@@ -1,0 +1,31 @@
+{
+  "width": 210,
+  "height": 70,
+  "func": "__ht__function(g, rect, comp, data, view) {\nvar rxRate = comp.getValue('rxRate'),\ntxRate = comp.getValue('txRate'),\nrxUtil = comp.getValue('rxUtil'),\ntxUtil = comp.getValue('txUtil');\nmainColorRx = comp.getValue('mainColorRx'),mainColorTx = comp.getValue('mainColorTx');\nvar width = rect.width,\nheight = rect.height;\nvar uh = 150,\nhh = 30;\n//RX bg color\ng.save();\ng.fillStyle = mainColorRx;\ng.fillRect(0, 0, uh, hh);\ng.restore();\n//TX bg color\ng.save();\ng.fillStyle = mainColorTx;\ng.fillRect(0, hh, uh, hh);\ng.restore();\nht.Default.drawText(g, 'RX ' + rxRate , '16px sans-serif', '#ffffff', 0, 0, uh, hh, 'center', 'middle');\nht.Default.drawText(g, 'TX ' + txRate , '16px sans-serif', '#ffffff', 0, hh, uh, hh, 'center', 'middle');\n}",
+  "properties": {
+    "rxRate": {
+      "valueType": "String",
+      "defaultValue": "1 Gbps"
+    },
+    "txRate": {
+      "valueType": "String",
+      "defaultValue": "11.3 Mbps"
+    },
+    "rxUtil": {
+      "valueType": "PositiveNumber",
+      "defaultValue": 40
+    },
+    "txUtil": {
+      "valueType": "PositiveNumber",
+      "defaultValue": 40
+    },
+    "mainColorRx": {
+      "valueType": "Color",
+      "defaultValue": "#91e806"
+    },
+    "mainColorTx": {
+      "valueType": "Color",
+      "defaultValue": "#91e806"
+    }
+  }
+}

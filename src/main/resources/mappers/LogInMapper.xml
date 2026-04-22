@@ -1,0 +1,26 @@
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.i52soft.lscable.cms.dao.LogInDao">
+
+	<select id="getActiveUser" parameterType="java.lang.String" resultType="UserVO">
+		select a.username, 
+		a.first_name || ' ' || a.last_name as fullname, 
+		'adminpassword' as password, 
+		b.name as role 
+		from 
+		lscms_auth_systemuser a, 
+		lscms_auth_group b, 
+		lscms_auth_systemuser_groups c
+		where 1=1
+		and a.id = c.systemuser_id 
+		and b.id=c.group_id
+		and a.username=#{username}
+		and is_deleted=false
+	</select>
+
+		
+	
+</mapper>
+

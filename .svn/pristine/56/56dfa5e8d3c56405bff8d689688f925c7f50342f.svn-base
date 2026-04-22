@@ -1,0 +1,71 @@
+/* These are just a test styles - you don't need them in your project */
+
+.circles {
+  margin-bottom: -10px;
+}
+
+.circle {
+  display: inline-block;
+  position: relative;
+  text-align: center;
+  line-height: 1.2;
+}
+.circle2 {
+  display: inline-block;
+  position: relative;
+  text-align: center;
+  line-height: 1.2;
+}
+.circle3 {
+  display: inline-block;
+  position: relative;
+  text-align: center;
+  line-height: 1.2;
+}
+.circle4 {
+  display: inline-block;
+  position: relative;
+  text-align: center;
+  line-height: 1.2;
+}
+.circle canvas, .circle2 canvas, .circle3 canvas, .circle4 canvas {
+  vertical-align: top;
+  width:120px;
+}
+
+
+.circle span {
+  display: block;
+  color: #aaa;
+  margin-top: 12px;
+}
+
+
+.install {
+  display: inline-block;
+}
+.circle_strong{
+height:26px;
+position:absolute;
+top:0;
+bottom:0;
+right:0;
+left:0;
+font-weight:400;
+font-size:24px;
+margin-left:auto; margin-right:auto;
+margin-top:auto; margin-bottom:auto;
+
+}
+.circle_strong2{
+height:26px;
+position:absolute;
+top:0;
+bottom:0;
+right:0;
+left:0;
+font-weight:400;
+font-size:24px;
+margin-left:auto; margin-right:auto;
+margin-top:auto; margin-bottom:auto;
+}

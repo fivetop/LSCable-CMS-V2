@@ -1,0 +1,308 @@
+{
+  "v": "6.2.7",
+  "p": {
+    "background": "rgb(61,61,61)",
+    "envmap": "assets/贴图/环境光/室内2.jpg",
+    "autoAdjustIndex": true,
+    "hierarchicalRendering": true,
+    "postProcessingData": {
+      "Bloom": {
+        "enable": false,
+        "strength": 0.36,
+        "threshold": 0.18,
+        "radius": 0.4
+      }
+    }
+  },
+  "d": [
+    {
+      "c": "ht.Node",
+      "i": 200143,
+      "p": {
+        "rotation": -3.14159,
+        "position": {
+          "x": -0.00257,
+          "y": -17.76951
+        },
+        "anchorElevation": 0,
+        "elevation": 166.65484
+      },
+      "s": {
+        "shape3d": "models/机房/设备零件/C1/1.json",
+        "2d.movable": false,
+        "3d.movable": false
+      }
+    },
+    {
+      "c": "ht.Node",
+      "i": 200144,
+      "p": {
+        "rotation": -3.14159,
+        "position": {
+          "x": -0.00257,
+          "y": -17.76951
+        },
+        "anchorElevation": 0,
+        "elevation": 103.42387
+      },
+      "s": {
+        "shape3d": "models/机房/设备零件/C1/2.json",
+        "2d.movable": false,
+        "3d.movable": false
+      }
+    },
+    {
+      "c": "ht.Node",
+      "i": 200145,
+      "p": {
+        "rotation": -3.14159,
+        "position": {
+          "x": -0.00257,
+          "y": -17.76951
+        },
+        "anchorElevation": 0,
+        "elevation": 79.30562
+      },
+      "s": {
+        "shape3d": "models/机房/设备零件/C1/8.json",
+        "2d.movable": false,
+        "3d.movable": false
+      }
+    },
+    {
+      "c": "ht.Node",
+      "i": 200146,
+      "p": {
+        "rotation": 3.14159,
+        "position": {
+          "x": -0.00257,
+          "y": -17.76951
+        },
+        "anchorElevation": 0
+      },
+      "s": {
+        "shape3d": "models/机房/设备零件/C1/9.json",
+        "2d.movable": false,
+        "3d.movable": false
+      }
+    },
+    {
+      "c": "ht.Node",
+      "i": 200147,
+      "p": {
+        "rotation": -3.14159,
+        "position": {
+          "x": -0.00257,
+          "y": -17.76951
+        },
+        "anchorElevation": 0,
+        "elevation": 118.42836
+      },
+      "s": {
+        "shape3d": "models/机房/设备零件/C1/2.json",
+        "2d.movable": false,
+        "3d.movable": false
+      }
+    },
+    {
+      "c": "ht.Node",
+      "i": 200148,
+      "p": {
+        "rotation": -3.14159,
+        "position": {
+          "x": -0.00257,
+          "y": -17.76951
+        },
+        "anchorElevation": 0,
+        "elevation": 133.45438
+      },
+      "s": {
+        "shape3d": "models/机房/设备零件/C1/2.json",
+        "2d.movable": false,
+        "3d.movable": false
+      }
+    },
+    {
+      "c": "ht.Node",
+      "i": 200141,
+      "p": {
+        "displayName": "后门",
+        "rotation": 3.14159,
+        "position": {
+          "x": 0,
+          "y": 13.38188
+        },
+        "anchorElevation": 0,
+        "width": 59.2278,
+        "height": 2.5081,
+        "tall": 201.7266
+      },
+      "s": {
+        "shape3d": "models/机房/机柜/门1.json",
+        "2d.movable": false,
+        "3d.movable": false
+      }
+    },
+    {
+      "c": "ht.Node",
+      "i": 200142,
+      "p": {
+        "displayName": "前门",
+        "position": {
+          "x": 0,
+          "y": -50.34286
+        },
+        "anchorElevation": 0,
+        "width": 59.2278,
+        "height": 2.3455,
+        "tall": 201.7266
+      },
+      "s": {
+        "shape3d": "models/机房/机柜/门1.json",
+        "envmap": 0.16,
+        "2d.movable": false,
+        "3d.movable": false,
+        "shape3d.transparent": true
+      }
+    },
+    {
+      "c": "ht.Node",
+      "i": 200140,
+      "p": {
+        "displayName": "柜其他",
+        "rotation": 3.14159,
+        "position": {
+          "x": 0,
+          "y": -18.52114
+        },
+        "anchorElevation": 0,
+        "width": 60,
+        "height": 61.29795,
+        "tall": 202.0512
+      },
+      "s": {
+        "shape3d": "models/机房/机柜/机柜42U.json",
+        "envmap": 0.06,
+        "2d.movable": false,
+        "3d.movable": false,
+        "shape3d.blend": null
+      }
+    },
+    {
+      "c": "ht.Node",
+      "i": 200166,
+      "p": {
+        "position": {
+          "x": 335.35185,
+          "y": -18.52114
+        },
+        "anchorElevation": 0
+      },
+      "s": {
+        "shape3d": "models/机房/设备零件/C1/1.json"
+      }
+    },
+    {
+      "c": "ht.Node",
+      "i": 200167,
+      "p": {
+        "position": {
+          "x": 268.71926,
+          "y": -18.52114
+        },
+        "anchorElevation": 0
+      },
+      "s": {
+        "shape3d": "models/机房/设备零件/C1/2.json"
+      }
+    },
+    {
+      "c": "ht.Node",
+      "i": 200168,
+      "p": {
+        "position": {
+          "x": 202.08666,
+          "y": -18.52114
+        },
+        "anchorElevation": 0
+      },
+      "s": {
+        "shape3d": "models/机房/设备零件/C1/4.json"
+      }
+    },
+    {
+      "c": "ht.Node",
+      "i": 200169,
+      "p": {
+        "position": {
+          "x": 135.45407,
+          "y": -18.52114
+        },
+        "anchorElevation": 0
+      },
+      "s": {
+        "shape3d": "models/机房/设备零件/C1/5.json"
+      }
+    },
+    {
+      "c": "ht.Node",
+      "i": 200170,
+      "p": {
+        "position": {
+          "x": 68.51615,
+          "y": -18.52114
+        },
+        "anchorElevation": 0
+      },
+      "s": {
+        "shape3d": "models/机房/设备零件/C1/7.json"
+      }
+    },
+    {
+      "c": "ht.Node",
+      "i": 200171,
+      "p": {
+        "position": {
+          "x": 401.98444,
+          "y": -18.52114
+        },
+        "anchorElevation": 0
+      },
+      "s": {
+        "shape3d": "models/机房/设备零件/C1/8.json"
+      }
+    },
+    {
+      "c": "ht.Node",
+      "i": 200172,
+      "p": {
+        "position": {
+          "x": 468.4773,
+          "y": -18.52114
+        },
+        "anchorElevation": 0
+      },
+      "s": {
+        "shape3d": "models/机房/设备零件/C1/9.json"
+      }
+    }
+  ],
+  "scene": {
+    "eye": [
+      -32.70754,
+      370.05009,
+      361.34808
+    ],
+    "center": [
+      146.65365,
+      143.97657,
+      15.0893
+    ],
+    "near": 10,
+    "far": 2000000,
+    "background": "rgb(61,61,61)",
+    "gridSize": 25,
+    "gridGap": 46,
+    "gridColor": "rgb(49,210,235)"
+  }
+}

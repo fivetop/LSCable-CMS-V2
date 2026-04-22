@@ -1,0 +1,1061 @@
+package com.i52soft.lscable.cms.service.impl;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.i52soft.lscable.cms.dao.HTBackendDao;
+import com.i52soft.lscable.cms.domain.CMSSiteVO;
+import com.i52soft.lscable.cms.domain.DeviceParam;
+import com.i52soft.lscable.cms.domain.EndUserVO;
+import com.i52soft.lscable.cms.domain.EntityVO;
+import com.i52soft.lscable.cms.domain.InterfaceVO;
+import com.i52soft.lscable.cms.domain.LinkageConnectionVO;
+import com.i52soft.lscable.cms.domain.MainPageLayoutVO;
+import com.i52soft.lscable.cms.domain.MainPageWidgetVO;
+import com.i52soft.lscable.cms.domain.MapWidgetVO;
+import com.i52soft.lscable.cms.domain.NetworkSwitchVO;
+import com.i52soft.lscable.cms.domain.NetworkVO;
+import com.i52soft.lscable.cms.domain.PPInvalidVO;
+import com.i52soft.lscable.cms.domain.ProductVO;
+import com.i52soft.lscable.cms.domain.RegionVO;
+import com.i52soft.lscable.cms.domain.SampleWidgetVO;
+import com.i52soft.lscable.cms.domain.SampleWidgetVO2;
+import com.i52soft.lscable.cms.domain.SiteTreePlacementVO;
+import com.i52soft.lscable.cms.domain.SiteTreeRackspacePositionVO;
+import com.i52soft.lscable.cms.domain.SiteTreeVO;
+import com.i52soft.lscable.cms.domain.SystemUserVO;
+import com.i52soft.lscable.cms.service.HTBackendService;
+
+@Service
+public class HTBackendServiceImpl implements HTBackendService {
+
+	@Autowired
+	private HTBackendDao hTBackendDao;
+
+    @Override
+	public List<SampleWidgetVO> getAvailableWidgetForBuildingLayout() {
+		List<SampleWidgetVO> lists = hTBackendDao.getAvailableWidgetForBuildingLayout();
+		return lists;
+	}	
+    @Override
+    public List<String> getAvailableLayoutForBuildingLayout(){
+		List<String> lists = hTBackendDao.getAvailableLayoutForBuildingLayout();
+		return lists;
+    }
+    
+    @Override
+    public List<HashMap> getAvailableLayoutForBuildingLayout2(){
+		List<HashMap> lists = hTBackendDao.getAvailableLayoutForBuildingLayout2();
+		return lists;
+    }
+    
+    @Override
+    public List<HashMap> getAvailableWidgetForLayoutSize(String layoutsize){
+		List<HashMap> lists = hTBackendDao.getAvailableWidgetForLayoutSize(layoutsize);
+		return lists;
+    }   
+    
+    @Override
+    public List<HashMap> getWidgetTypeForMainPage(){
+		List<HashMap> lists = hTBackendDao.getWidgetTypeForMainPage();
+		return lists;
+    }
+    
+    @Override
+    public void insertWidgetForBuildingLayout(SampleWidgetVO2 vo){
+    	hTBackendDao.insertWidgetForBuildingLayout(vo);
+		
+    }
+    @Override
+    public int deleteWidgetForBuildingLayout(int id){
+		int count = hTBackendDao.deleteWidgetForBuildingLayout(id);
+		return count;
+    }
+    
+    ///////////////////////////    
+    @Override
+	public List<HashMap> getAlarmStatusOfMapWidget(Map<String, Integer> map){
+		List<HashMap> lists = hTBackendDao.getAlarmStatusOfMapWidget(map);
+		return lists;
+    }
+
+    @Override
+	public List<HashMap> getAlarmStatusOfMapWidget(){
+		List<HashMap> lists = hTBackendDao.getAlarmStatusOfMapWidget();
+		return lists;
+    }
+	@Override
+	public int updateMainPageWidget(MainPageWidgetVO vo) {
+    	int count = hTBackendDao.updateMainPageWidget(vo);
+    	return count;
+	}
+	@Override
+	public void insertMainPageWidget(MainPageWidgetVO vo) {
+		hTBackendDao.insertMainPageWidget(vo);
+		
+	}
+	@Override
+	public int deleteMainPageWidget(int id) {
+		int count = hTBackendDao.deleteMainPageWidget(id);
+		return count;
+	}
+	@Override
+	public List<HashMap> getMainPageWidgetModelData(int id) {
+		List<HashMap> lists = hTBackendDao.getMainPageWidgetModelData(id);
+		return lists;
+	}
+	@Override
+	public void deleteAllDeviceFromMapWidget(int widgetId){
+		hTBackendDao.deleteAllDeviceFromMapWidget(widgetId);
+	}
+	@Override
+	public void insertDeviceIntoMapWidget(Map<String, Object> map){
+		hTBackendDao.insertDeviceIntoMapWidget(map);
+	}
+	@Override
+	public void deleteAllSubMapWidgetFromMapWidget(int widgetId){
+		hTBackendDao.deleteAllSubMapWidgetFromMapWidget(widgetId);
+	}
+	@Override
+	public void deleteAllFromMapWidgetTree(int id){
+		hTBackendDao.deleteAllFromMapWidgetTree(id);
+	}	
+	@Override
+	public void insertSubMapWidgetIntoMapWidget(Map<String, Object> map){
+		hTBackendDao.insertSubMapWidgetIntoMapWidget(map);
+	}
+	@Override
+	public Integer getDeviceId(String deviceName){
+		Integer rtn = hTBackendDao.getDeviceId(deviceName); 
+		if(rtn == null){
+			rtn = new Integer(0);
+		}
+		return rtn;
+	}
+	@Override
+	public void insertDeviceInfo(DeviceParam device){
+		hTBackendDao.insertDeviceInfo(device);
+	}
+	@Override
+	public List<HashMap> getProductMapIcon(){
+		return hTBackendDao.getProductMapIcon();
+	}
+	@Override
+	public List<HashMap> getImagesForProduct(int id){
+		return hTBackendDao.getImagesForProduct(id);
+	}
+	@Override
+	public int updateMapWidget(MapWidgetVO vo){    	
+    	int count = hTBackendDao.updateMapWidget(vo);
+    	return count;
+	}
+	@Override
+	public void deleteMapWidgetFromMapWidget(int widgetId){
+		hTBackendDao.deleteMapWidgetFromMapWidget(widgetId);
+	}
+	@Override
+	public void insertMapWidgetIntoMapWidget(Map<String, Object> map){
+		hTBackendDao.insertMapWidgetIntoMapWidget(map);
+	}
+	@Override
+	public List<HashMap> searchMapWidget(){
+		return hTBackendDao.searchMapWidget();
+	}
+	@Override
+	public String getProductTree(){
+		return hTBackendDao.getProductTree();
+	}
+	@Override
+	public void saveProductTree(String content){
+		hTBackendDao.saveProductTree(content);
+	}
+	@Override
+	public void deleteProductTree(){
+		hTBackendDao.deleteProductTree();
+	}
+	@Override
+	public List<HashMap> getProductType(){
+		return hTBackendDao.getProductType();
+	}
+	@Override
+	public int createMainPageLayout(MainPageLayoutVO vo){
+		return hTBackendDao.createMainPageLayout(vo);
+	}
+	@Override
+	public void deleteAllWidgetFromMainPage(int id){
+		hTBackendDao.deleteAllWidgetFromMainPage(id);
+	}
+	@Override
+	public int deleteMainPageLayout(int id){
+		int count =  hTBackendDao.deleteMainPageLayout(id);
+		return count;
+	}
+	@Override
+	public int updateMainPageLayout(MainPageLayoutVO vo){		
+    	int count = hTBackendDao.updateMainPageLayout(vo);
+    	return count;
+	}
+	@Override
+	public void insertWidgetIntoMainPage(Map<String, Object> map){
+		hTBackendDao.insertWidgetIntoMainPage(map);
+	}
+	@Override
+	public List<HashMap> getProductInfo(int type){
+		return hTBackendDao.getProductInfo(type);
+	}
+	@Override
+	public List<HashMap> getProductInfoByTypeName(String type){
+		return hTBackendDao.getProductInfoByTypeName(type);
+	}
+	@Override
+	public List<HashMap> getManufacturer(){
+		return hTBackendDao.getManufacturer();
+	}
+	@Override
+	public void registerProduct(ProductVO vo){
+		 hTBackendDao.registerProduct(vo);
+	}
+
+	public void registerProduct2(ProductVO vo){
+		hTBackendDao.registerProduct2(vo);
+	}
+	@Override
+	public int updateProduct(ProductVO vo){
+    	int count = hTBackendDao.updateProduct(vo);
+    	return count;
+	}
+	@Override
+	public int deleteProduct(int productid){
+		int count =  hTBackendDao.deleteProduct(productid);
+		return count;
+	}
+	@Override
+	public List<HashMap> getEndUser(){
+		return hTBackendDao.getEndUser();
+	}
+	@Override
+	public List<HashMap> getSystemUser(){
+		return hTBackendDao.getSystemUser();
+	}
+	@Override
+	public int registerEndUser(EndUserVO vo){
+		return hTBackendDao.registerEndUser(vo);
+	}
+	@Override
+	public int updateEndUser(EndUserVO vo){
+    	int count = hTBackendDao.updateEndUser(vo);
+    	return count;
+	}
+	@Override
+	public int deleteEndUser(int enduserid){
+		int count =  hTBackendDao.deleteEndUser(enduserid);
+		return count;
+	}
+	@Override
+	public int registerSystemUser(SystemUserVO vo){
+		return hTBackendDao.registerSystemUser(vo);
+	}
+	@Override
+	public int updateSystemUser(SystemUserVO vo){
+    	int count = hTBackendDao.updateSystemUser(vo);
+    	return count;
+	}
+	@Override
+	public int deleteSystemUser(int systemuserid){
+		int count =  hTBackendDao.deleteSystemUser(systemuserid);
+		return count;
+	}
+	@Override
+	public List<HashMap> getSystemGroup(){
+		return hTBackendDao.getSystemGroup();
+	}
+	@Override
+	public int registerSystemUserGroup(SystemUserVO vo){
+		return hTBackendDao.registerSystemUserGroup(vo);
+	}
+	@Override
+	public void deleteSystemUserGroup(int systemuser_id){
+		hTBackendDao.deleteSystemUserGroup(systemuser_id);
+	}
+	@Override
+	public String getSystemUserNameById(int systemuserid){
+		return hTBackendDao.getSystemUserNameById(systemuserid);
+	}
+	@Override
+	public List<HashMap> getSiteTreeModelData(int siteid){
+		return hTBackendDao.getSiteTreeModelData(siteid);
+	}
+	@Override
+	public List<HashMap> getAvailableNodeTypeAsChild(Map<String, Integer> map){
+		return hTBackendDao.getAvailableNodeTypeAsChild(map);
+	}
+	@Override
+	public List<HashMap> getProductByType(int type){
+		return hTBackendDao.getProductByType(type);
+	}
+	@Override
+	public List<HashMap> checkDuplicateName(Map<String, Object> map){
+		return hTBackendDao.checkDuplicateName(map);
+	}
+	@Override
+	public int createCMSSite(CMSSiteVO vo){
+		return hTBackendDao.createCMSSite(vo);
+	}
+	@Override
+	public List<HashMap> getSiteDetail(int siteid){
+		return hTBackendDao.getSiteDetail(siteid);
+	}
+	@Override
+	public void saveSiteDetail(CMSSiteVO vo){
+		hTBackendDao.saveSiteDetail(vo);
+	}
+	@Override
+	public List<HashMap> getSubRegion(Map<String, Integer> map){
+		return hTBackendDao.getSubRegion(map);
+	}
+	@Override
+	public List<HashMap> checkDuplicateSystemUserId(String id){
+		return hTBackendDao.checkDuplicateSystemUserId(id);
+	}
+	@Override
+	public List<SampleWidgetVO> getSampleWidgetPreviewImage(int samplewidgetid){
+		return hTBackendDao.getSampleWidgetPreviewImage(samplewidgetid);
+	}
+	@Override
+	public List<HashMap> getAvailableNodeTypeAllInOne(){
+		return hTBackendDao.getAvailableNodeTypeAllInOne();
+	}
+	@Override
+	public void addRegion(RegionVO vo){
+		
+		hTBackendDao.addRegion(vo);
+	
+	}
+	@Override
+	public void updateRegion(RegionVO vo){
+		hTBackendDao.updateRegion(vo);
+	}
+	@Override
+	public int deleteRegionChildren(int id){
+		int count =  hTBackendDao.deleteRegionChildren(id);
+		return count;
+	}
+	@Override
+	public int deleteRegionSelf(int id){
+		int count =  hTBackendDao.deleteRegionSelf(id);
+		return count;
+	}	
+	@Override
+	public List<HashMap> getAllRegion(){
+		return hTBackendDao.getAllRegion();
+	}
+	@Override
+	public List<HashMap> getCMSSite(Map<String, String> map){
+		return hTBackendDao.getCMSSite(map);
+	}
+	@Override
+	public int removeSite(int id){
+		int count =  hTBackendDao.removeSite(id);
+		return count;
+	}
+	@Override
+	public int saveSiteTreeModelData(Map<String, Object> map){
+		int count =  hTBackendDao.saveSiteTreeModelData(map);
+		return count;
+	}
+	@Override
+	public void updateEntityParam(EntityVO entityParam){
+		hTBackendDao.updateEntityParam(entityParam);
+	}
+	@Override
+	public void updateSiteTreeParam(SiteTreeVO siteTreeParam){
+		hTBackendDao.updateSiteTreeParam(siteTreeParam);
+	}
+	@Override
+	public void insertEntityParam(EntityVO entityParam){
+		hTBackendDao.insertEntityParam(entityParam);
+	}
+	@Override
+	public void insertSiteTreeParam(SiteTreeVO siteTreeParam){
+		hTBackendDao.insertSiteTreeParam(siteTreeParam);
+	}
+	@Override
+	public List<HashMap> getSiteTreeNodeDetail(int id){
+		return hTBackendDao.getSiteTreeNodeDetail(id);
+	}
+	@Override
+	public int removeNode(int id){
+		int count =  hTBackendDao.removeNode(id);
+		return count;
+	}
+	@Override
+	public void insertSiteTreePlacement(SiteTreePlacementVO placement){
+		hTBackendDao.insertSiteTreePlacement(placement);
+	}
+	@Override
+	public void insertChildrenEntityIntoPlacement(Map<String, Integer> map){
+		hTBackendDao.insertChildrenEntityIntoPlacement(map);
+	}
+	@Override
+	public void insertRackspacePosition(SiteTreeRackspacePositionVO rackPosition){
+		hTBackendDao.insertRackspacePosition(rackPosition);
+	}
+	@Override
+	public int checkTypeMatch(Map<String, Object> map){
+		return hTBackendDao.checkTypeMatch(map);
+	}
+	@Override
+	public void deleteRackspacePositionByNodeID(int id){
+		hTBackendDao.deleteRackspacePositionByNodeID(id);
+	}
+	@Override
+	public void deleteChildrenEntityFromPlacement(int id){
+		hTBackendDao.deleteChildrenEntityFromPlacement(id);
+	}
+	@Override
+	public void deleteSiteTreePlacement(int id){
+		hTBackendDao.deleteSiteTreePlacement(id);
+	}
+	@Override
+	public List<HashMap> getCMSSiteBySiteID(int id){
+		return hTBackendDao.getCMSSiteBySiteID(id);
+	}
+	@Override
+	public void changeSiteTreeParentNode(SiteTreeVO vo){
+		hTBackendDao.changeSiteTreeParentNode(vo);
+	}
+	@Override
+	public List<HashMap> getLinkageConnectionModelData(int nodeid){
+		return hTBackendDao.getLinkageConnectionModelData(nodeid);
+	}
+	@Override
+	public List<HashMap> getLinkageConnectionDetail(int nodeid){
+		return hTBackendDao.getLinkageConnectionDetail(nodeid);
+	}
+	@Override
+	public void insertLinkageConnection(LinkageConnectionVO vo){
+		hTBackendDao.insertLinkageConnection(vo);
+	}
+	@Override
+	public void insertPPIntoLinkageConnection(Map<String, Object> map){
+		hTBackendDao.insertPPIntoLinkageConnection(map);
+	}
+	@Override
+	public void insertInterface(InterfaceVO ivoa){
+		hTBackendDao.insertInterface(ivoa);
+	}
+	@Override
+	public void insertLinkageConnectionDetail(Map<String, Integer> map){
+		hTBackendDao.insertLinkageConnectionDetail(map);
+	}
+	@Override
+	public void updateLinkageConnection(LinkageConnectionVO vo){
+		hTBackendDao.updateLinkageConnection(vo);
+	}
+	@Override
+	public void deletePPFromLinkageConnection(int linkageconnectionid){
+		hTBackendDao.deletePPFromLinkageConnection(linkageconnectionid);
+	}
+	@Override
+	public void deleteInterface(int linkageconnectionid){
+		hTBackendDao.deleteInterface(linkageconnectionid);
+	}
+	@Override
+	public void deleteLinkageConnectionDetail(int linkageconnectionid){
+		hTBackendDao.deleteLinkageConnectionDetail(linkageconnectionid);
+	}
+	@Override
+	public void removeLinkageConnection(int id){
+		hTBackendDao.removeLinkageConnection(id);
+	}
+	@Override
+	public List<HashMap> getCableIcon(){
+		return hTBackendDao.getCableIcon();
+	}
+	@Override
+	public List<HashMap> checkDandDAvailability(Map<String, Object> map){
+		return hTBackendDao.checkDandDAvailability(map);
+	}
+	@Override
+	public Integer getTotalPortByCategory(int category){
+		return hTBackendDao.getTotalPortByCategory(category);
+	}
+	@Override
+	public void deleteInterfaceByNodeID(int id){
+		hTBackendDao.deleteInterfaceByNodeID(id);
+	}
+	@Override
+	public void deleteEntityByNodeID(int id){
+		hTBackendDao.deleteEntityByNodeID(id);
+	}
+	@Override
+	public int getInterfaceID(Map<String, Object> mapi){
+		return hTBackendDao.getInterfaceID(mapi);
+	}
+	@Override
+	public Integer getEntityIDFromSiteTreeByNodeID(int id){
+		return hTBackendDao.getEntityIDFromSiteTreeByNodeID(id);
+	}
+	@Override
+	public void deleteInterfaceByEntityID(Integer entityid){
+		hTBackendDao.deleteInterfaceByEntityID(entityid);
+	}
+	@Override
+	public void deleteEntityByEntityID(Integer entityid){
+		hTBackendDao.deleteEntityByEntityID(entityid);
+	}
+	@Override
+	public List<HashMap> getNetwork(){
+		return hTBackendDao.getNetwork();
+	}
+	@Override
+	public List<HashMap> getL3Gateway(String keyword){
+		return hTBackendDao.getL3Gateway(keyword);
+	}
+	@Override
+	public List<HashMap> getL2Switch(String keyword){
+		return hTBackendDao.getL2Switch(keyword);
+	}
+	@Override
+	public void registerNetwork(NetworkVO vo){
+		hTBackendDao.registerNetwork(vo);
+	}
+	@Override
+	public void insertNetworkSwitch(NetworkSwitchVO _switch){
+		hTBackendDao.insertNetworkSwitch(_switch);
+	}
+	@Override
+	public void deleteNetworkSwitch(int id){
+		hTBackendDao.deleteNetworkSwitch(id);
+	}
+	@Override
+	public void updateNetwork(NetworkVO vo){
+		hTBackendDao.updateNetwork(vo);
+	}
+	@Override
+	public int deleteNetwork(int networkid){
+		int count =  hTBackendDao.deleteNetwork(networkid);
+		return count;
+	}
+	@Override
+	public HashMap<String, Object> getNMSInterfaceInfo(Map<String, String> map2){
+		return hTBackendDao.getNMSInterfaceInfo(map2);
+	}
+	@Override
+	public List<HashMap> getNetworkL2Switch(Integer networkid){
+		return hTBackendDao.getNetworkL2Switch(networkid);
+	}
+	@Override
+	public List<HashMap> getNetworkL3Switch(Integer networkid){
+		return hTBackendDao.getNetworkL3Switch(networkid);
+	}
+	@Override
+	public void deleteEntityFromRackspacePosition(Integer entityid){
+		hTBackendDao.deleteEntityFromRackspacePosition(entityid);
+	}
+	@Override
+	public void deleteEntityFromPlacement(Integer entityid){
+		hTBackendDao.deleteEntityFromPlacement(entityid);
+	}
+	@Override
+	public List<HashMap> getIPAddress(){
+		return hTBackendDao.getIPAddress();
+	}
+	@Override
+	public void registerIPAddress(Map<String, Object> map){
+		hTBackendDao.registerIPAddress(map);
+	}
+	@Override
+	public void updateIPAddress(Map<String, Object> map){
+		hTBackendDao.updateIPAddress(map);
+	}
+	@Override
+	public int deleteIPAddress(int ipid){
+		return hTBackendDao.deleteIPAddress(ipid);
+	}
+	@Override
+	public List<HashMap> checkDuplicateIPAddress(String ipaddress){
+		return hTBackendDao.checkDuplicateIPAddress(ipaddress);
+	}
+	@Override
+	public List<HashMap> getConnectionDiagramTopDown(Map<String, Object> map){
+		return hTBackendDao.getConnectionDiagramTopDown(map);
+	}
+	@Override
+	public List<HashMap> getConnectionDiagramBottomUp(Map<String, Object> map){
+		return hTBackendDao.getConnectionDiagramBottomUp(map);
+	}
+	@Override
+	public List<HashMap> getOutletUsageHistory(Map<String, Object> map){
+		return hTBackendDao.getOutletUsageHistory(map);
+	}
+	@Override
+	public List<HashMap> getNetworkNodePortStatus(int nodeid){
+		return hTBackendDao.getNetworkNodePortStatus(nodeid);
+	}
+	@Override
+	public List<HashMap> getAlarmStatus(int nodeid){
+		return hTBackendDao.getAlarmStatus(nodeid);
+	}
+	@Override
+	public List<HashMap> searchIPTerminal(Map<String, String> map){
+		return hTBackendDao.searchIPTerminal(map);
+	}
+	@Override
+	public List<HashMap> getUsageHistory(String mac_address){
+		return hTBackendDao.getUsageHistory(mac_address);
+	}
+	@Override
+	public List<HashMap> getConnectionDiagramTopDownIPAM(String mac_address){
+		return hTBackendDao.getConnectionDiagramTopDownIPAM(mac_address);
+	}
+	@Override
+	public List<HashMap> getConnectionDiagramBottomUpIPAM(String mac_address){
+		return hTBackendDao.getConnectionDiagramBottomUpIPAM(mac_address);
+	}
+	@Override
+	public List<HashMap> searchCMSEntity(Map<String, Object> map){
+		return hTBackendDao.searchCMSEntity(map);
+	}
+	@Override
+	public List<HashMap> getAuthList(Integer siteid){
+		return hTBackendDao.getAuthList(siteid);
+	}
+	@Override
+	public List<HashMap> getAvailableSystemUser(Integer siteid){
+		return hTBackendDao.getAvailableSystemUser(siteid);
+	}
+	@Override
+	public int addAuthorizedSystemUser(Map<String, Object> map){
+		return hTBackendDao.addAuthorizedSystemUser(map);
+	}
+	@Override
+	public int removeAuthorizedSystemUser(Map<String, Object> map){
+		return hTBackendDao.removeAuthorizedSystemUser(map);
+	}
+	@Override
+	public List<HashMap> getAuthList2(Integer mainpageid){
+		return hTBackendDao.getAuthList2(mainpageid);
+	}
+	@Override
+	public List<HashMap> getAvailableSystemUser2(Integer mainpageid){
+		return hTBackendDao.getAvailableSystemUser2(mainpageid);
+	}
+	@Override
+	public int addAuthorizedSystemUser2(Map<String, Object> map){
+		return hTBackendDao.addAuthorizedSystemUser2(map);
+	}
+	@Override
+	public int removeAuthorizedSystemUser2(Map<String, Object> map){
+		return hTBackendDao.removeAuthorizedSystemUser2(map);
+	}
+	@Override
+	public int getInterfaceIDByNodeID(Map<String, Object> mapi){
+		return hTBackendDao.getInterfaceIDByNodeID(mapi);
+	}
+	@Override
+	public List<HashMap> getMainPageLayout(Map<String, String> map){
+		return hTBackendDao.getMainPageLayout(map);
+	}
+	@Override
+	public List<HashMap> getAvailableLayoutTheme(){
+		return hTBackendDao.getAvailableLayoutTheme();
+	}
+	@Override
+	public List<HashMap> getMainPageLayoutByPageID(int id){
+		return hTBackendDao.getMainPageLayoutByPageID(id);
+	}
+	@Override
+	public int setToDefaultMainPageLayout(Map<String, Object> map){
+		return hTBackendDao.setToDefaultMainPageLayout(map);
+	}
+	@Override
+	public void setToDefaultMainPageLayoutReset(Map<String, Object> map){
+		hTBackendDao.setToDefaultMainPageLayoutReset(map);
+	}
+	@Override
+	public int setToDefaultMainPageLayoutAdmin(Map<String, Object> map){
+		return hTBackendDao.setToDefaultMainPageLayoutAdmin(map);
+	}
+	@Override
+	public int addDefaultMainPageLayoutAdmin(Map<String, Object> map){
+		return hTBackendDao.addDefaultMainPageLayoutAdmin(map);
+	}
+	@Override
+	public void deleteAllDefaultTable(int id){
+		hTBackendDao.deleteAllDefaultTable(id);
+	}
+	@Override
+	public void deleteAllDefaultAdminTable(int id){
+		hTBackendDao.deleteAllDefaultAdminTable(id);
+	}
+	@Override
+	public List<HashMap> getChildrensAlarmStatus(int nodeid){
+		return hTBackendDao.getChildrensAlarmStatus(nodeid);
+	}
+	@Override
+	public List<HashMap> getChildrensDirectStatus(int nodeid){
+		return hTBackendDao.getChildrensDirectStatus(nodeid);
+	}	
+	@Override
+	public int getCategoryID(String string){
+		return hTBackendDao.getCategoryID(string);
+	}
+	@Override
+	public int getTypeID(String string){
+		return hTBackendDao.getTypeID(string);
+	}
+	@Override
+	public int updateCMSSiteRoot(CMSSiteVO vo){
+		return hTBackendDao.updateCMSSiteRoot(vo);
+	}
+	@Override
+	public List<HashMap> getConnectionDiagramEndUser(Map<String, Object> map){
+		return hTBackendDao.getConnectionDiagramEndUser(map);
+	}
+	@Override
+	public List<HashMap> getMainPageLayoutDetail(int id){
+		return hTBackendDao.getMainPageLayoutDetail(id);
+	}
+	@Override
+	public int saveMainPageLayoutDetail(Map<String, Object> map){
+		return hTBackendDao.saveMainPageLayoutDetail(map);
+	}
+	@Override
+	public void insertMainPageWidgetLayout(Map<String, Object> map){
+		hTBackendDao.insertMainPageWidgetLayout(map);
+	}
+	@Override
+	public int resetMainPageWidget(Map<String, Object> map){
+		return hTBackendDao.resetMainPageWidget(map);
+	}
+	@Override
+	public HashMap<String, Object> getCMSInfoForDevice(String devicename){
+		return hTBackendDao.getCMSInfoForDevice(devicename);
+	}
+	@Override
+	public List<HashMap> getCompatibleWidgetForLayout(Map<String, Object> map){
+		return hTBackendDao.getCompatibleWidgetForLayout(map);
+	}
+	@Override
+	public void updateMainPageWidgetLayout(Map<String, Object> map){
+		hTBackendDao.updateMainPageWidgetLayout(map);
+	}
+	@Override
+	public List<HashMap> getMainPageWidgetData(Map<String, Object> map){
+		return hTBackendDao.getMainPageWidgetData(map);
+	}
+	@Override
+	public void addManufacturer(RegionVO vo){
+		hTBackendDao.addManufacturer(vo);
+	}
+	@Override
+	public void updateManufacturer(RegionVO vo){
+		hTBackendDao.updateManufacturer(vo);
+	}
+	@Override
+	public int deleteManufacturer(int id){
+		return hTBackendDao.deleteManufacturer(id);
+	}
+	@Override
+	public HashMap getMainPageLayoutModelData(int id){
+		return hTBackendDao.getMainPageLayoutModelData(id);
+	}
+	@Override
+	public int deleteAllEndUser(){
+		return hTBackendDao.deleteAllEndUser();
+	}
+	@Override
+	public void registerBulkEndUser(Map<String, Object> map){
+		hTBackendDao.registerBulkEndUser(map);
+	}
+	@Override
+	public Integer getUHeightBuyEntityID(Integer integer){
+		return hTBackendDao.getUHeightBuyEntityID(integer);
+	}
+	@Override
+	public void deleteWidgetFromMainPage(Map<String, Object> map){
+		hTBackendDao.deleteWidgetFromMainPage(map);
+	}
+	@Override
+	public void updateMainPageLayoutToNull(int id){
+		hTBackendDao.updateMainPageLayoutToNull(id);
+	}
+	@Override
+	public List<HashMap> getAvailableDataProvider(int widgettype_id){
+		return hTBackendDao.getAvailableDataProvider(widgettype_id);
+	}
+	@Override
+	public List<HashMap> getAllWidgetTypeForSize(String layoutsize){
+		return hTBackendDao.getAllWidgetTypeForSize(layoutsize);
+	}
+	@Override
+	public String getLinkageImageForType(int type_id){
+		return hTBackendDao.getLinkageImageForType(type_id);
+	}
+	@Override
+	public Integer getDefaultMainPageID(Map<String, String> map){
+		return hTBackendDao.getDefaultMainPageID(map);
+	}
+	@Override
+	public Integer getDefaultMainPageIDAdmin(Map<String, String> map){
+		return hTBackendDao.getDefaultMainPageIDAdmin(map);
+	}
+	@Override
+	public int isRegionAvailableForDeletion(int id){
+		return hTBackendDao.isRegionAvailableForDeletion(id);
+	}
+	@Override
+	public List<Integer> getLinkageConnectionIDByNodeID(int nodeid){
+		return hTBackendDao.getLinkageConnectionIDByNodeID(nodeid);
+	}
+	@Override
+	public List<HashMap> getLinkageConnectionModelData2(Integer connectionid){
+		return hTBackendDao.getLinkageConnectionModelData2(connectionid);
+	}
+	@Override
+	public List<HashMap> getLinkageConnectionModelDataInvalid(Map<String, Integer> map){
+		return hTBackendDao.getLinkageConnectionModelDataInvalid(map);
+	}
+	@Override
+	public void deleteLinkageConnectionInvalid(int linkageconnectionid){
+		hTBackendDao.deleteLinkageConnectionInvalid(linkageconnectionid);
+	}
+	@Override
+	public void insertLinkageConnectionInvalid(PPInvalidVO invalid){
+		hTBackendDao.insertLinkageConnectionInvalid(invalid);
+	}
+	@Override
+	public void insertLinkageConnectionInvalidCable(PPInvalidVO invalid){
+		hTBackendDao.insertLinkageConnectionInvalidCable(invalid);
+	}
+	@Override
+	public void insertLinkageConnectionInvalidDevice(PPInvalidVO invalid){
+		hTBackendDao.insertLinkageConnectionInvalidDevice(invalid);
+	}
+	@Override
+	public void updateMainPageLayout2(MainPageLayoutVO vo){
+		hTBackendDao.updateMainPageLayout2(vo);
+	}
+	@Override
+	public List<HashMap> getCIList(){
+		return hTBackendDao.getCIList();
+	}
+	@Override
+	public Integer getMainpageWidgetTypeIDByName(String typename){
+		return hTBackendDao.getMainpageWidgetTypeIDByName(typename);
+	}
+	@Override
+	public List<HashMap> getConnectionDiagramUnauthorized(Map<String, Object> map){
+		return hTBackendDao.getConnectionDiagramUnauthorized(map);
+	}
+	@Override
+	public Boolean isBasisPatchPanel(Map<String, Integer> map){
+		return hTBackendDao.isBasisPatchPanel(map);
+	}
+	@Override
+	public List<String> getOutletPortName(int nodeid){
+		return hTBackendDao.getOutletPortName(nodeid);
+	}
+	@Override
+	public List<HashMap> getOutletPortStatus(Map<String, Object> map){
+		return hTBackendDao.getOutletPortStatus(map);
+	}
+	@Override
+	public HashMap getEntityInfoByNodeID(int id){
+		return hTBackendDao.getEntityInfoByNodeID(id);
+	}
+	@Override
+	public void deleteChildrenEntityByNodeID(Integer entityid){
+		hTBackendDao.deleteChildrenEntityByNodeID(entityid);
+	}
+	@Override
+	public List<Integer> getRackspacesAsChildren(Integer nodeid){
+		return hTBackendDao.getRackspacesAsChildren(nodeid);
+	}
+	@Override
+	public HashMap getEntityInfoByEntityID(Integer rackspace){
+		return hTBackendDao.getEntityInfoByEntityID(rackspace);
+	}
+	@Override
+	public void updateInterface(InterfaceVO ivo){
+		hTBackendDao.updateInterface(ivo);
+	}
+	@Override
+	public void deleteLinkageConnectionSwitchTopoDetail(int id){
+		hTBackendDao.deleteLinkageConnectionSwitchTopoDetail(id);
+	}
+	@Override
+	public void insertLinkageConnectionSwitchTopoDetail(Map<String, Integer> map){
+		hTBackendDao.insertLinkageConnectionSwitchTopoDetail(map);
+	}
+	@Override
+	public List<HashMap> getConnectionDiagramSwitchTopo(Map<String, Object> map){
+		return hTBackendDao.getConnectionDiagramSwitchTopo(map);
+	}
+	@Override
+	public HashMap getMainPageLayoutModelDataWOJson(Integer defaultid){
+		return hTBackendDao.getMainPageLayoutModelDataWOJson(defaultid);
+	}
+	@Override
+	public List<HashMap> getMainPageLayoutDetail4MainPage(Integer defaultid){
+		return hTBackendDao.getMainPageLayoutDetail4MainPage(defaultid);
+	}
+	@Override
+	public void deleteSystemUserMainpage(int systemuserid){
+		hTBackendDao.deleteSystemUserMainpage(systemuserid);
+	}
+	@Override
+	public void deleteSystemUserAdminMainpage(int systemuserid){
+		hTBackendDao.deleteSystemUserAdminMainpage(systemuserid);
+	}
+	@Override
+	public List<HashMap> getDeviceInterfaces(String deviceename) {
+		return hTBackendDao.getDeviceInterfaces(deviceename);
+	}
+	@Override
+	public List<HashMap> getEdgeStatus(Map<String, Object> map) {
+		return hTBackendDao.getEdgeStatus(map);
+	}
+	@Override
+	public List<HashMap> getMapWidgets() {
+		return hTBackendDao.getMapWidgets();
+	}
+	@Override
+	public List<HashMap> retrievePatchPortUsageRate(Map<String, Integer> map) {
+		return hTBackendDao.retrievePatchPortUsageRate(map);
+	}
+//	@Override
+//	public List<HashMap> getCMSList(Map<String, Object> map) {
+//		return hTBackendDao.getCMSList(map);
+//	}
+	@Override
+	public List<HashMap> getCMSSiteList(Map<String, String> map) {
+		return hTBackendDao.getCMSSiteList(map);
+	}
+	@Override
+	public List<HashMap> getCMSBuildingList(int id) {
+		return hTBackendDao.getCMSBuildingList(id);
+	}
+	@Override
+	public List<HashMap> getRealtimeAlarmList(HashMap<String, Object> requestParams) {
+		return hTBackendDao.getRealtimeAlarmList(requestParams);
+	}
+	@Override
+	public List<HashMap> getCurrentEndUsersTraffic(Map<String, Object> map) {
+		return hTBackendDao.getCurrentEndUsersTraffic(map);
+	}
+	@Override
+	public List<HashMap> retrieveSwitchPortUsageRate(Map<String, Integer> map) {
+		return hTBackendDao.retrieveSwitchPortUsageRate(map);
+	}
+	@Override
+	public List<HashMap> retrievePortUsageRate(Map<String, Object> map) {
+		return hTBackendDao.retrievePortUsageRate(map);
+	}
+	@Override
+	public List<HashMap> getCMSFloorList(Map<String, Integer> map) {
+		return hTBackendDao.getCMSFloorList(map);
+	}
+	@Override
+	public List<HashMap> getCMSFSubList(Map<String, Integer> map) {
+		return hTBackendDao.getCMSFSubList(map);
+	}
+	@Override
+	public List<HashMap> searchCMSEntitySummary(Map<String, Object> map) {
+		return hTBackendDao.searchCMSEntitySummary(map);
+	}
+	@Override
+	public List<HashMap> getEndUsersStats(Map<String, Object> map) {
+		return hTBackendDao.getEndUsersStats(map);
+	}
+	@Override
+	public List<HashMap> getEndUsersStatsMonthly(Map<String, Object> map) {
+		return hTBackendDao.getEndUsersStatsMonthly(map);
+	}
+	@Override
+	public int insertEndUserMac(Map<String, Object> map1) {
+		return hTBackendDao.insertEndUserMac(map1);
+	}
+	@Override
+	public int deleteEndUserMac(int id) {
+		return hTBackendDao.deleteEndUserMac(id);
+		
+	}
+	@Override
+	public int deleteAllEndUserMac() {
+		return hTBackendDao.deleteAllEndUserMac();
+	}
+	@Override
+	public List<HashMap> getTempUserInfo(Map<String, Object> map) {
+		return hTBackendDao.getTempUserInfo(map);
+	}
+	@Override
+	public int deleteTempUser(String mac) {
+		return hTBackendDao.deleteTempUser(mac);
+	}
+	@Override
+	public String getSwitchMac(Map<String, Object> map) {
+		return hTBackendDao.getSwitchMac(map);
+	}
+	@Override
+	public List<HashMap> getRackListForDCIM(Map<String, Integer> map) {
+		return hTBackendDao.getRackListForDCIM(map);
+	}
+	@Override
+	public List<HashMap> getAvailableDevicesInRack(Map<String, Object> map) {
+		return hTBackendDao.getAvailableDevicesInRack(map);
+	}
+	@Override
+	public List<HashMap> get3DRackDetail(int parseInt) {
+		return hTBackendDao.get3DRackDetail(parseInt);
+	}
+	@Override
+	public List<HashMap> getAllRacksInDCIM(int parseInt) {
+		return hTBackendDao.getAllRacksInDCIM(parseInt);
+	}
+	@Override
+	public int insert3DTexture(ProductVO vo) { 
+		return hTBackendDao.insert3DTexture(vo);
+	}
+	@Override
+	public int delete3DTexture(int i) {
+		return hTBackendDao.delete3DTexture(i);
+	}
+	@Override
+	public List<HashMap> getAreaDCIMWidget(Map<String, Object> map) {
+		return hTBackendDao.getAreaDCIMWidget(map);
+	}
+	@Override
+	public Integer getDCIMWidgetTypeId() {
+		return hTBackendDao.getDCIMWidgetTypeId();
+	}
+	@Override
+	public List<HashMap> getPatchPanelPortStatus(Map<String, Object> map) {
+		return hTBackendDao.getPatchPanelPortStatus(map);
+	}
+	@Override
+	public Integer getSiteIdbyNodeId(int nodeid) {
+		return hTBackendDao.getSiteIdbyNodeId(nodeid);
+	}
+	@Override
+	public List<HashMap> getRackType() {
+		return hTBackendDao.getRackType();
+	}
+	@Override
+	public String getUnAuthInfoBySWMac(Map<String, Object> map) {
+		return hTBackendDao.getUnAuthInfoBySWMac(map);
+	}
+	@Override
+	public Integer getTotalPortByEntity(int entityid) {
+		return hTBackendDao.getTotalPortByEntity(entityid);
+	}
+	@Override
+	public List<HashMap> getTempUserInfo2(Map<String, Object> map) {
+		return hTBackendDao.getTempUserInfo2(map);
+	}
+}

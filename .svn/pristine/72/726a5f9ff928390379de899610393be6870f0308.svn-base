@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <title>simpleEye MainPage</title>
+    <!-- Tell the browser to be responsive to screen width -->
+    <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport" />
+    <!-- Bootstrap 3.3.7 -->
+    <link rel="stylesheet" type="text/css" media="screen" href="../static/modules/bootstrap/dist/css/bootstrap.min.css" th:href="@{/modules/bootstrap/dist/css/bootstrap.min.css}" />
+    <!-- Font Awesome -->
+    <link rel="stylesheet" type="text/css" media="screen" href="../static/modules/font-awesome/css/font-awesome.min.css" th:href="@{/modules/font-awesome/css/font-awesome.min.css}" />
+    <!-- Ionicons -->
+    <link rel="stylesheet" type="text/css" media="screen" href="../static/modules/Ionicons/css/ionicons.min.css" th:href="@{/modules/Ionicons/css/ionicons.min.css}" />
+    <!-- jvectormap -->
+    <link rel="stylesheet" type="text/css" media="screen" href="../static/modules/jvectormap/jquery-jvectormap.css" th:href="@{/modules/jvectormap/jquery-jvectormap.css}" />
+    <!-- theme custom -->
+    <link rel="stylesheet" type="text/css" media="screen" href="../static/css/system-white.css" th:href="@{/css/system-white.css}" />
+    <!-- AdminLTE Skins. Choose a skin from the css/skins
+       folder instead of downloading all of them to reduce the load. -->
+    <link rel="stylesheet" type="text/css" media="screen" href="../static/css/skins/_all-skins.min.css" th:href="@{/css/skins/_all-skins.min.css}" />
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+  <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
+  <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+  <![endif]-->
+
+
+    <!-- jQuery 3 -->
+    <script src="../static/modules/jquery/dist/jquery.min.js" th:src="@{/modules/jquery/dist/jquery.min.js}"></script>
+    <!-- Bootstrap 3.3.7 -->
+    <script src="../static/modules/bootstrap/dist/js/bootstrap.min.js" th:src="@{/modules/bootstrap/dist/js/bootstrap.min.js}"></script>
+    <!-- FastClick -->
+    <script src="../static/modules/fastclick/lib/fastclick.js" th:src="@{/modules/fastclick/lib/fastclick.js}"></script>
+    <!-- AdminLTE App -->
+    <script src="../static/js/adminlte.min.js" th:src="@{/js/adminlte.min.js}"></script>
+    <!-- AdminLTE for demo purposes -->
+    <!-- <script type="text/javascript" src="../../static/modules/jQuery-1.12.3/jquery-1.12.3.min.js" th:src="@{/modules/jQuery-1.12.3/jquery-1.12.3.min.js}"></script> -->
+    <script type="text/javascript" src="../static/modules/DataTables-1.10.16/js/jquery.dataTables.min.js" th:src="@{/modules/DataTables-1.10.16/js/jquery.dataTables.min.js}"></script>
+    <script type="text/javascript" src="../static/modules/DataTables-1.10.16/js/dataTables.bootstrap4.min.js" th:src="@{/modules/DataTables-1.10.16/js/dataTables.bootstrap4.min.js}"></script>
+    <script type="text/javascript" src="../static/modules/Buttons-1.5.1/js/dataTables.buttons.min.js" th:src="@{/modules/Buttons-1.5.1/js/dataTables.buttons.min.js}"></script>
+    <script type="text/javascript" src="../static/modules/Buttons-1.5.1/js/buttons.bootstrap4.min.js" th:src="@{/modules/Buttons-1.5.1/js/buttons.bootstrap4.min.js}"></script>
+    <script type="text/javascript" src="../static/modules/Buttons-1.5.1/js/buttons.html5.min.js" th:src="@{/modules/Buttons-1.5.1/js/buttons.html5.min.js}"></script>
+    <script type="text/javascript" src="../static/modules/datatables/JSZip-2.5.0/jszip.min.js" th:src="@{/modules/datatables/JSZip-2.5.0/jszip.min.js}"></script>
+    <script src="../static/js/jquery.csv-0.71.min.js" th:src="@{/js/jquery.csv-0.71.min.js}"></script>
+
+    <!-- Sparkline -->
+    <script src="../static/modules/jquery-sparkline/dist/jquery.sparkline.min.js" th:src="@{/modules/jquery-sparkline/dist/jquery.sparkline.min.js}"></script>
+    <!-- SlimScroll -->
+    <script src="../static/modules/jquery-slimscroll/jquery.slimscroll.min.js" th:src="@{/modules/jquery-slimscroll/jquery.slimscroll.min.js}"></script>
+    <!-- AdminLTE dashboard demo (This is only for demo purposes) -->
+    <script src="../static/js/pages/dashboard2.js" th:src="@{/js/pages/dashboard2.js}"></script>
+
+
+    <script type="text/javascript" th:inline="javascript">
+        /*<![CDATA[*/
+        var clientIP = [[${clientIP}]];
+        $(document).ready(function() {
+        	$("#createForm #ip_address").val(clientIP);
+            $.ajax({
+                url: '/api/htbackend/getTempUserInfo?clientIP=' + clientIP,
+                method: 'get',
+                success: function success(r) {
+                    if (r && r[0]) {
+                        var rspn = eval(r);
+                        $("#createForm #mac_address").val(rspn[0].mac_address);
+                        $("#createForm #name").val(rspn[0].system_name);
+                    }
+                }
+            });
+
+        });
+        $(document).on("click", "#createBtn", function() {
+
+            var createdata = $("#createForm").serializeArray();
+            var data = {};
+            $.each(createForm,
+                function(i, v) {
+                    data[v.name] = v.value;
+                });
+            console.log(createdata);
+            $.ajax({
+                url: '/api/htbackend/registerEndUser',
+                dataType: 'text',
+                contentType: 'application/json',
+                data: JSON.stringify(data),
+                method: 'post',
+                success: function success(r) {
+                    alert("Registration Completed!");
+                    window.close();
+                },
+                error: function(r){
+                    alert('Registration Failure\n' + r.responseText);
+                  }
+            }); //ajax
+        });
+
+        /*    
+        	 var serialize =   function (tokenfield) {
+        	      var items = tokenfield.getItems();
+        	      console.log(items);
+        	      var prop;
+        	      var data = {};
+        	      items.forEach(function(item) {
+        	        if (item.isNew) {
+        	          prop = tokenfield._options.newItemName;
+        	        } else {
+        	          prop = tokenfield._options.itemName;
+        	        }
+        	        if (typeof data[prop] === 'undefined') {
+        	          data[prop] = [];
+        	        }
+        	        if (item.isNew) {
+        	          data[prop].push(item.name);
+        	        } else {
+        	          data[prop].push(item[tokenfield._options.itemValue]);
+        	        }
+        	      });
+        	      return data;
+        	    };*/
+
+        /*]]>*/
+    </script>
+</head>
+
+<body>
+
+    <div class="page-wrapper" layout:fragment="content" style="padding-bottom: 0 !important;">
+
+        <!-- Content Wrapper. Contains page content -->
+        <div class="content-wrapper" style="min-height: 100px !important;">
+            <div class="panel-custom-wrap">
+                <!-- Content Header (Page header) -->
+                <section class="content-header">
+                    <div class="subpage-menu-border">
+                        <h3 class="title col-sm-6" th:text="#{User_add}">사용자 등록</h3>
+                    </div>
+                </section>
+                <section class="content">
+                    <div class="panel">
+                        <div class="panel-body" style="width: 500px;margin: auto;">
+                            <div>
+                                <form accept-charset="UTF-8" role="form" method="post" id="createForm">
+                                    <div class="form-group">
+                                        <label for="name" th:text="#{terminal_name}">단말이름</label>
+                                        <input name="name" id="name" type="text" class="form-control" />
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label for="full_name" th:text="#{full_name}">성명</label>
+                                        <input name="full_name" id="full_name" type="text" class="form-control" />
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label for="mac_address" th:text="#{mac}">맥주소</label>
+                                        <input name="mac_address" id="mac_address" type="text" class="form-control" disabled="disabled" />
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label for="contact" th:text="#{contact}">연락처</label>
+                                        <input name="contact" id="contact" type="text" class="form-control" />
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label for="email" th:text="#{email}">이메일</label>
+                                        <input name="email" id="email" type="text" class="form-control" />
+                                        <input name="ip_address" id="ip_address" type="hidden" value="" />
+                                    </div>
+
+                                </form>
+                                <button type="button" class="btn btn-primary-custom" th:text="#{create}" id="createBtn">등록</button>
+                                <button type="button" class="btn btn-default" data-dismiss="modal" th:text="#{cancel}">취소</button>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+                <!-- /.content -->
+            </div>
+        </div>
+        <!-- /.content-wrapper -->
+    </div>
+    <!-- ./wrapper -->
+
+</body>
+
+</html>

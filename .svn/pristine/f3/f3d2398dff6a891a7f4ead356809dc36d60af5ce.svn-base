@@ -1,0 +1,47 @@
+{
+  "width": 150,
+  "height": 60,
+  "func": "__ht__function(g, rect, comp, data, view) {\nvar rxRate = comp.getValue('rxRate'),\ntxRate = comp.getValue('txRate'),\nmainColorRx = comp.getValue('mainColorRx'),\nmainColorTx = comp.getValue('mainColorTx'),\nmainFont = comp.getValue('mainFontBold') + ' '+ comp.getValue('mainFontSize') + 'px ' + comp.getValue('mainFontFamily'),\nmainFontColor = comp.getValue('mainFontColor'),\nboxWidth = comp.getValue('boxWidth'),\nboxHeight = comp.getValue('boxHeight');\n//RX bg color\ng.save();\ng.fillStyle = '#ffffff';\ng.fillRect(0, 0, boxWidth+2, (boxHeight/2)+2);\ng.fillStyle = mainColorRx;\ng.fillRect(1, 1, boxWidth, boxHeight/2);\ng.restore();\ng.save();\ng.fillStyle = '#ffffff';\ng.fillRect(0, boxHeight/2, boxWidth+2, (boxHeight/2)+2);\ng.fillStyle = mainColorTx;\ng.fillRect(1, (boxHeight/2)+1, boxWidth, boxHeight/2);\ng.restore();\nht.Default.drawText(g, '  Rx' , mainFont, mainFontColor, 0, 0, boxWidth, boxHeight/2, 'left', 'middle');\nht.Default.drawText(g, rxRate +'  ' , mainFont, mainFontColor, 0, 0, boxWidth, boxHeight/2, 'right', 'middle');\nht.Default.drawText(g, '  Tx' , mainFont, mainFontColor, 0, boxHeight/2, boxWidth, boxHeight/2, 'left', 'middle');\nht.Default.drawText(g, txRate + '  ' , mainFont, mainFontColor, 0, boxHeight/2, boxWidth, boxHeight/2, 'right', 'middle');\n}",
+  "properties": {
+    "rxRate": {
+      "valueType": "String",
+      "defaultValue": "1 G"
+    },
+    "txRate": {
+      "valueType": "String",
+      "defaultValue": "11.3 M"
+    },
+    "mainColorRx": {
+      "valueType": "Color",
+      "defaultValue": "rgb(128,201,174,1)"
+    },
+    "mainColorTx": {
+      "valueType": "Color",
+      "defaultValue": "rgb(128,201,174,1)"
+    },
+	"mainFontSize": {
+      "valueType": "PositiveNumber",
+      "defaultValue": 14
+	},
+	"mainFontFamily": {
+      "valueType": "String",
+      "defaultValue": "sans-serif"
+	},
+    "mainFontBold": {
+      "valueType": "String",
+      "defaultValue": ""
+    },
+    "mainFontColor": {
+      "valueType": "Color",
+      "defaultValue": "#000000"
+    },
+     "boxWidth": {
+      "valueType": "PositiveNumber",
+      "defaultValue": 100
+    },   
+      "boxHeight": {
+      "valueType": "PositiveNumber",
+      "defaultValue": 60
+    }
+  }
+}

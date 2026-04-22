@@ -1,0 +1,41 @@
+var rxRate = comp.getValue('rxRate'),
+	txRate = comp.getValue('txRate'),
+	rxUtil = comp.getValue('rxUtil'),
+	txUtil = comp.getValue('txUtil');
+
+var width = rect.width,
+	height = rect.height;
+
+var uh = 150,
+	hh = 30;
+
+var mainColorRx = '#11e806';
+if(rxUtil > 80){
+	mainColorRx =  '#e81506';
+}else if(rxUtil > 60){
+	mainColorRx =  '#b706e8';
+}else if(rxUtil > 40){
+	mainColorRx =  '#91e806';
+}
+var mainColorTx = '#11e806';
+if(txUtil > 80){
+	mainColorTx =  '#e81506';
+}else if(txUtil > 60){
+	mainColorTx =  '#b706e8';
+}else if(txUtil > 40){
+	mainColorTx =  '#91e806';
+}
+
+//RX bg color
+g.save();
+g.fillStyle = mainColorRx;
+g.fillRect(0, 0, uh, hh);
+g.restore();
+
+//TX bg color
+g.save();
+g.fillStyle = mainColorTx;
+g.fillRect(0, hh, uh, hh);
+g.restore();
+ht.Default.drawText(g, 'RX ' + rxRate , '16px sans-serif', '#ffffff', 0, 0, uh, hh, 'center', 'middle');
+ht.Default.drawText(g, 'TX ' + txRate , '16px sans-serif', '#ffffff', 0, hh, uh, hh, 'center', 'middle');

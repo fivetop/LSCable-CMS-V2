@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8" />
+	<title>LS Cable</title>
+</head>
+<body>
+	<script src="../../static/ht/libs/core/ht.js"  th:src="@{/ht/libs/core/ht.js}"></script>
+	<script src="../../static/ht/libs/plugin/ht-cssanimation.js"  th:src="@{/ht/libs/plugin/ht-cssanimation.js}"></script>
+	<script src="../../static/ht/libs/plugin/ht-dialog.js"  th:src="@{/ht/libs/plugin/ht-dialog.js}"></script>
+	<script src="../../static/ht/libs/plugin/ht-autolayout.js"  th:src="@{/ht/libs/plugin/ht-autolayout.js}"></script>
+	<script src="../../static/ht/js/viewing-site-floor-map.js"  th:src="@{/ht/js/viewing-site-floor-map.js}"></script>	
+
+</body>
+</html>

@@ -1,0 +1,93 @@
+{
+  "v": "6.2.7",
+  "p": {
+    "autoAdjustIndex": true,
+    "hierarchicalRendering": true
+  },
+  "a": {
+    "connectActionType": null,
+    "rotateAsClock": false
+  },
+  "d": [
+    {
+      "c": "ht.Node",
+      "i": 14345,
+      "p": {
+        "displayName": "table",
+        "image": "symbols/basic/table.json",
+        "position": {
+          "x": 290.16532,
+          "y": 7.52181
+        },
+        "width": 455.40776,
+        "height": 216.34831
+      },
+      "a": {
+        "STableColumns": "[{ \t\"displayName\": \"Name\", \t\"key\": \"username\", \t\"width\": 120 }, { \t\"displayName\": \"Sex\", \t\"align\": \"right\", \t\"key\": \"sex\", \t\"width\": 0.1 }, { \t\"displayName\": \"Age\", \t\"align\": \"center\", \t\"key\": \"userAge\", \t\"width\": \"30+0.1\" }, { \t\"displayName\": \"Adress\", \t\"key\": \"address\", \t\"width\": 180 }]",
+        "headBackground": "rgb(28,36,79)",
+        "columnLineWidth": 1,
+        "rowLineWidth": 2,
+        "borderWidth": 3,
+        "table.column.line.color": "rgb(212,212,212)",
+        "table.cell.padding": 5,
+        "table.body.font.size": 13,
+        "table.border.color": "#BD0FE1",
+        "table.border.width": 0,
+        "table.body.color": "#7ED321",
+        "table.columns": [
+          {
+            "name": "port_name",
+            "tag": "port_name",
+            "displayName": "Port",
+            "accessType": "attr",
+            "align": "center"
+          },
+          {
+            "name": "status",
+            "tag": "status",
+            "displayName": "Status",
+            "accessType": "attr",
+            "align": "center",
+            "drawCell": "__ht__function (g, data, selected, column, x, y, w, h, view) {\n                    var image = ht.Default.getImage('/images/' + data.a('status') + '.png');\n                    ht.Default.drawStretchImage(g, image, 'centerUniform', x, y, w, h);\n                }"
+          },
+          {
+            "name": "enduser",
+            "tag": "enduser",
+            "displayName": "Terminal",
+            "accessType": "attr",
+            "align": "center"
+          },
+          {
+            "name": "ip_address",
+            "tag": "ip_address",
+            "displayName": "IP",
+            "accessType": "attr",
+            "align": "center"
+          }
+        ],
+        "table.dataSource": [
+          {
+            "port_name": "Port 1",
+            "status": "LinkUp",
+            "enduser": "Terminal1",
+            "ip_address": "192.0.0.17"
+          },
+          {
+            "port_name": "Port 2",
+            "status": "NoLink"
+          }
+        ],
+        "table.row.line.width": 1,
+	"table.head.height": 1,
+	"table.body.height": 30,
+        "table.column.line.width": 0
+      }
+    }
+  ],
+  "contentRect": {
+    "x": 62.46144,
+    "y": -100.65234,
+    "width": 455.40776,
+    "height": 216.34831
+  }
+}

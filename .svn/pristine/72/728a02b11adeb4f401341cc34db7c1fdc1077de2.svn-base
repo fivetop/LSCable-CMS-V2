@@ -1,0 +1,117 @@
+<div layout:fragment="header_White">
+    <!-- 화이트버전 헤더 -->
+
+    <header class="main-header">
+        <script type="text/javascript" th:inline="javascript">
+            window.onload = function() {
+                var link = $(location).attr('protocol') + "//" + $(location).attr('hostname');
+                var url = link.toString();
+                $(document).on("click", "#opmanager", function(link) {
+                    window.open(url + '/', '_blank');
+                });
+
+            }
+            var img1 = [[@{/images/slidedown.jpg}]];
+            var img2 = [[@{/images/slideup.jpg}]];
+            $(document).ready(function() {
+                $(".navbar").addClass("change-up");
+                $(".img2").hide();
+                //content 클래스를 가진 div를 표시/숨김(토글)
+                $(".heading").click(function() {
+                    if ($(".navbar").hasClass("change-up")) {
+                        $(".heading").removeClass("padding-down").addClass("padding-up");
+                        $(".navbar").removeClass("change-up").addClass("change-down");
+                        $(".img2").show();
+                        $(".img1").hide();
+
+                    } //열기
+                    else {
+                        $(".navbar").removeClass("change-down").addClass("change-up");
+                        $(".heading").removeClass("padding-up").addClass("padding-down");
+                        $(".img2").hide();
+                        $(".img1").show();
+
+                    }; //닫기
+                });
+            });
+        </script>
+
+        <style>
+            .change-up {
+                transition: margin-top 0.2s !important;
+                margin-top: -50px;
+            }
+            .change-down {
+                transition: margin-top 0.2s !important;
+                margin-top: 0px;
+            }
+            .padding-up {
+                transition: padding-top 0.2s !important;
+                padding-top: 0;
+            }
+            .padding-down {
+                transition: padding-top 0.2s !important;
+                padding-top: 20px;
+            }
+            .shape {
+                display: block;
+                margin-left: auto;
+                margin-right: auto;
+                height: 50px;
+                width: 100px;
+                border-top: 20px solid #EFF3F6;
+                border-left: 20px solid transparent;
+                border-bottom-right-radius: 25px;
+                border-bottom-left-radius: 25px;
+                border-right: 20px solid transparent;
+            }
+        </style>
+        <nav class="navbar navbar-static-top">
+            <div class="container">
+                <!-- Navbar left Menu -->
+                <div class="navbar-header">
+                    <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#myNavbar">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </button>
+                    <a href="/mainpage" th:href="@{/mainpage.html}" class="navbar-brand"><img class="h2" th:src="@{/images/simple_eye.png}" />
+                    </a>
+                </div>
+                <div class="collapse navbar-collapse blue-collapse navbar-right" id="myNavbar">
+                    <ul class="nav navbar-nav">
+                        <li>
+                            <a href="/setting2/system" th:href="@{/setting2/system.html}" style=" padding:15px 27px;"><img th:src="@{/images/icon01.png}" style="height:50px;" />
+                            </a>
+                        </li>
+                        <li>
+                            <a id="opmanager" href="#" style=" padding:15px 27px;"><img th:src="@{/images/icon02.png}" style="height:50px;" />
+                            </a>
+                        </li>
+                        <li>
+                            <a href="/cms2/index" th:href="@{/cms2/index.html}" style=" padding:15px 27px;"><img th:src="@{/images/icon03.png}" style="height:50px;" />
+                            </a>
+                        </li>
+                        <li>
+                            <a href="/ipam2/index" th:href="@{/ipam2/index.html}" style=" padding:15px 27px;"><img th:src="@{/images/icon04.png}" style="height:50px;" />
+                            </a>
+                        </li>
+                        <li class="user user-menu">
+                            <img th:src="@{/images/icon05.png}" />&nbsp;&nbsp;
+                            <span sec:authentication="name"></span>
+                        </li>
+                        <li class="user-logout">
+                            <a th:href="@{/logout}" href="/logout"><img class="logout" th:src="@{/images/icon06.png}" />
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+                <!-- /.container-fluid -->
+            </div>
+        </nav>
+        <nav class="heading padding-down" style="text-align:center; z-index:99999;width:100%; position:absolute;top:79px;">
+            <img class="img1" th:src="@{/images/slidedown.png}" style="height:20px;" />
+            <img class="img2" th:src="@{/images/slideup.png}" style="height:20px;" />
+        </nav>
+    </header>
+</div>

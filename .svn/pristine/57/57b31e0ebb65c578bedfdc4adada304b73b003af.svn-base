@@ -1,0 +1,19 @@
+{
+  "width": 240,
+  "height": 500,
+  "func": "__ht__function(g, rect, comp, data, view) {\nvar usize = comp.getValue('usize'),\n\tmainColor = comp.getValue('mainColor'),\n\tname = comp.getValue('name') || 'Rack';\n\nvar width = rect.width,\n\theight = rect.height;\n\nvar uh = 20.8,\n\tU_GAP = 2,\n\thh = 30,\n\tfh = 56; width += U_GAP;\n\n// var childrenIndexs = [];\n// data.getChildren().each(function(child) {\n// \tchildrenIndexs.push(child.a('uindex'));\n// });\n\nht.Default.drawImage(g, ht.Default.getImage('./imgs/rack-header.png'), 0, 0, width, hh);\nht.Default.drawText(g, name, '15px Calibri', '#ffffff', 0, 0, width, hh, 'center', 'middle');\n//left rect\ng.save();\ng.fillStyle = mainColor;\ng.fillRect(0, hh, uh, (uh+U_GAP) * usize);\ng.restore();\n\n//right rect\ng.save();\ng.fillStyle = mainColor;\ng.fillRect(width - uh, hh, uh, (uh+U_GAP) * usize);\ng.restore();\n// u\nvar uy = hh;\nfor (var i = 0; i < usize; i++) {\t\n\t// u rect\n\tg.save();\n\tg.fillStyle = '#332E34';\n\tg.fillRect(uh, uy, width - uh * 2, (uh+U_GAP));\n\tg.strokeStyle = '#1B161C';\n\tg.strokeRect(uh, uy, width - uh * 2, (uh+U_GAP));\n\tg.restore();\n\n\t// u index\n\t// if (childrenIndexs.indexOf(usize - 1) < 0) {\n\t\tht.Default.drawText(g, ((usize - i) < 10 ? '0' : '') + (usize - i), '10px Calibri', '#5F6062', uh, uy, width - uh * 2, (uh+U_GAP), 'center', 'middle');\n\t// }\n\n\tif ((usize - i) % 5 === 0) {\n\t\tg.save();\n\t\tg.fillStyle = '#AF0917';\n\t\tg.beginPath();\n\t\tg.arc(uh * 0.5, uy + (uh+U_GAP) * 0.5, 2, 0, 2 * Math.PI, false);\n\t\tg.fill();\n\t\tg.restore();\n\n\t\tg.save();\n\t\tg.fillStyle = '#AF0917';\n\t\tg.beginPath();\n\t\tg.arc(width - uh * 0.5, uy + (uh+U_GAP) * 0.5, 2, 0, 2 * Math.PI, false);\n\t\tg.fill();\n\t\tg.restore();\n\t}\n\t\n\tuy += (uh+U_GAP);\n}\n\n//footer\nht.Default.drawImage(g, ht.Default.getImage('./imgs/rack-footer.png'), 0, uy, width, fh);\n}",
+  "properties": {
+    "usize": {
+      "valueType": "PositiveNumber",
+      "defaultValue": 16
+    },
+    "name": {
+      "valueType": "String",
+      "defaultValue": "Rack"
+    },
+    "mainColor": {
+      "valueType": "Color",
+      "defaultValue": "#4A4A4A"
+    }
+  }
+}

@@ -1,0 +1,177 @@
+DROP VIEW  if exists lscms_view_authorized;
+DROP VIEW  if exists lscms_view_cmsinfo;
+DROP VIEW  if exists lscms_view_linkage_connection;
+DROP VIEW  if exists lscms_view_linkage_connection_all;
+DROP VIEW  if exists lscms_view_linkage_connection_all_array;
+DROP VIEW  if exists lscms_view_linkage_connection_bottomup;
+DROP VIEW  if exists lscms_view_linkage_connection_topdown;
+DROP VIEW  if exists lscms_view_linkage_connection_valid_interface;
+DROP VIEW  if exists lscms_view_unauthorized;
+DROP VIEW  if exists lscms_view_enduser;
+DROP VIEW  if exists lscms_view_connectioninfo;
+DROP VIEW  if exists lscms_view_cmsinfo_interface;
+DROP VIEW  if exists lscms_view_cmsinfo_device;
+
+DROP TABLE  if exists lscms_ipam_enduser_mac;
+DROP TABLE  if exists lscms_cms_linkage_connection_interface_switchtopo;
+DROP TABLE  if exists lscms_cms_category_3d_texture;
+DROP TABLE  if exists lscms_port_to_ifindex;
+DROP TABLE  if exists lscms_mac_to_port;
+DROP TABLE  if exists lscms_mac_to_ip;
+DROP TABLE  if exists lscms_ipam_scanhistory;
+DROP TABLE  if exists lscms_ipam_enduser;
+DROP TABLE  if exists lscms_ipam_accesslist;
+DROP TABLE  if exists lscms_ipam_accesshistory;
+DROP TABLE  if exists lscms_extras_graph;
+DROP TABLE  if exists lscms_cms_product_tree;
+
+DROP TABLE  if exists lscms_cms_linkage_connection_interface;
+
+DROP TABLE  if exists lscms_mainpage_widget;
+DROP TABLE  if exists lscms_cms_mapwidget_hierarchy;
+DROP TABLE  if exists lscms_cms_linkage_detail;
+DROP TABLE  if exists lscms_cms_linkage_connection_invalid;
+DROP TABLE  if exists lscms_cms_asset;
+
+DROP TABLE  if exists lscms_widget_layout_size;
+DROP TABLE  if exists lscms_systemuser_mainpage_admin_default;
+DROP TABLE  if exists lscms_systemuser_mainpage;
+DROP TABLE  if exists lscms_systemuser_cms_site;
+DROP TABLE  if exists lscms_ipam_network_switch;
+DROP TABLE  if exists lscms_extras_customfieldvalue;
+DROP TABLE  if exists lscms_extras_customfield_obj_type;
+DROP TABLE  if exists lscms_cms_sitetree_rackspace_position;
+DROP TABLE  if exists lscms_cms_sitetree_placement_entity;
+DROP TABLE  if exists lscms_cms_sitetree_placement_device;
+DROP TABLE  if exists lscms_cms_sitetree_legimate_child;
+DROP TABLE  if exists lscms_cms_opm_category_mapping;
+DROP TABLE  if exists lscms_cms_mapwidget_entity;
+DROP TABLE  if exists lscms_cms_mapwidget_device;
+DROP TABLE  if exists lscms_cms_linkage_connection_patchpanel;
+DROP TABLE  if exists lscms_auth_systemuser_permissions;
+DROP TABLE  if exists lscms_auth_systemuser_groups;
+DROP TABLE  if exists lscms_auth_group_permissions;
+
+DROP TABLE  if exists lscms_widget_sample;
+DROP TABLE  if exists lscms_ipam_ipaddress;
+DROP TABLE  if exists lscms_extras_useraction;
+DROP TABLE  if exists lscms_extras_topologymap;
+DROP TABLE  if exists lscms_extras_imageattachment;
+DROP TABLE  if exists lscms_extras_exporttemplate;
+DROP TABLE  if exists lscms_extras_customfieldchoice;
+DROP TABLE  if exists lscms_cms_widget_dataprovider;
+DROP TABLE  if exists lscms_cms_product_extracolumn;
+
+DROP TABLE  if exists lscms_cms_linkage;
+
+DROP TABLE  if exists lscms_mainpage;
+
+DROP TABLE  if exists lscms_cms_device;
+
+DROP TABLE  if exists lscms_cms_sitetree_placement;
+
+DROP TABLE  if exists lscms_cms_interface;
+
+DROP TABLE  if exists lscms_widget;
+
+DROP TABLE  if exists lscms_cms_product;
+
+DROP TABLE  if exists lscms_cms_sitetree;
+
+DROP TABLE  if exists lscms_cms_site;
+DROP TABLE  if exists lscms_cms_entity;
+DROP TABLE  if exists lscms_cms_category;
+DROP TABLE  if exists lscms_cms_region;
+DROP TABLE  if exists lscms_common_code;
+
+DROP TABLE  if exists lscms_ipam_network;
+DROP TABLE  if exists lscms_cms_manufacturer;
+DROP TABLE  if exists lscms_auth_permission;
+DROP TABLE  if exists lscms_auth_group;
+
+DROP TABLE  if exists lscms_extras_customfield;
+DROP TABLE  if exists lscms_cms_linkage_connection;
+
+DROP TABLE  if exists lscms_content_type;
+
+DROP TABLE  if exists lscms_auth_systemuser;
+
+DROP TABLE  if exists lscms_ipam_accessstat;
+DROP TABLE  if exists lscms_ipam_temp_user;
+DROP TABLE  if exists lscms_ipam_unmanaged;
+DROP TABLE if exists  lscms_mac_to_port_temp;
+
+
+DROP SEQUENCE  if exists auth_group_id_seq;
+
+
+DROP SEQUENCE  if exists auth_group_permissions_id_seq;
+
+
+DROP SEQUENCE  if exists auth_permission_id_seq;
+
+
+DROP SEQUENCE  if exists auth_systemuser_groups_id_seq;
+
+
+DROP SEQUENCE  if exists auth_systemuser_id_seq;
+
+
+DROP SEQUENCE  if exists auth_systemuser_permissions_id_seq;
+
+
+DROP SEQUENCE  if exists content_type_id_seq;
+
+
+DROP SEQUENCE  if exists extras_customfield_id_seq;
+
+
+DROP SEQUENCE  if exists extras_customfield_obj_type_id_seq;
+
+
+DROP SEQUENCE if exists extras_customfieldchoice_id_seq;
+
+
+DROP SEQUENCE  if exists extras_customfieldvalue_id_seq;
+
+
+DROP SEQUENCE  if exists extras_exporttemplate_id_seq;
+
+
+DROP SEQUENCE  if exists extras_graph_id_seq;
+
+
+DROP SEQUENCE  if exists extras_imageattachment_id_seq;
+
+
+DROP SEQUENCE  if exists cms_manufacturer_id_seq;
+DROP SEQUENCE  if exists ipam_ipaddress_id_seq;
+DROP SEQUENCE  if exists common_code_id_seq;
+DROP SEQUENCE  if exists mainpage_id_seq;
+DROP SEQUENCE  if exists widget_id_seq;
+DROP SEQUENCE  if exists cms_region_id_seq;
+DROP SEQUENCE  if exists cms_site_id_seq;
+DROP SEQUENCE  if exists cms_sitetree_id_seq;
+DROP SEQUENCE  if exists cms_sitetree_placement_id_seq;
+DROP SEQUENCE  if exists ipam_enduser_id_seq;
+DROP SEQUENCE  if exists ipam_network_id_seq;
+DROP SEQUENCE  if exists widget_sample_id_seq;
+DROP SEQUENCE  if exists widget_layout_size_id_seq;
+DROP SEQUENCE  if exists cms_mapwidget_hierarchy_id_seq;
+DROP SEQUENCE  if exists cms_category_id_seq;
+DROP SEQUENCE  if exists cms_sitetree_legimate_child_id_seq;
+DROP SEQUENCE  if exists cms_entity_id_seq;
+DROP SEQUENCE  if exists cms_sitetree_palcement_entity_id_seq;
+DROP SEQUENCE  if exists cms_interface_id_seq;
+DROP SEQUENCE  if exists cms_linkage_connection_id_seq;
+DROP SEQUENCE  if exists cms_linkage_id_seq;
+DROP SEQUENCE  if exists ipam_accesslist_id_seq;
+DROP SEQUENCE  if exists ipam_accesshistory_id_seq;
+DROP SEQUENCE  if exists cms_mapwidget_entity_id_seq;
+DROP SEQUENCE  if exists ipam_scanhistory_id_seq;
+DROP SEQUENCE  if exists cms_widget_dataprovider_id_seq;
+DROP SEQUENCE  if exists ipam_unmanaged_id_seq;
+DROP SEQUENCE  if exists ipam_accessstat_id_seq; 
+DROP SEQUENCE  if exists cms_category_3d_texture_id_seq;
+
+drop cast  if exists (varchar AS macaddr) ;

@@ -1,0 +1,6 @@
+#bright theme properties file bright.properties
+css=themes/bright.css
+page.title=Welcome to Bright Theme
+welcome.message=Hello Visitor!! Have a Good day!!
+background=themes/img/coolBg.jpg
+stylesheet=themes/bright.css

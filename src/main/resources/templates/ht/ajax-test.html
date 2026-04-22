@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Document</title>
+</head>
+<body>
+	<script src="../../static/libs/jquery-3.2.1.js"></script>
+	<script>
+		$(function(){
+			$.ajax({
+				url: 'http://211.114.70.120:8080/api/htbackend/saveMapWidget',
+				contentType: 'application/json;charset=utf-8',
+	            data: JSON.stringify({
+	            	display_name: 'ab',
+	            	content_data:"{}",
+	            	widgettype_id: 23,
+	            	devices: [],
+	            	submaps: [],
+    	            option_data: ''
+	            }),
+	            method: 'post',
+	            dataType: 'json',
+	            success: r => {
+	                console.log(r);
+	            }
+			});
+		});
+	</script>
+</body>
+</html>

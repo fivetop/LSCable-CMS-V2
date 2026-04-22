@@ -1,0 +1,47 @@
+{
+  "width": 16,
+  "height": 16,
+  "fitSize": false,
+  "comps": [
+    {
+      "type": "oval",
+      "shadowColor": "rgb(102,102,102)",
+      "background": "rgba(38,38,38,0.6)",
+      "borderWidth": 1,
+      "borderColor": "#D8D8D8",
+      "rect": [
+        1,
+        1,
+        14,
+        14
+      ]
+    },
+    {
+      "type": "arc",
+      "borderWidth": 1,
+      "borderColor": "rgb(0,204,51)",
+      "borderCap": "round",
+      "arcFrom": -0.8726646259971648,
+      "arcTo": 4.014257279586958,
+      "arcClose": false,
+      "rect": [
+        4,
+        4,
+        8,
+        8
+      ]
+    },
+    {
+      "type": "shape",
+      "borderWidth": 1,
+      "borderColor": "#00CC33",
+      "borderCap": "round",
+      "points": [
+        8.107733632491277,
+        3.499856020522441,
+        8.107733632491277,
+        7.499856020522441
+      ]
+    }
+  ]
+}

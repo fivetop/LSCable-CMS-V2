@@ -1,0 +1,31 @@
+{
+  "width": 240,
+  "height": 50,
+  "comps": [
+    {
+      "type": "rect",
+      "background": "#404040",
+      "borderColor": "#979797",
+      "rect": [
+        0,
+        0,
+        240,
+        50
+      ]
+    },
+    {
+      "type": "rect",
+      "borderWidth": 2,
+      "borderColor": "#f9f9f9",
+      "borderCap": "round",
+      "anchorX": 0,
+      "anchorY": 0,
+      "rect": [
+        20.8,
+        0,
+        198.4,
+        49.5
+      ]
+    }
+  ]
+}

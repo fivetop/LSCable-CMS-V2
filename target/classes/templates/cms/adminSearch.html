@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" layout:decorator="layout/default4">
+
+<head>
+    <title>simpleEye MainPage</title>
+    <!-- Tell the browser to be responsive to screen width -->
+    <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport" />
+    <!-- Bootstrap 3.3.7 -->
+    <link rel="stylesheet" type="text/css" media="screen" href="../../static/modules/bootstrap/dist/css/bootstrap.min.css" th:href="@{/modules/bootstrap/dist/css/bootstrap.min.css}" />
+    <!-- Font Awesome -->
+    <link rel="stylesheet" type="text/css" media="screen" href="../../static/modules/font-awesome/css/font-awesome.min.css" th:href="@{/modules/font-awesome/css/font-awesome.min.css}" />
+    <!-- Ionicons -->
+    <link rel="stylesheet" type="text/css" media="screen" href="../../static/modules/Ionicons/css/ionicons.min.css" th:href="@{/modules/Ionicons/css/ionicons.min.css}" />
+    <!-- jvectormap -->
+    <link rel="stylesheet" type="text/css" media="screen" href="../../static/modules/jvectormap/jquery-jvectormap.css" th:href="@{/modules/jvectormap/jquery-jvectormap.css}" />
+    <!-- theme custom -->
+    <link rel="stylesheet" type="text/css" media="screen" href="../../static/css/system-black.css" th:href="@{/css/system-black.css}" />
+    <!-- AdminLTE Skins. Choose a skin from the css/skins
+       folder instead of downloading all of them to reduce the load. -->
+    <link rel="stylesheet" type="text/css" media="screen" href="../../static/css/skins/_all-skins.min.css" th:href="@{/css/skins/_all-skins.min.css}" />
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+  <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
+  <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+  <![endif]-->
+    <!-- jQuery 3 -->
+    <script src="../../static/modules/jquery/dist/jquery.min.js" th:src="@{/modules/jquery/dist/jquery.min.js}"></script>
+    <!-- Bootstrap 3.3.7 -->
+    <script src="../../static/modules/bootstrap/dist/js/bootstrap.min.js" th:src="@{/modules/bootstrap/dist/js/bootstrap.min.js}"></script>
+    <!-- FastClick -->
+    <script src="../../static/modules/fastclick/lib/fastclick.js" th:src="@{/modules/fastclick/lib/fastclick.js}"></script>
+    <!-- SlimScroll -->
+    <script src="../../static/modules/jquery-slimscroll/jquery.slimscroll.min.js" th:src="@{/modules/jquery-slimscroll/jquery.slimscroll.min.js}"></script>
+
+    <link rel="stylesheet" type="text/css" href="../../static/modules/DataTables-1.10.16/css/dataTables.bootstrap4.min.css" th:href="@{/modules/DataTables-1.10.16/css/dataTables.bootstrap4.min.css}" />
+    <link rel="stylesheet" type="text/css" href="../../static/modules/Buttons-1.5.1/css/buttons.bootstrap4.min.css" th:href="@{/modules/Buttons-1.5.1/css/buttons.bootstrap4.min.css}" />
+    <!--<script type="text/javascript" src="../../static/modules/jQuery-1.12.3/jquery-1.12.3.min.js" th:src="@{/modules/jQuery-1.12.3/jquery-1.12.3.min.js}"></script>-->
+    <script type="text/javascript" src="../../static/modules/DataTables-1.10.16/js/jquery.dataTables.min.js" th:src="@{/modules/DataTables-1.10.16/js/jquery.dataTables.min.js}"></script>
+    <script type="text/javascript" src="../../static/modules/DataTables-1.10.16/js/dataTables.bootstrap4.min.js" th:src="@{/modules/DataTables-1.10.16/js/dataTables.bootstrap4.min.js}"></script>
+    <script type="text/javascript" src="../../static/modules/Buttons-1.5.1/js/dataTables.buttons.min.js" th:src="@{/modules/Buttons-1.5.1/js/dataTables.buttons.min.js}"></script>
+    <script type="text/javascript" src="../../static/modules/Buttons-1.5.1/js/buttons.bootstrap4.min.js" th:src="@{/modules/Buttons-1.5.1/js/buttons.bootstrap4.min.js}"></script>
+    <script type="text/javascript" src="../../static/modules/Buttons-1.5.1/js/buttons.html5.min.js" th:src="@{/modules/Buttons-1.5.1/js/buttons.html5.min.js}"></script>
+    <script type="text/javascript" src="../../static/modules/datatables/JSZip-2.5.0/jszip.min.js" th:src="@{/modules/datatables/JSZip-2.5.0/jszip.min.js}"></script>
+
+    <script type="text/javascript">
+        /*<![CDATA[*/
+        $('document').ready(function() {
+            $("#sel2").on("change", function() {
+                // value 값으로 선택
+                if ($("#sel2").val() !== 'NONE') {
+                    $.ajax({
+                        url: '/api/htbackend/getCMSFSubList?site_id=' + $("#sel2").val(),
+                        dataType: 'text',
+                        method: 'get',
+                        success: function success(r) {
+                            console.log(r);
+                            var rspns = eval(r);
+                            //fill country
+                            $("#sel3 option").remove(); // Remove all <option> child tags.
+                            $("#sel3").prepend( // Append an object to the inside of the select box
+                                $("<option value='NONE'></option>") // Yes you can do this.
+                                .text('--- Select ---')
+                            );
+                            $.each(rspns, function(index, item) { // Iterates through a collection
+                                $("#sel3").append( // Append an object to the inside of the select box
+                                    $("<option></option>") // Yes you can do this.
+                                    .text(item.name)
+                                    .val(item.id)
+                                );
+                            });
+                        }
+                    }); //ajax//
+
+                } //else {$("#searchBtn").prop("disabled", true);};
+            });
+            $("#sel3").on("change", function() {
+                // value 값으로 선택
+                if ($("#sel3").val() !== 'NONE') {
+                    $.ajax({
+                        url: '/api/htbackend/getCMSFSubList?site_id=' + $("#sel2").val() + '&building_id=' + $("#sel3").val(),
+                        dataType: 'text',
+                        method: 'get',
+                        success: function success(r) {
+                            console.log(r);
+                            var rspns = eval(r);
+                            //fill country
+                            $("#sel4 option").remove(); // Remove all <option> child tags.
+                            $("#sel4").prepend( // Append an object to the inside of the select box
+                                $("<option value='NONE'></option>") // Yes you can do this.
+                                .text('--- Select ---')
+                            );
+                            $.each(rspns, function(index, item) { // Iterates through a collection
+                                $("#sel4").append( // Append an object to the inside of the select box
+                                    $("<option></option>") // Yes you can do this.
+                                    .text(item.name)
+                                    .val(item.id)
+                                );
+                            });
+                        }
+                    }); //ajax//
+
+                } //else {$("#searchBtn").prop("disabled", true);};		    	
+
+            }); // 값이 변경 되는 경우 값이 none 이 아니면 검색 활성화		  
+
+
+            $('#searchBtn').click(function() {
+                searchIPTerminal();
+            });
+            $('#keyword').keypress(function(e) {
+                if (e.which == 13) { //Enter key pressed
+                    $('#searchBtn').click(); //Trigger search button click event
+                }
+            });
+
+        });
+        //	  $(document).on("click","#searchBtn", function(){
+        //		  searchIPTerminal();
+        //	  });
+
+        function searchIPTerminal() {
+
+            example_datatables = null;
+            if (example_datatables) example_datatables.destroy();
+            var url = "/api/htbackend/searchCMSEntity?";
+            if ($("#sel2").val() && $("#sel2").val() !== 'NONE') {
+                url += "&site_id=" + $("#sel2").val();
+            } else {
+                //$("#searchBtn").prop("disabled", true);
+            };
+            if ($("#sel3").val() && $("#sel3").val() !== 'NONE') {
+                url += "&bld_entity_id=" + $("#sel3").val();
+            }
+            if ($("#sel4").val() && $("#sel4").val() !== 'NONE') {
+                url += "&floor_entity_id=" + $("#sel4").val();
+            }
+            if ($("#sel5").val() && $("#sel5").val() !== 'NONE') {
+                url += "&type=" + $("#sel5").val();
+            }
+            if ($("#keyword").val() !== '') {
+                url += "&keyword=" + $("#keyword").val();
+            }
+            example_datatables = $('#cmsEntityListTable').DataTable({
+                "lengthMenu": [
+                    [15, 25, 50, -1],
+                    [15, 25, 50, "All"]
+                ],
+                "processing": true,
+                "pageLength": 15,
+                sAjaxDataProp: "",
+                paging: true,
+                ordering: false,
+                info: false,
+                destroy: true,
+                searching: false,
+                ajax: {
+                    url: url,
+                    type: 'get'
+                }
+
+                ,
+                dom: 'Bfrtip',
+                buttons: [{
+                    extend: 'excel',
+                    text: 'Excel',
+                    className: 'exportExcel',
+                    filename: 'CMS Entity List',
+                    exportOptions: {
+                        modifier: {
+                            page: 'all'
+                        }
+                    }
+                }, {
+                    extend: 'csv',
+                    text: 'CSV',
+                    className: 'exportExcel',
+                    filename: 'CMS Entity List',
+                    exportOptions: {
+                        modifier: {
+                            search: 'none',
+                            page: 'all'
+                        }
+                    }
+                }]
+
+                ,
+                columnDefs: [
+                    //{visible: false, targets :[0,1]}
+                ],
+                columns: [
+                    // {"data": "id"}
+                    //,{"data": "site_id"}
+                    {
+                        "data": "region_name"
+                    }, {
+                        "data": "site_name"
+                    }, {
+                        "data": "site_description"
+                    }, {
+                        "data": "bld_entity_name"
+                    }, {
+                        "data": "floor_entity_name"
+                    }, {
+                        "data": "type_name"
+                    }, {
+                        "data": "ci_name"
+                    }, {
+                        "data": "entity_name"
+                    }, {
+                        "data": "entity_asset_tag"
+                    }, {
+                        "data": "entity_comments"
+                    }, {
+                        "data": "entity_opm_name"
+                    }, {
+                        "data": "entity_ip"
+                    }
+                    //,{"data": "type_id"}
+                    , {
+                        "data": "location"
+                    }
+                ]
+            });
+            $(".dt-buttons").addClass('pull-right');
+            /* $("#cmsEntityListTable_previous").closest("div").unwrap();
+			    $("#cmsEntityListTable_previous").closest("div").addClass('col-sm-12');
+			    $("#cmsEntityListTable_paginate").siblings("div").remove();
+			    $("#cmsEntityListTable_paginate").css("text-align","center");
+	    		$("#cmsEntityListTable_length").hide();*/
+        };
+
+
+
+        $(document).ready(function() {
+            $.fn.dataTableExt.sErrMode = 'none';
+
+            $('#cmsEntityListTable tbody').on('click', 'tr', function() {
+                if ($(this).hasClass('selected')) {
+                    $(this).removeClass('selected');
+                } else {
+
+                    example_datatables.$('tr.selected').removeClass('selected');
+                    $(this).addClass('selected');
+
+                    var d = example_datatables.row(this).data();
+                    console.log(d);
+                    var host = window.location.hostname;
+                    //var url = host+"/ht/viewing-site-tree.html?siteid=" + d.site_id + "&nodeid=" +d.id
+                    var url = "/ht/viewing-site-tree.html?siteid=" + d.site_id + "&nodeid=" + d.id
+                        //http://localhost:8080/ht/viewing-site-tree.html?siteid=38&nodeid=225
+                    window.open(url);
+                }
+            });
+            $.ajax({
+                url: '/api/htbackend/getCMSFSubList',
+                dataType: 'text',
+                method: 'get',
+                success: function success(r) {
+                    console.log(r);
+                    var rspns = eval(r);
+                    //fill country
+                    $("#sel2 option").remove(); // Remove all <option> child tags.
+                    $("#sel2").prepend( // Append an object to the inside of the select box
+                        $("<option value='NONE'></option>") // Yes you can do this.
+                        .text('--- Select ---')
+                    );
+                    $.each(rspns, function(index, item) { // Iterates through a collection
+                        $("#sel2").append( // Append an object to the inside of the select box
+                            $("<option></option>") // Yes you can do this.
+                            .text(item.name)
+                            .val(item.id)
+                        );
+                    });
+                }
+            }); //ajax//
+            $.ajax({
+                url: '/api/htbackend/getProductType',
+                dataType: 'text',
+                method: 'get',
+                success: function success(r) {
+                    console.log(r);
+                    var rspns = eval(r);
+                    //fill country
+                    $("#sel5 option").remove(); // Remove all <option> child tags.
+                    $("#sel5").append( // Append an object to the inside of the select box
+                        $("<option></option>") // Yes you can do this.
+                        .text('--- Select ---')
+                        .val('NONE')
+                    );
+                    $.each(rspns, function(index, item) { // Iterates through a collection
+                        $("#sel5").append( // Append an object to the inside of the select box
+                            $("<option></option>") // Yes you can do this.
+                            .text(item.name)
+                            .val(item.id)
+                        );
+                    });
+                }
+            }); //ajax//			
+        });
+
+        /*]]>*/
+    </script>
+    <style>
+        .table-hover>tbody>tr {
+            cursor: pointer;
+        }
+        .dataTables_paginate {
+            text-align: center!important;
+        }
+        .exportExcel {
+            color: #eee;
+            padding: 5px;
+            background: #79b4c1;
+            border: 1px solid #79b4c1;
+            margin: 5px;
+            cursor: pointer;
+        }
+        .exportExcel:hover,
+        .exportExcel:active:focus {
+            background: #4c8a96!important;
+            border: 1px solid #4c8a96;
+            color: #eee;
+        }
+        .table>thead>tr>th {
+            padding: 8px 0;
+            font-size: 16px;
+            line-height: 30px;
+        }
+        .table>tbody>tr>td {
+            padding: 9px;
+            line-height: 30px;
+            vertical-align: middle !important;
+        }  
+    </style>
+</head>
+
+<body>
+
+    <div class="page-wrapper" layout:fragment="content">
+
+        <!-- Content Wrapper. Contains page content -->
+        <div class="content-wrapper">
+            <div class="panel-custom-wrap">
+                <!-- Content Header (Page header) -->
+                <section class="content-header">
+                    <div class="subpage-menu-border">
+                        <h3 th:text="#{cmslist}" class="title col-sm-6"></h3>
+                        <ol class="breadcrumb no-margin-padding col-sm-6  text-right">
+                            <li><a href="/cms/index" th:href="@{/cms/index.html}"><i class="fa fa-dashboard" th:text="' '+#{cmsopt}"></i></a>
+                            </li>
+                            <li class="active" th:text="#{cmslist}"></li>
+                        </ol>
+                    </div>
+                </section>
+                <!-- Main content -->
+                <section class="content row">
+                    <div class="subpage-menu">
+                        <div class="col-md-12 nopadding">
+                            <div class="panel panel-default form-inline text-center" style="margin-bottom:8px; border:none;">
+                                <div class="form-group input-custom">
+                                    <label for="sel2" th:text="#{site}+' :'"></label>
+                                    <select id="sel2" name="sel2" class="form-control" style="width: 180px;padding: 6px;"></select>
+                                </div>
+                                <div class="form-group input-custom">
+                                    <label for="sel3" th:text="#{building}+' :'"></label>
+                                    <select id="sel3" name="sel3" class="form-control" style="width: 130px;padding: 6px;"></select>
+                                </div>
+                                <div class="form-group input-custom">
+                                    <label for="sel4" th:text="#{floor}+' :'"></label>
+                                    <select id="sel4" name="sel4" class="form-control" style="width: 130px;padding: 6px;"></select>
+                                </div>
+                                <div class="form-group input-custom">
+                                    <label for="sel5" th:text="#{product}+' :'"></label>
+                                    <select id="sel5" name="sel5" class="form-control" style="width: 200px;padding: 6px;"></select>
+                                </div>
+                                <div class="form-group input-custom">
+                                    <label for="keyword" th:text="#{search}+' :'"></label>
+                                    <input type="text" id="keyword" name="keyword" class="form-control" />
+                                </div>
+                                <div class="form-group input-custom">
+                                    <button type="button" class="btn btn-success-custom btn-md" id="searchBtn">
+                                        <i class="glyphicon glyphicon-search" th:text="' '+#{search}"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-12 nopadding">
+                            <div class="panel panel-wrap" style="min-height:400px;">
+                                <div>
+                                    <table class="table table-striped text-center table-hover" id="cmsEntityListTable">
+                                        <thead class="thead-search">
+                                            <tr id="tableth">
+                                                <th th:text="#{region}"></th>
+                                                <th th:text="#{site}+' '+#{name}"></th>
+                                                <th th:text="#{site}+' '+#{description}"></th>
+                                                <th th:text="#{building}"></th>
+
+                                                <th th:text="#{floor}"></th>
+                                                <th th:text="#{product_type}+' '+#{name}"></th>
+                                                <th th:text="#{ci}+' '+#{name}"></th>
+                                                <th th:text="#{entity}+' '+#{name}"></th>
+                                                <th th:text="#{entity}+' '+#{assetnum}"></th>
+                                                <th th:text="#{entity}+' '+#{coments}"></th>
+                                                <th th:text="#{entity}+' '+#{opmname}"></th>
+                                                <th th:text="#{entity}+' '+#{ip}"></th>
+                                                <th th:text="#{location}" style="width:400px;"></th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr id="tabletr">
+                                                <td></td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+                <!-- /.content -->
+            </div>
+        </div>
+        <!-- /.content-wrapper -->
+    </div>
+    <!-- ./wrapper -->
+</body>
+
+</html>

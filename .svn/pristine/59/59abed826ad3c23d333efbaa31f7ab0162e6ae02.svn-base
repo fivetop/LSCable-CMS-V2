@@ -1,0 +1,59 @@
+{
+    "width": 75,
+    "height": 45,
+    "comps": [
+        {
+            "type": "triangle",
+            "background": "rgb(38,226,255)",
+            "borderColor": "#979797",
+            "shadow": true,
+            "shadowColor": "rgb(38,226,255)",
+            "shadowBlur": 20,
+            "shadowOffsetX": 0,
+            "shadowOffsetY": 0,
+            "rotation": 1.5708,
+            "rect": [
+                41.15315,
+                10,
+                30,
+                25
+            ]
+        },
+        {
+            "type": "rect",
+            "background": "rgb(38,226,255)",
+            "borderColor": "#979797",
+            "rotation": 1.5708,
+            "rect": [
+                33.60473,
+                17.5,
+                10,
+                10
+            ]
+        },
+        {
+            "type": "rect",
+            "background": "rgb(38,226,255)",
+            "borderColor": "#979797",
+            "rotation": 1.5708,
+            "rect": [
+                16.79364,
+                17.5,
+                10,
+                10
+            ]
+        },
+        {
+            "type": "rect",
+            "background": "rgb(38,226,255)",
+            "borderColor": "#979797",
+            "rotation": 1.5708,
+            "rect": [
+                -0.01745,
+                17.5,
+                10,
+                10
+            ]
+        }
+    ]
+}

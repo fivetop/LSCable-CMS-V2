@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <title>simpleEye | Log in</title>
+    <!-- Tell the browser to be responsive to screen width -->
+    <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport" />
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="../static/modules/font-awesome/css/font-awesome.min.css" th:href="@{/modules/font-awesome/css/font-awesome.min.css}" />
+    <!-- Ionicons -->
+    <link rel="stylesheet" href="../static/modules/Ionicons/css/ionicons.min.css" th:href="@{/modules/Ionicons/css/ionicons.min.css}" />
+    <!-- Theme style -->
+    <link rel="stylesheet" href="../static/css/AdminLTE.min.css" th:href="@{/css/AdminLTE.min.css}" />
+    <!-- iCheck -->
+    <link rel="stylesheet" href="../static/modules/plugins/iCheck/square/blue.css" th:href="@{/modules/plugins/iCheck/square/blue.css}" />
+    <!-- Bootstrap 3.3.7 -->
+    <link rel="stylesheet" type="text/css" media="screen" href="../static/modules/bootstrap/dist/css/bootstrap.min.css" th:href="@{/modules/bootstrap/dist/css/bootstrap.min.css}" />
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+  <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
+  <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+  <![endif]-->
+    <style>
+        .wrapper {
+            background-image: url("images/background.png");
+            background-size: cover;
+            background-repeat: no-repeat;
+        }
+    </style>
+</head>
+
+<body class="login-page" layout:fragment="content">
+    <section class="wrapper">
+        <div class="content-wrapper">
+        	<!-- 
+            <div class="pull-right" style="position: absolute;top:20px;right: 20px;">
+                <a class="btn btn-primary" style="opacity: 0.7;word-wrap:break-word;" th:href="@{/api/endUserRegistration}" th:text="#{User_add}" target="popup" onclick="window.open(this.href,'targetWindow','toolbar=no, location=no, status=no, menubar=no, scrollbars=no, resizable=yes, width=600, height=600'); return false;"></a>
+            </div>
+             -->
+            <div class="login-box">
+                <div class="login-logo">
+                    <img th:src="@{images/simpleeye.png}" alt="simple eye" style="height:150px; padding:30px 10px 0px 10px;" />
+                </div>
+                <!-- /.login-logo -->
+                <div class="text-center" style="width:300px;margin:auto;padding:20px 0 0 0;">
+                    <form th:action="@{/login-process}" method="post">
+                        <fieldset>
+                            <div class="form-group has-feedback">
+                                <input type="text" name="username" class="form-control" placeholder="username" th:attr="placeholder=#{username}" required="required" autofocus="autofocus" />
+                                <span class="glyphicon glyphicon-user form-control-feedback"></span>
+                            </div>
+                            <div class="form-group has-feedback">
+                                <input type="password" name="password" class="form-control" placeholder="Password" th:attr="placeholder=#{password}" />
+                                <span class="glyphicon glyphicon-lock form-control-feedback"></span>
+                            </div>
+                            <div class="row">
+                                <div class="col-xs-8">
+                                    <div class="checkbox icheck">
+                                        <label>
+                                            <input type="checkbox" name="remember-me" id="remember-me" th:text="#{remember}" />
+                                            <!-- Remember Me -->
+                                        </label>
+                                    </div>
+                                </div>
+                                <!-- /.col -->
+                                <div class="col-xs-4">
+                                    <button type="submit" class="btn btn-primary btn-block" th:text="#{login}">
+                                        <!-- Log In -->
+                                    </button>
+                                </div>
+                                <!-- /.col -->
+                            </div>
+                        </fieldset>
+                    </form>
+                </div>
+                <!-- /.login-box-body -->
+            </div>
+            <!-- /.login-box -->
+
+            <!-- jQuery 3 -->
+            <script src="../static/modules/jquery/dist/jquery.min.js" th:src="@{/modules/jquery/dist/jquery.min.js}"></script>
+            <!-- Bootstrap 3.3.7 -->
+            <script src="../static/modules/bootstrap/dist/js/bootstrap.min.js" th:src="@{/modules/bootstrap/dist/js/bootstrap.min.js}"></script>
+            <!-- iCheck -->
+            <script src="../static/modules/plugins/iCheck/icheck.min.js" th:src="@{/modules/plugins/iCheck/icheck.min.js}"></script>
+            <script>
+                $(function() {
+                    $('#remember-me').iCheck({
+                        checkboxClass: 'icheckbox_square-blue',
+                        radioClass: 'iradio_square-blue',
+                        increaseArea: '20%' // optional
+                    });
+                });
+                $('input').iCheck('toggle');
+            </script>
+        </div>
+    </section>
+</body>
+
+</html>

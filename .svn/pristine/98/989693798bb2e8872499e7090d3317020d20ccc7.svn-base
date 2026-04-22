@@ -1,0 +1,380 @@
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.i52soft.lscable.cms.dao.WidgetDataProviderDao">
+
+	<select id="getTableNameFromMetaTable"  parameterType="java.util.HashMap" resultType="java.lang.String">
+<![CDATA[ 
+		select 
+		archivetablename
+		from MetaTable
+		where lookuptablename=#{lookuptable}
+		and (endtime >= #{endtime} or endtime = -1) limit 1
+ ]]>			
+	</select>
+	
+	<select id="getDeviceSummary" resultType="java.util.HashMap">
+<![CDATA[ 
+		select case when vd.NAME IS NULL then 'Others' else vd.NAME end as vendorname, MasterV.vendorid1, total, case when error IS NULL then 0 else error end as error, 
+		alerts, status from 
+		(select case when VENDORID IS NULL then -1 else VENDORID end as vendorid1, min(status) as status, count(distinct(mo.MOID)) as total, count(al.ID) as alerts 
+		 from ManagedObject mo INNER JOIN OpManagerObject oo ON mo.NAME=oo.NAME LEFT JOIN Alert al ON oo.NAME=al.SOURCE and severity<5 group by oo.vendorid) as MasterV 
+		      left join (select case when VENDORID IS NULL then -1 else VENDORID end as vendorid1, count(*) as error from ManagedObject mo 
+		      INNER JOIN OpManagerObject oo ON mo.NAME=oo.NAME and status<5 group by oo.vendorid) as ErrV on MasterV.vendorid1=ErrV.vendorid1 left join VENDORDETAILS vd on vd.VENDORID=MasterV.vendorid1 
+		      order by vendorname
+ ]]>		      
+	</select>
+
+	<select id="getRecentAlarmList_1019"  resultType="java.util.HashMap">
+		select  SOURCE,CATEGORY,AL.ENTITY,AL.DISPLAYNAME,AL.SEVERITY,MMESSAGE,MODTIME from Alert AL WHERE AL.SEVERITY!=5  order by AL.MODTIME DESC
+	</select>
+	
+	<select id="getRecentAlarmList"  resultType="java.util.HashMap">
+  		WITH RECURSIVE topdownsearchtree AS (
+		  SELECT a.id, a.site_id, a.type_id, a.level, a.level_rank, a.entity_id, a.parent_id, ARRAY[]::TEXT[] AS linkagepath
+		  FROM lscms_cms_sitetree a, lscms_cms_site b 
+          WHERE a.site_id=b.id and a.type_id=(select id from lscms_common_code where group_id=(select id from lscms_common_code where name='CMS Category Type') and name='Floor')
+          and a.parent_id is not null and b.is_deleted=False		 
+		  UNION ALL		 
+		  SELECT a.id, a.site_id, a.type_id, a.level, a.level_rank, a.entity_id, a.parent_id, 
+           array_append(b.linkagepath, (select name::TEXT from lscms_cms_entity where id=(select entity_id from lscms_cms_sitetree where id=a.parent_id))) 
+            --b.linkagepath || (select name from lscms_cms_entity where id=(select entity_id from lscms_cms_sitetree where id=a.parent_id))
+		  FROM lscms_cms_sitetree a, topdownsearchtree b
+		  WHERE a.parent_id = b.id 
+		) 
+        select  xxx.* from
+        (
+        select z.*, xx.location, (ROW_NUMBER() OVER(partition BY z.source, z.entity)) AS ROWNUM from 
+        (
+            select  SOURCE,CATEGORY,AL.ENTITY,AL.DISPLAYNAME,AL.SEVERITY,MMESSAGE,MODTIME, eventtype
+              from Alert AL WHERE AL.SEVERITY!=5  order by AL.MODTIME DESC        
+        ) z  left join      
+        (
+        select t.*, array_to_string(tt.linkagepath, '>>') as location
+        --string_agg(tt.linkagepath, '>>') 
+        from
+        (
+		select b.id, b.site_id, a.name as entity_name, a.asset_tag as entity_asset_tag, a.comments as entity_comments, 
+		a.opm_name as entity_opm_name, a.ip as entity_ip, c.name as site_name, c.description as site_description,
+		d.name as region_name, b.type_id
+		from lscms_cms_entity a, lscms_cms_sitetree b, lscms_cms_site c, lscms_cms_region d
+		where a.id=b.entity_id and b.site_id=c.id and a.is_deleted=False and c.region_id=d.id
+        ) t ,
+        topdownsearchtree tt where t.id=tt.id 
+        ) xx on z.source =xx.entity_opm_name
+            ) xxx 
+        where xxx.rownum=1    
+        order by xxx.MODTIME DESC
+        
+	</select>
+		
+	<select id="getTopNPacketLoss"  resultType="java.util.HashMap">
+		select DISPLAYNAME,pObj,min(min),max(max),ROUND(avg(val),2) as val from ( select DISPLAYNAME,PolledData.PARENTOBJ as pObj,min(MINVALUE) as min,max(MAXVALUE) as max,ROUND(avg(VAL),2) as val from ${tablename} as statsD INNER JOIN PolledData ON statsD.POLLID=PolledData.ID AND PolledData.NAME = 'stat' AND VAL!='-1' AND INSTANCE='Packet_Loss' INNER JOIN ManagedObject as mo ON PolledData.PARENTOBJ=mo.NAME INNER JOIN OpManagerObject ON PolledData.PARENTOBJ=OpManagerObject.NAME 
+		WHERE TTIME BETWEEN #{starttimehr} AND #{endtimehr} group by PARENTOBJ,DISPLAYNAME ) as temp group by pObj,DISPLAYNAME  order by val DESC,DISPLAYNAME LIMIT 10 OFFSET 0
+	</select>	
+
+	<select id="getEventSummaryList"  resultType="java.util.HashMap">
+		SELECT eventtype, severity, count(*) cnt 
+		FROM Alert  WHERE  Alert.SEVERITY != 5  
+		group by eventtype, severity
+	</select>
+	
+	<select id="getRecentAlarmStat" resultType="java.util.HashMap">
+	select x.severity, COALESCE(y.cnt, 0) cnt from
+    (select 1  severity union all select 2 severity union all select 3 severity union all select 4 severity) x
+	left outer join
+	(select  severity, count(*) cnt from Alert AL WHERE AL.SEVERITY!=5 
+		group by severity
+     ) y on x.severity=y.severity
+	</select>
+		
+	<select id="getLastNCPU" resultType="java.util.HashMap">
+		select PARENTOBJ,POLICYNAME,ManagedObject.DISPLAYNAME,PolledData.NAME from PolledData,ManagedObject,WidgetMonitorDetails 
+		where ID=MONITORID and ManagedObject.NAME=PolledData.PARENTOBJ --and ASSOCIATIONID=1203
+	</select>	
+	<select id="getEventSummaryLS" parameterType="java.util.HashMap" resultType="java.util.HashMap">
+		select EVENTTYPE, SUM(count), min(sev) 
+		from ( (select EVENTTYPE,count(*) as count ,min(SEVERITY) as sev 
+		        from event_2018_02_07_17 INNER JOIN ManagedObject ON event_2018_02_07_17.SOURCE=ManagedObject.NAME INNER JOIN OpManagerObject ON ManagedObject.NAME=OpManagerObject.NAME 
+		        where TTIME BETWEEN #{startttime} AND #{endttime} group by EVENTTYPE) ) as events GROUP BY EVENTTYPE	
+	</select>	
+	<select id="getEventSummary" parameterType="java.util.HashMap" resultType="java.util.HashMap">
+		select EVENTTYPE, SUM(count), min(sev) 
+		from ( (select EVENTTYPE,count(*) as count ,min(SEVERITY) as sev 
+		        from ${tablename} INNER JOIN ManagedObject ON ${tablename}.SOURCE=ManagedObject.NAME INNER JOIN OpManagerObject ON ManagedObject.NAME=OpManagerObject.NAME 
+		        where TTIME BETWEEN #{startttime} AND #{endttime} group by EVENTTYPE) ) as events GROUP BY EVENTTYPE	
+	</select>
+
+	<select id="getRecentEventList" parameterType="java.util.HashMap" resultType="java.util.HashMap">
+		select * from ( ( select  SOURCE,CATEGORY,ENTITY,ev.DISPLAYNAME,ev.SEVERITY,TEXT, TTIME from ${tablename} ev ORDER BY TTIME DESC limit 10 )) as outerTable  ORDER BY TTIME DESC 
+	</select>	
+		
+	<select id="searchUnauthorizedIPTerminal" resultType="java.util.HashMap">	
+with connectioninfo as 
+		(
+		select x.*, y.peer_mac_address, y.peer_ip_address from
+		(
+		select --*
+				a.port_no, a.switch_name, b.ifindex, --b.ifspeed, b.ifdescr, b.ifspeedin, b.ifspeedout, 
+		        replace(upper(b.physaddr), ' ', ':') macaddress, b.ifname 
+				from
+				lscms_port_to_ifindex a, snmpinterface b, ipaddress c 
+				where 1=1
+				and cast(a.if_index as int)=b.ifindex
+				and b.name=c.name
+				and a.switch_name=c.parentnode
+				order by a.switch_name, b.ifindex
+		    ) x, 
+		    (
+		        select b.switch_name, b.port_no, b.peer_mac_address, a.ip_address peer_ip_address
+		        from lscms_mac_to_ip a, lscms_mac_to_port b
+		        where a.mac_address=b.peer_mac_address
+		        order by switch_name, port_no    
+		    ) y
+		    where x.switch_name=y.switch_name and x.port_no=y.port_no
+		)
+
+	select 
+    distinct (select x.id from lscms_cms_sitetree x, lscms_cms_interface y, lscms_cms_site z, lscms_cms_entity zz where x.entity_id=zz.id and x.entity_id=y.entity_id and x.site_id=z.id and z.is_deleted = False and zz.is_deleted = False 		
+		and upper(y.mac_address::TEXT) = zzzz.macaddress limit 1) node_id,
+		(select x.site_id from lscms_cms_sitetree x, lscms_cms_interface y, lscms_cms_site z, lscms_cms_entity zz where x.entity_id=zz.id and x.entity_id=y.entity_id and x.site_id=z.id and z.is_deleted = False and zz.is_deleted = False 	
+		and upper(y.mac_address::TEXT) = zzzz.macaddress limit 1) site_id,
+    	zzzz.switch_name switch_name, 
+        (select b.name from lscms_cms_entity a, 
+			lscms_cms_interface b
+            where a.id=b.entity_id and a.opm_name=zzzz.switch_name and b.ifindex=zzzz.ifindex limit 1) switch_port_no,
+         zzzz.ifindex switch_ifindex,  
+         zzzz.macaddress switch_mac_address,
+         zzzz.peer_ip_address unauthorized_ip_address,
+         upper(zz.mac_address) unauthorized_mac_address
+		from
+		connectioninfo zzzz,
+		( 
+		select x.* from
+        (
+        select  
+		b.ip_address || '' as ip_address, upper(b.mac_address) || '' as mac_address 
+        from lscms_mac_to_ip b left outer join (select mac_address from lscms_ipam_enduser union all select mac_address from lscms_ipam_unmanaged) a 
+		on upper(a.mac_address::TEXT)=b.mac_address		
+        where a.mac_address is null 
+            ) x left outer join (select distinct a.ip from lscms_cms_entity a, lscms_cms_sitetree b, lscms_cms_site c where a.id=b.entity_id and b.site_id=c.id and c.is_deleted=False and a.is_deleted=False) y
+            on x.ip_address = y.ip
+            where y.ip is null         
+		) zz
+		where (zzzz.peer_ip_address)=zz.ip_address
+	</select>
+			
+	<select id="getDevicesAlarm" parameterType="java.util.HashMap" resultType="java.util.HashMap">
+<![CDATA[ 
+		select  SOURCE,DISPLAYNAME,MMESSAGE,seve,ENTITY from (select SOURCE,ENTITY,MMESSAGE,min(AL.SEVERITY) as seve,MODTIME 
+		from Alert AL where AL.SEVERITY<5 AND CATEGORY NOT IN('URL','OpManager')  group by SOURCE,ENTITY,MMESSAGE,MODTIME order by MODTIME desc) as MiniAlert 
+		INNER JOIN ManagedObject mo ON MiniAlert.source=mo.NAME ORDER BY DISPLAYNAME,seve desc,MODTIME
+ ]]>		
+	</select>	
+	<select id="getTopNAvailLS" parameterType="java.util.HashMap" resultType="java.util.HashMap">
+<![CDATA[ 
+		select DISPLAYNAME,NAME,PARENTKEY ,TEMPUPTIME AS UPTIME,TEMPONHOLD AS ONHOLD,TEMPONMAINTENANCE AS ONMAINTENANCE,TEMPDEPENDENTUNAVAILABLE AS DEPENDENTUNAVAILABLE,TEMPPARENTDOWN AS PARENTDOWN,TEMPELEMENTDOWN AS ELEMENTDOWN,NOTMONITORED,ROUND(((1-(((TEMPELEMENTDOWN+TEMPPARENTDOWN+TEMPDEPENDENTUNAVAILABLE)*1.0)/(TEMPELEMENTDOWN+TEMPPARENTDOWN+TEMPDEPENDENTUNAVAILABLE+TEMPUPTIME+.0001)))*100), 3) as avail,TEMPTOTALTIME AS TOTALTIME 
+		from (select DISPLAYNAME,NAME,PARENTKEY,SUM(UPTIME) AS TEMPUPTIME,SUM(ONHOLD) AS TEMPONHOLD,SUM(ONMAINTENANCE) AS TEMPONMAINTENANCE,SUM(DEPENDENTUNAVAILABLE) AS TEMPDEPENDENTUNAVAILABLE,SUM(PARENTDOWN) AS TEMPPARENTDOWN,SUM(ELEMENTDOWN) AS TEMPELEMENTDOWN,SUM(TOTALTIME) as TEMPTOTALTIME,SUM(NOTMONITORED) AS NOTMONITORED 
+		      from (select DISPLAYNAME,mo.NAME,mo.PARENTKEY,SUM(UPTIME) AS UPTIME,SUM(ONHOLD) AS ONHOLD,SUM(ONMAINTENANCE) AS ONMAINTENANCE,SUM(DEPENDENTUNAVAILABLE) AS DEPENDENTUNAVAILABLE,SUM(PARENTDOWN) AS PARENTDOWN,SUM(ELEMENTDOWN) AS ELEMENTDOWN,SUM(NOTMONITORED) AS  NOTMONITORED,ROUND(((1-(((ELEMENTDOWN+PARENTDOWN+DEPENDENTUNAVAILABLE)*1.0)/(ELEMENTDOWN+PARENTDOWN+DEPENDENTUNAVAILABLE+UPTIME+.0001)))*100), 3) as avail,SUM(UPTIME+ONHOLD+ONMAINTENANCE+DEPENDENTUNAVAILABLE+PARENTDOWN+ELEMENTDOWN) as totaltime 
+		            from elementavailabilityhourly2018_02_07_17 , ManagedObject mo,OpManagerObject opm where ELEMENTID=mo.MOID AND mo.NAME=opm.NAME  AND COLLECTIONTIME > '2017-12-27 17:00:00.0' AND COLLECTIONTIME <= '2017-12-28 17:00:00.0'  group by mo.NAME,mo.DISPLAYNAME,mo.PARENTKEY,PARENTDOWN,ELEMENTDOWN,DEPENDENTUNAVAILABLE,UPTIME ) as TEMP group by NAME,DISPLAYNAME,PARENTKEY ) as finalBlock group by NAME,DISPLAYNAME,PARENTKEY,UPTIME,ONHOLD,ONMAINTENANCE,DEPENDENTUNAVAILABLE,PARENTDOWN,ELEMENTDOWN,NOTMONITORED,TEMPTOTALTIME  
+		            order by avail DESC,DISPLAYNAME LIMIT 10 OFFSET 0
+ ]]>		            
+	</select>		
+	 
+	<select id="getTopNTrafficLS" parameterType="java.util.HashMap" resultType="java.util.HashMap">
+		select mo.DISPLAYNAME DISPNAME, temp.DISPNAME as INTFDISPNAME,mo.NAME as moname, temp.NAME, round(sum(AVGG)/sum(countt),2) as AVGG ,round(sum(RCV)/sum(countt),2) ,round(sum(TRANS)/sum(countt),2),temp.SPEEDIN,temp.SPEEDOUT from ((select count(comm.ID) countt,mo.NAME as NAME, mo.DISPLAYNAME DISPNAME, sum(INOCTETS*8*1000/(DELTATIME)+OUTOCTETS*8*1000/(DELTATIME)) AVGG, ipa.PARENTNODE DEVICENAME, sum(INOCTETS*8*1000/(DELTATIME)) RCV,sum(OUTOCTETS*8*1000/(DELTATIME)) TRANS,si.IFSPEEDIN SPEEDIN, si.IFSPEEDOUT SPEEDOUT 
+		from SnmpInterface si INNER JOIN ManagedObject mo ON si.NAME=mo.NAME AND IFSPEEDIN!=0 AND IFSPEEDOUT!=0 INNER JOIN IpAddress ipa ON si.NAME=ipa.NAME INNER JOIN ifhchourlysum_2018_02_07_17 comm ON mo.MOID=comm.ID AND COLLECTIONTIME BETWEEN '2017-12-27 17:18:34.829' AND '2017-12-28 17:18:34.829' group by comm.ID,mo.NAME,mo.DISPLAYNAME,ipa.PARENTNODE,si.IFSPEEDIN,si.IFSPEEDOUT  order by AVGG DESC LIMIT 100 OFFSET 0)) as temp, ManagedObject mo where mo.NAME=temp.DEVICENAME group by temp.NAME,mo.DISPLAYNAME,temp.DISPNAME,mo.NAME,temp.SPEEDIN,temp.SPEEDOUT  
+		order by AVGG DESC LIMIT 10 OFFSET 0
+	</select>	 
+	 
+	<select id="getTopNBandwidthLS" parameterType="java.util.HashMap" resultType="java.util.HashMap">
+		select mo.DISPLAYNAME DISPNAME, temp.DISPNAME as INTFDISPNAME,mo.NAME as moname, temp.NAME, round(sum(AVGG)/sum(countt),2) as AVGG ,round(sum(RCV)/sum(countt),2) ,round(sum(TRANS)/sum(countt),2),temp.SPEEDIN,temp.SPEEDOUT 
+		from ((select count(comm.ID) countt,mo.NAME as NAME, mo.DISPLAYNAME DISPNAME, sum((INOCTETS*800000/(DELTATIME*(IFSPEEDIN+0.0001)))+(OUTOCTETS*800000/(DELTATIME*(IFSPEEDOUT+0.0001)))) AVGG, ipa.PARENTNODE DEVICENAME, sum((INOCTETS*800000/(DELTATIME*(IFSPEEDIN+0.0001)))) RCV,sum((OUTOCTETS*800000/(DELTATIME*(IFSPEEDOUT+0.0001)))) TRANS,si.IFSPEEDIN SPEEDIN, si.IFSPEEDOUT SPEEDOUT from SnmpInterface si INNER JOIN ManagedObject mo ON si.NAME=mo.NAME AND IFSPEEDIN!=0 AND IFSPEEDOUT!=0 INNER JOIN IpAddress ipa ON si.NAME=ipa.NAME 
+		INNER JOIN ifhchourlysum_2018_02_07_17 comm ON mo.MOID=comm.ID AND COLLECTIONTIME BETWEEN '2017-12-27 17:18:34.832' AND '2017-12-28 17:18:34.832' group by comm.ID,mo.NAME,mo.DISPLAYNAME,ipa.PARENTNODE,si.IFSPEEDIN,si.IFSPEEDOUT  order by AVGG DESC LIMIT 100 OFFSET 0)) as temp, ManagedObject mo where mo.NAME=temp.DEVICENAME group by temp.NAME,mo.DISPLAYNAME,temp.DISPNAME,mo.NAME,temp.SPEEDIN,temp.SPEEDOUT  
+		order by AVGG DESC LIMIT 10 OFFSET 0
+	</select>		
+	<select id="getTopNAvail" parameterType="java.util.HashMap" resultType="java.util.HashMap">
+<![CDATA[ 
+		select DISPLAYNAME,NAME,PARENTKEY ,TEMPUPTIME AS UPTIME,TEMPONHOLD AS ONHOLD,TEMPONMAINTENANCE AS ONMAINTENANCE,TEMPDEPENDENTUNAVAILABLE AS DEPENDENTUNAVAILABLE,TEMPPARENTDOWN AS PARENTDOWN,TEMPELEMENTDOWN AS ELEMENTDOWN,NOTMONITORED,ROUND(((1-(((TEMPELEMENTDOWN+TEMPPARENTDOWN+TEMPDEPENDENTUNAVAILABLE)*1.0)/(TEMPELEMENTDOWN+TEMPPARENTDOWN+TEMPDEPENDENTUNAVAILABLE+TEMPUPTIME+.0001)))*100), 3) as avail,TEMPTOTALTIME AS TOTALTIME 
+		from (select DISPLAYNAME,NAME,PARENTKEY,SUM(UPTIME) AS TEMPUPTIME,SUM(ONHOLD) AS TEMPONHOLD,SUM(ONMAINTENANCE) AS TEMPONMAINTENANCE,SUM(DEPENDENTUNAVAILABLE) AS TEMPDEPENDENTUNAVAILABLE,SUM(PARENTDOWN) AS TEMPPARENTDOWN,SUM(ELEMENTDOWN) AS TEMPELEMENTDOWN,SUM(TOTALTIME) as TEMPTOTALTIME,SUM(NOTMONITORED) AS NOTMONITORED 
+		      from (select DISPLAYNAME,mo.NAME,mo.PARENTKEY,SUM(UPTIME) AS UPTIME,SUM(ONHOLD) AS ONHOLD,SUM(ONMAINTENANCE) AS ONMAINTENANCE,SUM(DEPENDENTUNAVAILABLE) AS DEPENDENTUNAVAILABLE,SUM(PARENTDOWN) AS PARENTDOWN,SUM(ELEMENTDOWN) AS ELEMENTDOWN,SUM(NOTMONITORED) AS  NOTMONITORED,ROUND(((1-(((ELEMENTDOWN+PARENTDOWN+DEPENDENTUNAVAILABLE)*1.0)/(ELEMENTDOWN+PARENTDOWN+DEPENDENTUNAVAILABLE+UPTIME+.0001)))*100), 3) as avail,SUM(UPTIME+ONHOLD+ONMAINTENANCE+DEPENDENTUNAVAILABLE+PARENTDOWN+ELEMENTDOWN) as totaltime 
+		            from ${tablename} , ManagedObject mo,OpManagerObject opm where ELEMENTID=mo.MOID AND mo.NAME=opm.NAME  AND COLLECTIONTIME > '2017-12-27 17:00:00.0' AND COLLECTIONTIME <= '2017-12-28 17:00:00.0'  group by mo.NAME,mo.DISPLAYNAME,mo.PARENTKEY,PARENTDOWN,ELEMENTDOWN,DEPENDENTUNAVAILABLE,UPTIME ) as TEMP group by NAME,DISPLAYNAME,PARENTKEY ) as finalBlock group by NAME,DISPLAYNAME,PARENTKEY,UPTIME,ONHOLD,ONMAINTENANCE,DEPENDENTUNAVAILABLE,PARENTDOWN,ELEMENTDOWN,NOTMONITORED,TEMPTOTALTIME  
+		            order by avail DESC,DISPLAYNAME LIMIT 10 OFFSET 0
+ ]]>		            
+	</select>		
+	 
+	<select id="getTopNTraffic" parameterType="java.util.HashMap" resultType="java.util.HashMap">
+		select mo.DISPLAYNAME DISPNAME, temp.DISPNAME as INTFDISPNAME,mo.NAME as moname, temp.NAME, round(sum(AVGG)/sum(countt),2) as AVGG ,round(sum(RCV)/sum(countt),2) ,round(sum(TRANS)/sum(countt),2),temp.SPEEDIN,temp.SPEEDOUT from ((select count(comm.ID) countt,mo.NAME as NAME, mo.DISPLAYNAME DISPNAME, sum(INOCTETS*8*1000/(DELTATIME)+OUTOCTETS*8*1000/(DELTATIME)) AVGG, ipa.PARENTNODE DEVICENAME, sum(INOCTETS*8*1000/(DELTATIME)) RCV,sum(OUTOCTETS*8*1000/(DELTATIME)) TRANS,si.IFSPEEDIN SPEEDIN, si.IFSPEEDOUT SPEEDOUT 
+		from SnmpInterface si INNER JOIN ManagedObject mo ON si.NAME=mo.NAME AND IFSPEEDIN!=0 AND IFSPEEDOUT!=0 INNER JOIN IpAddress ipa ON si.NAME=ipa.NAME INNER JOIN ${tablename} comm ON mo.MOID=comm.ID AND COLLECTIONTIME BETWEEN '2017-12-27 17:18:34.829' AND '2017-12-28 17:18:34.829' group by comm.ID,mo.NAME,mo.DISPLAYNAME,ipa.PARENTNODE,si.IFSPEEDIN,si.IFSPEEDOUT  order by AVGG DESC LIMIT 100 OFFSET 0)) as temp, ManagedObject mo where mo.NAME=temp.DEVICENAME group by temp.NAME,mo.DISPLAYNAME,temp.DISPNAME,mo.NAME,temp.SPEEDIN,temp.SPEEDOUT  
+		order by AVGG DESC LIMIT 10 OFFSET 0
+	</select>	 
+	 
+	<select id="getTopNBandwidth" parameterType="java.util.HashMap" resultType="java.util.HashMap">
+		select mo.DISPLAYNAME DISPNAME, temp.DISPNAME as INTFDISPNAME,mo.NAME as moname, temp.NAME, round(sum(AVGG)/sum(countt),2) as AVGG ,round(sum(RCV)/sum(countt),2) ,round(sum(TRANS)/sum(countt),2),temp.SPEEDIN,temp.SPEEDOUT 
+		from ((select count(comm.ID) countt,mo.NAME as NAME, mo.DISPLAYNAME DISPNAME, sum((INOCTETS*800000/(DELTATIME*(IFSPEEDIN+0.0001)))+(OUTOCTETS*800000/(DELTATIME*(IFSPEEDOUT+0.0001)))) AVGG, ipa.PARENTNODE DEVICENAME, sum((INOCTETS*800000/(DELTATIME*(IFSPEEDIN+0.0001)))) RCV,sum((OUTOCTETS*800000/(DELTATIME*(IFSPEEDOUT+0.0001)))) TRANS,si.IFSPEEDIN SPEEDIN, si.IFSPEEDOUT SPEEDOUT from SnmpInterface si INNER JOIN ManagedObject mo ON si.NAME=mo.NAME AND IFSPEEDIN!=0 AND IFSPEEDOUT!=0 INNER JOIN IpAddress ipa ON si.NAME=ipa.NAME 
+		INNER JOIN ${tablename} comm ON mo.MOID=comm.ID AND COLLECTIONTIME BETWEEN '2017-12-27 17:18:34.832' AND '2017-12-28 17:18:34.832' group by comm.ID,mo.NAME,mo.DISPLAYNAME,ipa.PARENTNODE,si.IFSPEEDIN,si.IFSPEEDOUT  order by AVGG DESC LIMIT 100 OFFSET 0)) as temp, ManagedObject mo where mo.NAME=temp.DEVICENAME group by temp.NAME,mo.DISPLAYNAME,temp.DISPNAME,mo.NAME,temp.SPEEDIN,temp.SPEEDOUT  
+		order by AVGG DESC LIMIT 10 OFFSET 0
+	</select>	
+	
+	<select id="getRackUsage" resultType="java.util.HashMap">
+		select t.used, tt.total, ceil(100 *(t.used::decimal/tt.total)) rate from
+		(select sum(z.u_height) used from
+		(select distinct d.sitetree_palcement_entity_id entity_id from lscms_cms_sitetree_placement a, lscms_cms_sitetree b, lscms_cms_entity c, lscms_cms_sitetree_rackspace_position d, lscms_cms_site e
+		where a.sitetree_id=b.id and b.entity_id=c.id and a.id=d.sitetree_placement_id and b.site_id=e.id and e.is_deleted=False and c.is_deleted=False
+		--and b.site_id=101
+		 ) x, lscms_cms_entity y, lscms_cms_category z
+		 where x.entity_id = y.id and y.category_id=z.id and y.is_deleted=False
+		) t,
+		(
+		select sum(u_size) total from lscms_cms_entity a, lscms_cms_category b, lscms_cms_sitetree c, lscms_cms_site d where a.category_id=b.id and c.entity_id=a.id and c.site_id=d.id and a.is_deleted=False and d.is_deleted=False
+		and b.type_id=(
+				select id from lscms_common_code 
+				where group_id = (select id from lscms_common_code where group_id is null and name='CMS Category Type')
+				and name = 'Rack'
+		)
+		) tt
+	</select>		
+
+	<select id="getIPUsage" resultType="java.util.HashMap">
+		select x.used, y.total, ceil(100 *(x.used::decimal/y.total)) rate  from
+		(select count(distinct ip_address) used 
+			from lscms_mac_to_ip 
+			where ip_address in 
+			(
+			select host(address) from lscms_ipam_ipaddress a, lscms_ipam_network b where a.network_id=b.id and a.is_usable and b.is_deleted=False
+			 )
+		) x,
+		(select count(*) total from lscms_ipam_ipaddress a, lscms_ipam_network b where a.network_id=b.id and a.is_usable and b.is_deleted=False) y
+	</select>	
+
+	<select id="getPatchPanelUsage" resultType="java.util.HashMap">
+		select t.used, tt.total, ceil(100 *(t.used::decimal/tt.total)) rate from
+		(
+		select count(distinct interface) used from
+		(
+		select interface_a_id interface from lscms_cms_linkage_connection_interface
+		where (linkage_connection_id, interface_a_id) in (
+		select linkage_connection_id, e.id from lscms_cms_linkage_connection_patchpanel a, lscms_cms_sitetree b, lscms_cms_site c, lscms_cms_entity d, lscms_cms_interface e
+		where a.sitetree_id=b.id and b.site_id=c.id and b.entity_id=d.id and d.id=e.entity_id and c.is_deleted=False and d.is_deleted=False
+		    )
+		    union all
+		select interface_b_id interface from lscms_cms_linkage_connection_interface
+		where (linkage_connection_id, interface_b_id) in (
+		select linkage_connection_id, e.id from lscms_cms_linkage_connection_patchpanel a, lscms_cms_sitetree b, lscms_cms_site c, lscms_cms_entity d, lscms_cms_interface e
+		where a.sitetree_id=b.id and b.site_id=c.id and b.entity_id=d.id and d.id=e.entity_id and c.is_deleted=False and d.is_deleted=False
+		    )    
+		) x
+		) t,
+		(
+		select sum(total_port) total from lscms_cms_entity a, lscms_cms_category b, lscms_cms_sitetree c, lscms_cms_site d where a.category_id=b.id and c.entity_id=a.id and c.site_id=d.id and a.is_deleted=False and d.is_deleted=False
+		and b.type_id=(
+				select id from lscms_common_code 
+				where group_id = (select id from lscms_common_code where group_id is null and name='CMS Category Type')
+				and name = 'Patch Panel'
+		)
+		) tt
+	</select>	
+	
+	<select id="getPortUsage" resultType="java.util.HashMap">
+	<![CDATA[ 
+		select sum(total_port) total, sum(used) used, ceil(100 *(sum(used)::decimal/sum(total_port))) rate  from
+		(
+		select x.id, cast(avg(x.total_port) as int) total_port, count(*) used from
+		(
+		    select  a.id, b.total_port
+		--sum(total_port) total 
+		--a.name, b.total_port
+		from lscms_cms_entity a, lscms_cms_category b, lscms_cms_sitetree c, lscms_cms_site d where a.category_id=b.id and c.entity_id=a.id and c.site_id=d.id and a.is_deleted=False and d.is_deleted=False
+		and b.type_id in (
+				select id from lscms_common_code 
+				where group_id = (select id from lscms_common_code where group_id is null and name='CMS Category Type')
+				and name in ('L2 Switch', 'L3 Switch', 'Backbone Switch&Router')
+		)
+		) x, 
+				(
+				select --*
+		            a.id, a.ip, c.name ifname, b.name portname, a.name devicename, a.opm_name, upper(b.mac_address::TEXT) mac_address, b.description, b.ifindex, c.ifadminstatus, c.ifoperstatus 
+		            from lscms_cms_entity a, lscms_cms_interface b, snmpinterface c
+				where a.id=b.entity_id and upper(b.mac_address::TEXT)=replace(upper(c.physaddr), ' ', ':')
+				) y 
+		        where x.id=y.id and y.ifoperstatus=1
+		        group by x.id
+		) t
+	]]>
+	</select>				 
+
+	<select id="getDevicesAvailability"  parameterType="java.util.HashMap" resultType="java.util.HashMap">
+		<![CDATA[ 
+			select x.displayname, x.avail::integer::TEXT from (
+			select DISPLAYNAME,NAME,PARENTKEY ,TEMPUPTIME AS UPTIME,TEMPONHOLD AS ONHOLD,TEMPONMAINTENANCE AS ONMAINTENANCE,TEMPDEPENDENTUNAVAILABLE AS DEPENDENTUNAVAILABLE,TEMPPARENTDOWN AS PARENTDOWN,TEMPELEMENTDOWN AS ELEMENTDOWN,NOTMONITORED,ROUND(((1-(((TEMPELEMENTDOWN+TEMPPARENTDOWN+TEMPDEPENDENTUNAVAILABLE)*1.0)/(TEMPELEMENTDOWN+TEMPPARENTDOWN+TEMPDEPENDENTUNAVAILABLE+TEMPUPTIME+.0001)))*100), 3) as avail,TEMPTOTALTIME AS TOTALTIME from (select DISPLAYNAME,NAME,PARENTKEY,SUM(UPTIME) AS TEMPUPTIME,SUM(ONHOLD) AS TEMPONHOLD,SUM(ONMAINTENANCE) AS TEMPONMAINTENANCE,SUM(DEPENDENTUNAVAILABLE) AS TEMPDEPENDENTUNAVAILABLE,SUM(PARENTDOWN) AS TEMPPARENTDOWN,SUM(ELEMENTDOWN) AS TEMPELEMENTDOWN,SUM(TOTALTIME) as TEMPTOTALTIME,SUM(NOTMONITORED) AS NOTMONITORED from (select DISPLAYNAME,mo.NAME,mo.PARENTKEY,SUM(UPTIME) AS UPTIME,SUM(ONHOLD) AS ONHOLD,SUM(ONMAINTENANCE) AS ONMAINTENANCE,SUM(DEPENDENTUNAVAILABLE) AS DEPENDENTUNAVAILABLE,SUM(PARENTDOWN) AS PARENTDOWN,SUM(ELEMENTDOWN) AS ELEMENTDOWN,SUM(NOTMONITORED) AS  NOTMONITORED,ROUND(((1-(((ELEMENTDOWN+PARENTDOWN+DEPENDENTUNAVAILABLE)*1.0)/(ELEMENTDOWN+PARENTDOWN+DEPENDENTUNAVAILABLE+UPTIME+.0001)))*100), 3) as avail,SUM(UPTIME+ONHOLD+ONMAINTENANCE+DEPENDENTUNAVAILABLE+PARENTDOWN+ELEMENTDOWN) as totaltime 
+			from ${tablename} , ManagedObject mo,OpManagerObject opm where ELEMENTID=mo.MOID AND mo.NAME=opm.NAME  AND COLLECTIONTIME > #{starttimehr} AND COLLECTIONTIME <= #{endtimehr}  group by mo.NAME,mo.DISPLAYNAME,mo.PARENTKEY,PARENTDOWN,ELEMENTDOWN,DEPENDENTUNAVAILABLE,UPTIME ) as TEMP group by NAME,DISPLAYNAME,PARENTKEY ) as finalBlock group by NAME,DISPLAYNAME,PARENTKEY,UPTIME,ONHOLD,ONMAINTENANCE,DEPENDENTUNAVAILABLE,PARENTDOWN,ELEMENTDOWN,NOTMONITORED,TEMPTOTALTIME  order by avail DESC,DISPLAYNAME LIMIT 4 OFFSET 0
+			) x
+		 ]]>		
+	</select>
+	<select id="getDevicesAvailabilityLS"  parameterType="java.util.HashMap" resultType="java.util.HashMap">
+		<![CDATA[ 
+			select x.displayname, x.avail::integer::TEXT from (
+			select DISPLAYNAME,NAME,PARENTKEY ,TEMPUPTIME AS UPTIME,TEMPONHOLD AS ONHOLD,TEMPONMAINTENANCE AS ONMAINTENANCE,TEMPDEPENDENTUNAVAILABLE AS DEPENDENTUNAVAILABLE,TEMPPARENTDOWN AS PARENTDOWN,TEMPELEMENTDOWN AS ELEMENTDOWN,NOTMONITORED,ROUND(((1-(((TEMPELEMENTDOWN+TEMPPARENTDOWN+TEMPDEPENDENTUNAVAILABLE)*1.0)/(TEMPELEMENTDOWN+TEMPPARENTDOWN+TEMPDEPENDENTUNAVAILABLE+TEMPUPTIME+.0001)))*100), 3) as avail,TEMPTOTALTIME AS TOTALTIME from (select DISPLAYNAME,NAME,PARENTKEY,SUM(UPTIME) AS TEMPUPTIME,SUM(ONHOLD) AS TEMPONHOLD,SUM(ONMAINTENANCE) AS TEMPONMAINTENANCE,SUM(DEPENDENTUNAVAILABLE) AS TEMPDEPENDENTUNAVAILABLE,SUM(PARENTDOWN) AS TEMPPARENTDOWN,SUM(ELEMENTDOWN) AS TEMPELEMENTDOWN,SUM(TOTALTIME) as TEMPTOTALTIME,SUM(NOTMONITORED) AS NOTMONITORED from (select DISPLAYNAME,mo.NAME,mo.PARENTKEY,SUM(UPTIME) AS UPTIME,SUM(ONHOLD) AS ONHOLD,SUM(ONMAINTENANCE) AS ONMAINTENANCE,SUM(DEPENDENTUNAVAILABLE) AS DEPENDENTUNAVAILABLE,SUM(PARENTDOWN) AS PARENTDOWN,SUM(ELEMENTDOWN) AS ELEMENTDOWN,SUM(NOTMONITORED) AS  NOTMONITORED,ROUND(((1-(((ELEMENTDOWN+PARENTDOWN+DEPENDENTUNAVAILABLE)*1.0)/(ELEMENTDOWN+PARENTDOWN+DEPENDENTUNAVAILABLE+UPTIME+.0001)))*100), 3) as avail,SUM(UPTIME+ONHOLD+ONMAINTENANCE+DEPENDENTUNAVAILABLE+PARENTDOWN+ELEMENTDOWN) as totaltime 
+			from elementavailabilityhourly2018_02_07_17 , ManagedObject mo,OpManagerObject opm where ELEMENTID=mo.MOID AND mo.NAME=opm.NAME  AND COLLECTIONTIME > #{starttimehr} AND COLLECTIONTIME <= #{endtimehr}  group by mo.NAME,mo.DISPLAYNAME,mo.PARENTKEY,PARENTDOWN,ELEMENTDOWN,DEPENDENTUNAVAILABLE,UPTIME ) as TEMP group by NAME,DISPLAYNAME,PARENTKEY ) as finalBlock group by NAME,DISPLAYNAME,PARENTKEY,UPTIME,ONHOLD,ONMAINTENANCE,DEPENDENTUNAVAILABLE,PARENTDOWN,ELEMENTDOWN,NOTMONITORED,TEMPTOTALTIME  order by avail DESC,DISPLAYNAME LIMIT 4 OFFSET 0
+			) x
+		 ]]>		
+	</select>	
+	<select id="getMinMaxAvgCPUTopN"  parameterType="java.util.HashMap" resultType="java.util.HashMap">
+		<![CDATA[ 
+			select DISPLAYNAME,PARENTOBJ,min(min),max(max),ROUND(avg(val),0) as val from ( (select DISPLAYNAME,PolledData.PARENTOBJ,min(MINVALUE) as min,max(MAXVALUE) as max,ROUND(avg(VAL),0) as val 
+            from ${tablename} as statsD INNER JOIN PolledData ON statsD.POLLID=PolledData.ID AND PolledData.POLICYNAME like '%CPUUtilization%' INNER JOIN ManagedObject as mo ON PolledData.PARENTOBJ=mo.NAME WHERE TTIME BETWEEN #{starttimehr} AND #{endtimehr} group by PARENTOBJ, DISPLAYNAME) ) as temp group by PARENTOBJ,DISPLAYNAME  
+            order by VAL DESC,DISPLAYNAME LIMIT 4 OFFSET 0
+		 ]]>		
+	</select>	
+	<select id="getMinMaxAvgCPUTopNLS"  parameterType="java.util.HashMap" resultType="java.util.HashMap">
+		<![CDATA[ 
+			select DISPLAYNAME,PARENTOBJ,min(min),max(max),ROUND(avg(val),0) as val from ( (select DISPLAYNAME,PolledData.PARENTOBJ,min(MINVALUE) as min,max(MAXVALUE) as max,ROUND(avg(VAL),0) as val 
+            from statsdata_hourly_2018_02_07_17 as statsD INNER JOIN PolledData ON statsD.POLLID=PolledData.ID AND PolledData.POLICYNAME like '%CPUUtilization%' INNER JOIN ManagedObject as mo ON PolledData.PARENTOBJ=mo.NAME WHERE TTIME BETWEEN #{starttimehr} AND #{endtimehr} group by PARENTOBJ, DISPLAYNAME) ) as temp group by PARENTOBJ,DISPLAYNAME  
+            order by VAL DESC,DISPLAYNAME LIMIT 4 OFFSET 0
+		 ]]>		
+	</select>
+	<select id="getMinMaxAvgMemoryTopN"  parameterType="java.util.HashMap" resultType="java.util.HashMap">
+		<![CDATA[ 
+			select DISPLAYNAME,PARENTOBJ,min(min),max(max),ROUND(avg(val),0) as val from ( (select DISPLAYNAME,PolledData.PARENTOBJ,min(MINVALUE) as min,max(MAXVALUE) as max,ROUND(avg(VAL),0) as val 
+            from ${tablename} as statsD INNER JOIN PolledData ON statsD.POLLID=PolledData.ID AND PolledData.POLICYNAME like '%MemoryUtilization%' INNER JOIN ManagedObject as mo ON PolledData.PARENTOBJ=mo.NAME WHERE TTIME BETWEEN #{starttimehr} AND #{endtimehr} group by PARENTOBJ, DISPLAYNAME) ) as temp group by PARENTOBJ,DISPLAYNAME  
+            order by VAL DESC,DISPLAYNAME LIMIT 4 OFFSET 0
+		 ]]>		
+	</select>		
+	<select id="getMinMaxAvgMemoryTopNLS"  parameterType="java.util.HashMap" resultType="java.util.HashMap">
+		<![CDATA[ 
+			select DISPLAYNAME,PARENTOBJ,min(min),max(max),ROUND(avg(val),0) as val from ( (select DISPLAYNAME,PolledData.PARENTOBJ,min(MINVALUE) as min,max(MAXVALUE) as max,ROUND(avg(VAL),0) as val 
+            from statsdata_hourly_2018_02_07_17 as statsD INNER JOIN PolledData ON statsD.POLLID=PolledData.ID AND PolledData.POLICYNAME like '%MemoryUtilization%' INNER JOIN ManagedObject as mo ON PolledData.PARENTOBJ=mo.NAME WHERE TTIME BETWEEN #{starttimehr} AND #{endtimehr} group by PARENTOBJ, DISPLAYNAME) ) as temp group by PARENTOBJ,DISPLAYNAME  
+            order by VAL DESC,DISPLAYNAME LIMIT 4 OFFSET 0
+		 ]]>		
+	</select>
+	<select id="getInterfaceTrafficInPeriod"  parameterType="java.util.HashMap" resultType="java.util.HashMap">
+		<![CDATA[   
+		with temp as (
+		 select comm.ID ,mo.NAME as NAME, mo.DISPLAYNAME DISPNAME, COLLECTIONTIME, (INOCTETS*8*1000/(DELTATIME)+OUTOCTETS*8*1000/(DELTATIME)) G, ipa.PARENTNODE DEVICENAME, (INOCTETS*8*1000/(DELTATIME)) RCV,(OUTOCTETS*8*1000/(DELTATIME)) TRANS,si.IFSPEEDIN SPEEDIN, si.IFSPEEDOUT SPEEDOUT 
+		                                                                              from SnmpInterface si 
+		                                                                              INNER JOIN ManagedObject mo ON si.NAME=mo.NAME AND IFSPEEDIN!=0 AND IFSPEEDOUT!=0 INNER JOIN IpAddress ipa ON si.NAME=ipa.NAME INNER JOIN ${tablename} comm ON mo.MOID=comm.ID AND COLLECTIONTIME  BETWEEN #{starttimehr} AND  #{endtimehr}
+		                                                                              where ipa.PARENTNODE = #{moname}
+		                                                                              order by comm.ID ,mo.NAME , mo.DISPLAYNAME , COLLECTIONTIME desc
+		)
+		select temp.dispname, temp.collectiontime, temp.rcv, temp.trans, temp.g from temp, ManagedObject mo where mo.NAME=temp.DEVICENAME
+		and temp.id in (select id from temp group by id order by sum(g) desc limit 3)
+		order by temp.COLLECTIONTIME 		    
+		 ]]>		
+	</select>		
+
+	<select id="getInterfaceTrafficInPeriodLS"  parameterType="java.util.HashMap" resultType="java.util.HashMap">
+		<![CDATA[ 
+		select  temp.dispname, temp.collectiontime, temp.rcv, temp.trans, temp.g from (
+		select comm.ID ,mo.NAME as NAME, mo.DISPLAYNAME DISPNAME, COLLECTIONTIME, (INOCTETS*8*1000/(DELTATIME)+OUTOCTETS*8*1000/(DELTATIME)) G, ipa.PARENTNODE DEVICENAME, (INOCTETS*8*1000/(DELTATIME)) RCV,(OUTOCTETS*8*1000/(DELTATIME)) TRANS,si.IFSPEEDIN SPEEDIN, si.IFSPEEDOUT SPEEDOUT 
+		from SnmpInterface si INNER JOIN ManagedObject mo 
+		  ON si.NAME=mo.NAME AND IFSPEEDIN!=0 AND IFSPEEDOUT!=0 INNER JOIN IpAddress ipa ON si.NAME=ipa.NAME INNER JOIN ifhchourlysum_2018_02_07_17 comm ON mo.MOID=comm.ID AND COLLECTIONTIME BETWEEN #{starttimehr} AND  #{endtimehr}
+		  --group by comm.ID,mo.NAME,mo.DISPLAYNAME,ipa.PARENTNODE,si.IFSPEEDIN,si.IFSPEEDOUT 
+		  --order by AVGG DESC LIMIT 100 OFFSET 0
+		  order by comm.ID ,mo.NAME , mo.DISPLAYNAME , COLLECTIONTIME desc
+		    )  as temp, ManagedObject mo where mo.NAME=temp.DEVICENAME
+		    and mo.NAME = #{moname}
+		    order by  temp.COLLECTIONTIME desc	
+		 ]]>		
+	</select>
+</mapper>

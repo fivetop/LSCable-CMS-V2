@@ -1,0 +1,59 @@
+<div layout:fragment="header5">
+    <!-- 화이트버전 헤더 -->
+
+    <header class="main-header">
+        <script type="text/javascript">
+            window.onload = function() {
+                var link = $(location).attr('protocol') + "//" + $(location).attr('hostname');
+                var url = link.toString();
+                $(document).on("click", "#opmanager", function(link) {
+                    window.open(url + '/', '_blank');
+                });
+
+            }
+        </script>
+        <nav class="navbar navbar-static-top">
+            <div class="container">
+                <!-- Navbar left Menu -->
+                <div class="navbar-header">
+                    <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#myNavbar">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </button>
+                    <a href="/mainpage" th:href="@{/mainpage.html}" class="navbar-brand"><img class="h2" th:src="@{/images/simple_eye.png}" />
+                    </a>
+                </div>
+                <div class="collapse navbar-collapse blue-collapse navbar-right" id="myNavbar">
+                    <ul class="nav navbar-nav">
+                        <li>
+                            <a href="/setting2/system" th:href="@{/setting2/system.html}" style=" padding:15px 27px;"><img th:src="@{/images/icon01.png}" style="height:50px;" />
+                            </a>
+                        </li>
+                        <li>
+                            <a id="opmanager" href="#" style=" padding:15px 27px;"><img th:src="@{/images/icon02.png}" style="height:50px;" />
+                            </a>
+                        </li>
+                        <li>
+                            <a href="/cms2/index" th:href="@{/cms2/index.html}" style=" padding:15px 27px;"><img th:src="@{/images/icon03.png}" style="height:50px;" />
+                            </a>
+                        </li>
+                        <li>
+                            <a href="/ipam2/index" th:href="@{/ipam2/index.html}" style=" padding:15px 27px;"><img th:src="@{/images/icon04.png}" style="height:50px;" />
+                            </a>
+                        </li>
+                        <li class="user user-menu">
+                            <img th:src="@{/images/icon05.png}" />&nbsp;&nbsp;
+                            <span sec:authentication="name"></span>
+                        </li>
+                        <li class="user-logout">
+                            <a th:href="@{/logout}" href="/logout"><img class="logout" th:src="@{/images/icon06.png}" />
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+                <!-- /.container-fluid -->
+            </div>
+        </nav>
+    </header>
+</div>

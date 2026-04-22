@@ -1,0 +1,33 @@
+<div layout:fragment="header3">
+
+  <header class="main-header">
+    <nav class="navbar navbar-static-top">
+      <div class="container">
+              <!-- Navbar left Menu -->
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#myNavbar">
+	        <span class="icon-bar"></span>
+	        <span class="icon-bar"></span>
+	        <span class="icon-bar"></span>                        
+	      </button>
+	      <a href="/dashboard5" class="navbar-brand"><span class="h2">[&nbsp;<strong>IOE</strong>&nbsp;<span>Soft&nbsp;</span>]</span></a>
+        </div>
+		<div class="collapse navbar-collapse blue-collapse navbar-right" id="myNavbar">
+          <ul class="nav navbar-nav">
+            <li><a href="/setting/system" th:href="@{/setting/system.html}"><span class="glyphicon glyphicon-cog"></span></a></li>
+            <li><a href="http://127.0.0.1:80/"><span class="fa fa-sitemap"></span></a></li>
+            <li><a href="/cms/index" th:href="@{/cms/index.html}"><span class="fa fa-share-alt"></span></a></li>
+            <li><a href="/ipam/index" th:href="@{/ipam/index.html}"><span class="fa fa-code-fork"></span></a></li>
+			<li class="user user-menu">
+            	<span class="glyphicon glyphicon-user">&nbsp;Admin</span> 
+                <!-- <img th:src="@{/images/user2-160x160.jpg}" class="user-image" alt="User Image" />  -->
+                <!-- hidden-xs hides the username on small devices so only the image appears. -->
+           </li>
+           <li class="user-logout"><a th:href="@{/logout}" href="/logout"><span class="glyphicon glyphicon-log-out"></span></a></li>
+        </ul>
+        </div>
+      <!-- /.container-fluid -->
+      </div>
+    </nav>
+  </header>
+ </div>

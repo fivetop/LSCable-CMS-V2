@@ -1,0 +1,27 @@
+{
+  "dataBindings": [
+    {
+      "attr": "usize",
+      "valueType": "PositiveNumber"
+    }
+  ],
+  "width": 240,
+  "height": 500,
+  "fitSize": true,
+  "comps": [
+    {
+      "type": "components/rack.json",
+      "displayName": "rack",
+      "rect": [
+        0,
+        0,
+        240,
+        500
+      ],
+      "usize": {
+        "func": "attr@usize",
+        "value": 20
+      }
+    }
+  ]
+}

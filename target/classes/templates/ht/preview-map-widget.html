@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8" />
+	<title>LS Cable</title>
+	        <style>
+
+ @font-face { font-family: 'Godo'; font-style: normal; font-weight:600; src: url('/font/GodoM.woff') format('woff');}
+ @font-face { font-family: 'YeonSung'; font-style: normal; font-weight:400; src: url('/font/YeonSung.woff') format('woff');}
+
+* {
+	font-family : Godo, YeonSung, Arial;
+}	        
+	        
+            html, body {
+                padding: 0px;
+                margin: 0px;                
+            }            
+            .main {
+                margin: 0px;
+                padding: 0px;
+                position: absolute;
+                top: 0px;
+                bottom: 0px;
+                left: 0px;
+                right: 0px;
+            }
+            .overview{
+                position:absolute;
+                left:0px;
+                bottom:0px;
+                width:200px;
+                height:150px;
+                background:rgb(240, 239, 248);
+            }
+            .animation{
+                -webkit-transition: width .3s,height .3s;
+                -moz-transition: width .3s,height .3s;
+                -o-transition: width .3s,height .3s;
+                transition: width .3s,height .3s;
+            }
+        </style>  
+</head>
+<body>
+<script type="text/javascript">
+	      /*<![CDATA[*/
+    htconfig = {
+        Color: {
+            highlight: '#45c4f9',
+            titleBackground: '#076186',
+            titleIconBackground: 'white',
+            headerBackground: '#DAECF4'
+        },
+        Default: {
+            dialogButtonBackground: '#45c4f9',
+            dialogButtonSelectBackground: '#39B0E4',
+            dialogButtonLabelColor: '#fff'
+        }
+    };
+	  /*]]>*/
+</script>
+	<script src="../../static/ht/libs/core/ht.js" th:src="@{/ht/libs/core/ht.js}"></script>
+	<script src="../../static/ht/libs/plugin/ht-flow.js" th:src="@{/ht/libs/plugin/ht-flow.js}"></script>
+	<script src="../../static/ht/libs/plugin/ht-overview.js" th:src="@{/ht/libs/plugin/ht-overview.js}"></script>
+	<script src="../../static/ht/libs/plugin/ht-animation.js" th:src="@{/ht/libs/plugin/ht-animation.js}"></script>
+	<script src="../../static/ht/libs/plugin/ht-historymanager.js" th:src="@{/ht/libs/plugin/ht-historymanager.js}"></script>
+	<script src="../../static/ht/libs/plugin/ht-edgetype.js" th:src="@{/ht/libs/plugin/ht-edgetype.js}"></script>
+	<script src="../../static/ht/js/preview-map-widget.js" th:src="@{/ht/js/preview-map-widget.js}"></script>
+
+</body>
+</html>
+
+

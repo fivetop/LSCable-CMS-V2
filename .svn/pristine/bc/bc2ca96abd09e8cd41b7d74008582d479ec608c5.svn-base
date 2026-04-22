@@ -1,0 +1,39 @@
+{
+  "width": 400,
+  "height": 84,
+  "func": "__ht__function(g, rect, comp, data, view) {\nvar start = comp.getValue('start'),\n\tend = comp.getValue('end'),\n\tportCount = comp.getValue('portCount'),\n\tdeviceName = comp.getValue('deviceName'), deviceCellWidth = comp.getValue('deviceCellWidth'),cableCellWidth = comp.getValue('cableCellWidth'),\n\toddBackground = comp.getValue('oddBackground'),\n\tevenBackground = comp.getValue('evenBackground');\n\nvar width = rect.width,\n\theight = rect.height;\n\nvar colCount = end - start + 1,\n\tcolWidth = width / colCount,\n\trowHeight = height / portCount;\n// draw column bg\nvar cy = 0, colColor;\nfor (var i = 0; i < portCount; i++) {\n\tg.save();\n\tg.fillStyle = i % 2 === 0 ? oddBackground : evenBackground;\n\tg.fillRect(0, cy, width, rowHeight);\n\tg.restore();\n\tcy += rowHeight;\n}\n// column line\ncolWidth = deviceCellWidth; var cx = colWidth;\nfor (var i = 1; i < colCount; i++) {\n\tcolWidth = (i % 2 === 0)?deviceCellWidth:cableCellWidth;\n\tg.beginPath();\n\tg.strokeStyle = '#dfdfdf';\n\tg.moveTo(cx, 0);\n\tg.lineTo(cx, height);\n\tg.stroke();\n\tcx += colWidth;\n}\n\n// border\ng.rect(0, 0, width, height);\ng.stroke();\n// row line port text\ncolWidth = deviceCellWidth;\nvar cy = 0, textX = (0 - start) * (colWidth+cableCellWidth)/2;\nfor (var i = 0; i < portCount; i++) {\n\tht.Default.drawImage(g, ht.Default.getImage('patch.panel.port'), textX, cy, colWidth, rowHeight * 0.7);\n\tg.save();\n\tg.font = '14px sans-serif';\n\tg.textAlign = 'center';\n\tg.strokeStyle = '#999999';\n\tg.strokeText(i + 1, textX  + 18 + colWidth * 0.32, cy + rowHeight * 0.5);\n\n\tg.fillStyle = '#ffffff';\n\tg.fillText(i + 1, textX  + 18 + colWidth * 0.32, cy + rowHeight * 0.5);\n\tg.restore();\n\n\tvar deviceScale = 0.7;\n\tg.save();\n\tg.scale(deviceScale, deviceScale);\n\tg.font = '12px sans-serif';\n\tg.textAlign = 'center';\n\tg.fillStyle = '#000000';\n\tg.fillText(deviceName+ '-' + ('0' + (i+1)).slice(-2), (textX  + 18 + colWidth * 0.32) / deviceScale, (cy + rowHeight * 0.92) / deviceScale);\n\tg.restore();\n\t// ht.Default.drawText(g, i + 1, '12px sans-serif', '#ffffff', textX + 9, cy, colWidth * 0.64, rowHeight * 0.64, 'center', 'middle');\n\tcy += rowHeight;\n\tif (i === portCount - 1) {\n\t\tcontinue;\n\t}\n\tg.beginPath();\n\tg.strokeStyle = '#dfdfdf';\n\tg.moveTo(0, cy);\n\tg.lineTo(width, cy);\n\tg.stroke();\n\n}\n}",
+  "properties": {
+    "start": {
+      "valueType": "Int",
+      "defaultValue": -2
+    },
+    "end": {
+      "valueType": "Int",
+      "defaultValue": 2
+    },
+    "portCount": {
+      "valueType": "PositiveNumber",
+      "defaultValue": 2
+    },
+    "oddBackground": {
+      "valueType": "Color",
+      "defaultValue": "rgb(255,255,255)"
+    },
+    "evenBackground": {
+      "valueType": "Color",
+      "defaultValue": "#ededed"
+    },
+    "deviceName": {
+      "valueType": "String",
+      "defaultValue": "250"
+    }    ,
+    "cableCellWidth": {
+      "valueType": "PositiveNumber",
+      "defaultValue": 50
+    },
+    "deviceCellWidth": {
+      "valueType": "PositiveNumber",
+      "defaultValue": 100
+    }
+  }
+}

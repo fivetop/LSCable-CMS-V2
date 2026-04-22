@@ -1,0 +1,10 @@
+Manifest-Version: 1.0
+Implementation-Title: LSCableCMS
+Implementation-Version: 2.0
+Built-By: dslee
+Implementation-Vendor-Id: com.i52soft.lscable.cms
+Build-Jdk: 1.8.0_151
+Implementation-URL: http://projects.spring.io/spring-boot/LSCableCMS/
+Created-By: Maven Integration for Eclipse
+Implementation-Vendor: Pivotal Software, Inc.
+

@@ -1,0 +1,9 @@
+com.i52soft.lscable.cms
+com.i52soft.lscable.cms.common
+com.i52soft.lscable.cms.config
+com.i52soft.lscable.cms.controller
+com.i52soft.lscable.cms.dao
+com.i52soft.lscable.cms.domain
+com.i52soft.lscable.cms.service
+com.i52soft.lscable.cms.service.impl
+com.mysample

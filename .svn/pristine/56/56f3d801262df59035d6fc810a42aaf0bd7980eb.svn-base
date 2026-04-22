@@ -1,0 +1,32 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org" layout:decorator="layout/default2">
+<head>
+  <title>LS Cable CMS - Server Error</title>
+  <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js" th:src="@{/webjars/jquery/1.11.3/jquery.min.js}"></script>
+  <script src="http://cdn.jsdelivr.net/webjars/bootstrap/3.3.4/js/bootstrap.min.js" th:src="@{/webjars/bootstrap/3.3.4/js/bootstrap.min.js}"></script>
+  <script src="../static/js/sb-admin-2.js" th:src="@{/js/sb-admin-2.js}"></script>
+  <script src="../static/modules/metisMenu/dist/metisMenu.min.js" th:src="@{/modules/metisMenu/dist/metisMenu.min.js}"></script>
+ 
+  <link rel="stylesheet" type="text/css" media="screen" href="../static/css/common.css" th:href="@{/css/common.css}" />
+  <link rel="stylesheet" type="text/css" media="screen" href="http://cdn.jsdelivr.net/webjars/bootstrap/3.3.4/css/bootstrap.min.css" th:href="@{/webjars/bootstrap/3.3.4/css/bootstrap.min.css}" />
+  <link rel="stylesheet" type="text/css" media="screen" href="../static/modules/metisMenu/dist/metisMenu.min.css" th:href="@{/modules/metisMenu/dist/metisMenu.min.css}" />
+  <link rel="stylesheet" type="text/css" media="screen" href="../static/modules/font-awesome/css/font-awesome.min.css" th:href="@{/modules/font-awesome/css/font-awesome.min.css}" />
+  <link rel="stylesheet" type="text/css" media="screen" href="../static/css/system-white.css" th:href="@{/css/system-white.css}" />
+</head>
+<body>
+
+<div layout:fragment="content">
+  <div class="container text-center">
+    <div class="row box-error">
+      <div class="col-lg-12 jumbotron">
+        <h1><i class="fa fa-exclamation-circle" aria-hidden="true"  th:text="'   '+#{servererror}"></i></h1>
+        <span class="jumbo-caption" th:text="#{errormsg}">There is an error on the server. Please check again.</span>
+      </div>
+      <!-- /.col-lg-12 -->
+    </div>
+    <!-- /.row -->
+  </div>
+</div>
+
+</body>
+</html>

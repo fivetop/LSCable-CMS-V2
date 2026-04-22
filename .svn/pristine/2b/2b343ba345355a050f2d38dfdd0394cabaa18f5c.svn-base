@@ -1,0 +1,32 @@
+{
+  "width": 100,
+  "height": 100,
+  "comps": [
+    {
+      "type": "rect",
+      "background": "rgb(27,119,247)",
+      "borderColor": "#979797",
+      "anchorY": 0.49,
+      "rect": [
+        -0.03578,
+        -0.03506,
+        100,
+        100
+      ]
+    },
+    {
+      "type": "arc",
+      "background": "#B8E986",
+      "borderWidth": 1,
+      "borderColor": "#979797",
+      "arcFrom": 0,
+      "arcTo": 4.1888,
+      "rect": [
+        4.2576,
+        4.50805,
+        91.91413,
+        92.41503
+      ]
+    }
+  ]
+}

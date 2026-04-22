@@ -1,0 +1,1489 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" layout:decorator="layout/default6">
+
+<head>
+    <title>simpleEye MainPage</title>
+    <!-- Tell the browser to be responsive to screen width -->
+    <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport" />
+    <!-- Bootstrap 3.3.7 -->
+    <link rel="stylesheet" type="text/css" media="screen" href="../../static/modules/bootstrap/dist/css/bootstrap.min.css" th:href="@{/modules/bootstrap/dist/css/bootstrap.min.css}" />
+    <!-- Font Awesome -->
+    <link rel="stylesheet" type="text/css" media="screen" href="../../static/modules/font-awesome/css/font-awesome.min.css" th:href="@{/modules/font-awesome/css/font-awesome.min.css}" />
+    <!-- Ionicons -->
+    <link rel="stylesheet" type="text/css" media="screen" href="../../static/modules/Ionicons/css/ionicons.min.css" th:href="@{/modules/Ionicons/css/ionicons.min.css}" />
+    <!-- jvectormap -->
+    <link rel="stylesheet" type="text/css" media="screen" href="../../static/modules/jvectormap/jquery-jvectormap.css" th:href="@{/modules/jvectormap/jquery-jvectormap.css}" />
+    <!-- theme custom -->
+    <link rel="stylesheet" type="text/css" media="screen" href="../../static/css/system-white.css" th:href="@{/css/system-white.css}" />
+    <!-- AdminLTE Skins. Choose a skin from the css/skins
+       folder instead of downloading all of them to reduce the load. -->
+    <link rel="stylesheet" type="text/css" media="screen" href="../../static/css/skins/_all-skins.min.css" th:href="@{/css/skins/_all-skins.min.css}" />
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+  <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
+  <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+  <![endif]-->
+    <!-- jQuery 3 -->
+    <script src="../../static/modules/jquery/dist/jquery.min.js" th:src="@{/modules/jquery/dist/jquery.min.js}"></script>
+    <!-- Bootstrap 3.3.7 -->
+    <script src="../../static/modules/bootstrap/dist/js/bootstrap.min.js" th:src="@{/modules/bootstrap/dist/js/bootstrap.min.js}"></script>
+    <!-- FastClick -->
+    <script src="../../static/modules/fastclick/lib/fastclick.js" th:src="@{/modules/fastclick/lib/fastclick.js}"></script>
+    <!-- jvectormap  -->
+    <script src="../../static/modules/plugins/jvectormap/jquery-jvectormap-1.2.2.min.js" th:src="@{/modules/plugins/jvectormap/jquery-jvectormap-1.2.2.min.js}"></script>
+    <script src="../../static/modules/plugins/jvectormap/jquery-jvectormap-world-mill-en.js" th:src="@{/modules/plugins/jvectormap/jquery-jvectormap-world-mill-en.js}"></script>
+    <!-- SlimScroll -->
+    <script src="../../static/modules/jquery-slimscroll/jquery.slimscroll.min.js" th:src="@{/modules/jquery-slimscroll/jquery.slimscroll.min.js}"></script>
+    <!-- DataTables -->
+
+    <link rel="stylesheet" type="text/css" href="../../static/modules/DataTables-1.10.16/css/dataTables.bootstrap4.min.css" th:href="@{/modules/DataTables-1.10.16/css/dataTables.bootstrap4.min.css}" />
+    <link rel="stylesheet" type="text/css" href="../../static/modules/Buttons-1.5.1/css/buttons.bootstrap4.min.css" th:href="@{/modules/Buttons-1.5.1/css/buttons.bootstrap4.min.css}" />
+    <script type="text/javascript" src="../../static/modules/DataTables-1.10.16/js/jquery.dataTables.min.js" th:src="@{/modules/DataTables-1.10.16/js/jquery.dataTables.min.js}"></script>
+    <script type="text/javascript" src="../../static/modules/DataTables-1.10.16/js/dataTables.bootstrap4.min.js" th:src="@{/modules/DataTables-1.10.16/js/dataTables.bootstrap4.min.js}"></script>
+    <script type="text/javascript" src="../../static/modules/Buttons-1.5.1/js/dataTables.buttons.min.js" th:src="@{/modules/Buttons-1.5.1/js/dataTables.buttons.min.js}"></script>
+    <script type="text/javascript" src="../../static/modules/Buttons-1.5.1/js/buttons.bootstrap4.min.js" th:src="@{/modules/Buttons-1.5.1/js/buttons.bootstrap4.min.js}"></script>
+    <script type="text/javascript" src="../../static/modules/Buttons-1.5.1/js/buttons.html5.min.js" th:src="@{/modules/Buttons-1.5.1/js/buttons.html5.min.js}"></script>
+    <script type="text/javascript" src="../../static/modules/datatables/JSZip-2.5.0/jszip.min.js" th:src="@{/modules/datatables/JSZip-2.5.0/jszip.min.js}"></script>
+    <!--<script type="text/javascript" src="../../static/modules/jQuery-1.12.3/jquery-1.12.3.min.js" th:src="@{/modules/jQuery-1.12.3/jquery-1.12.3.min.js}"></script>-->
+    <style>
+    	.table>thead>tr>th {
+            padding: 8px 0;
+            line-height: 30px;
+        }
+        .table>tbody>tr>td {
+            padding: 9px;
+            line-height: 30px;
+            vertical-align: middle !important;
+        }
+        .content {
+            overflow: auto;
+        }
+        table {
+            margin: 0 auto;
+            font-size: 13px;
+        }
+        table>thead>tr>th,
+        table>tbody>tr>td {
+            padding-left: 14px;
+        }
+        .table-hover>tbody>tr {
+            cursor: pointer;
+        }
+        .btn-custom {
+            position: absolute;
+            margin-left: -34px;
+            top: 23px;
+            padding: 5px 10px;
+            color: #666;
+            border: none;
+            border-radius: 7px;
+        }
+        .imageform {
+            width: 143px;
+        }
+        .imageviewform {
+            width: 1010px;
+        }
+        .imagesizeform {
+            width: 220px;
+        }
+        .imagesizeform2 {
+            width: 492px;
+        }
+        .imagesizeform3 {
+        	width: 476px;
+        }
+        @media(max-width:1600px) {
+            .imageform {
+                width: 112px;
+            }
+            .imageviewform {
+                width: 810px;
+            }
+            .imagesizeform {
+                width: 170px;
+            }
+            .imagesizeform2 {
+                width: 406px;
+            }
+            .imagesizeform3 {
+        		width: 390px;
+        	}
+        }
+        div.dataTables_wrapper div.dataTables_paginate {
+            text-align: center;
+        }
+        .pull-right {
+            padding-bottom: 10px;
+        }
+        .exportExcel {
+            color: #eee;
+            padding: 5px;
+            background: #79b4c1;
+            border: 1px solid #79b4c1;
+            margin: 5px;
+            cursor: pointer;
+        }
+        .exportExcel:hover,
+        .exportExcel:active:focus {
+            background: #4c8a96!important;
+            border: 1px solid #4c8a96;
+            color: #eee;
+        }
+        .uploadInput {position: relative;}
+        .uploadInput .upload {
+            opacity: 0;
+		    position: absolute;
+		    height: 30px;
+		    width: 34px;
+		    top: 0;
+		    cursor: pointer;
+    	}
+    </style>
+    <script type="text/javascript" th:inline="javascript">
+        /*<![CDATA[*/
+        CIListTable = null;
+        OPMDeviceListTable = null;
+        var getCIList = function() {
+
+            if (CIListTable) CIListTable.destroy();
+
+            CIListTable = $('#CIListTable').DataTable({
+                sAjaxDataProp: "",
+                paging: true,
+                ordering: false,
+                info: false,
+                destroy: true,
+                searching: false,
+                dom: 'Bfrtip',
+                buttons: [{
+                        extend: 'excel',
+                        text: 'Excel',
+                        className: 'exportExcel',
+                        filename: 'CI List',
+                        exportOptions: {
+                            modifier: {
+                                page: 'all'
+                            }
+                        }
+                    }, {
+                        extend: 'csv',
+                        text: 'CSV',
+                        className: 'exportExcel',
+                        filename: 'CI List',
+                        exportOptions: {
+                            modifier: {
+                                search: 'none',
+                                page: 'all'
+                            }
+                        }
+                    }]
+                    /*,columnDefs: [
+		  		            {visible: false, targets :[3, 5, 11]}
+		  		        ]*/
+                    ,
+                ajax: {
+                    url: "/api/htbackend/getCIList",
+                    type: 'get'
+                },
+                columns: [{
+                    "data": "ci_id"
+                }, {
+                    "data": "ci_type"
+                }, {
+                    "data": "ci_name"
+                }, {
+                    "data": "manufacturer"
+                }, {
+                    "data": "model"
+                }, {
+                    "data": "description"
+                }, {
+                    "data": "dimensions"
+                }, {
+                    "data": "total_port"
+                }]
+            });
+
+            $(".dt-buttons").addClass('pull-right');
+        };
+        var getOPMDeviceList = function() {
+
+            if (OPMDeviceListTable) OPMDeviceListTable.destroy();
+
+            OPMDeviceListTable = $('#OPMDeviceListTable').DataTable({
+                sAjaxDataProp: "",
+                paging: true,
+                ordering: false,
+                info: false,
+                destroy: true,
+                searching: false,
+                dom: 'Bfrtip',
+                buttons: [{
+                        extend: 'excel',
+                        text: 'Excel',
+                        className: 'exportExcel',
+                        filename: 'OPM Device List',
+                        exportOptions: {
+                            modifier: {
+                                page: 'all'
+                            }
+                        }
+                    }, {
+                        extend: 'csv',
+                        text: 'CSV',
+                        className: 'exportExcel',
+                        filename: 'OPM Device List',
+                        exportOptions: {
+                            modifier: {
+                                search: 'none',
+                                page: 'all'
+                            }
+                        }
+                    }]
+                    /*,columnDefs: [
+		  		            {visible: false, targets :[3, 5, 11]}
+		  		        ]*/
+                    ,
+                ajax: {
+                    url: "/api/htbackend/getOPMDeviceList",
+                    type: 'get'
+                },
+                columns: [{
+                    "data": "deviceName"
+                }, {
+                    "data": "displayName"
+                }, {
+                    "data": "type"
+                }, {
+                    "data": "category"
+                }, {
+                    "data": "addedTime"
+                }, {
+                    "data": "vendorName"
+                }, {
+                    "data": "ipaddress"
+                }]
+            });
+            $(".dt-buttons").addClass('pull-right');
+        };
+
+
+        $(document).on("click", "#fullListBtn", function() {
+            getCIList();
+        });
+        $(document).on("click", "#nmsBtn", function() {
+            getOPMDeviceList();
+        });
+        /*]]>*/
+    </script>
+</head>
+
+<body>
+
+    <div class="page-wrapper" layout:fragment="content">
+
+        <!-- Content Wrapper. Contains page content -->
+        <div class="content-wrapper">
+            <div class="panel-custom-wrap">
+                <!-- Content Header (Page header) -->
+                <section class="content-header">
+                    <div class="subpage-menu-border">
+                        <h3 th:text="#{catalogopt}" class="title col-sm-6"></h3>
+                        <ol class="breadcrumb no-margin-padding col-sm-6  text-right">
+                            <li><a href="/cms2/index" th:href="@{/cms2/index.html}"><i class="fa fa-dashboard" th:text="' '+#{cmsopt}"></i></a>
+                            </li>
+                            <li><a href="../cms2/setting" th:href="@{../cms2/setting.html}" th:text="#{siteopt}">cms-setting</a>
+                            </li>
+                            <li class="active" th:text="#{catalogopt}">cms-catalog</li>
+                        </ol>
+                    </div>
+                </section>
+                <!-- Main content -->
+                <section class="content">
+                    <div class="subpage-menu row">
+                        <div class="col-md-3 no-left-padding">
+                            <div class="panel panel-wrap">
+                                <div class="panel panel-title">
+                                    <span class="godo" th:text="#{category}+#{list}">List</span>
+                                    <div class="pull-right">
+                                        <a data-target="#fulllist" data-toggle="modal" id="fullListBtn" href="#fulllist" class="btn btn-primary-custom" th:text="#{fullview}">
+
+                                        </a>
+                                    </div>
+                                </div>
+                                <div class="panel panel-body" style="height:1216px; background-color:#eee; border-radius:2px; ">
+                                    <iframe src="/../ht/managing-catalog" scrolling="no" frameborder="0" id="manage-catalog" style="position: relative; height: 100%; width: 100%;">
+                                    </iframe>
+                                </div>
+                                <div class="panel panel-body">
+                                    <span class="godo" th:text="#{nms}+#{list}">List</span>
+                                    <div class="pull-right">
+                                        <a data-target="#fulllist2" data-toggle="modal" id="nmsBtn" href="#fulllist2" class="btn btn-primary-custom" th:text="#{fullview}">
+
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- 전체보기  -->
+                            <div class="modal modal-center fade" id="fulllist" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+                                <div class="modal-dialog modal-50size modal-center">
+                                    <div class="modal-content modal-50size">
+                                        <div class="modal-header">
+                                            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span>
+                                            </button>
+                                            <h4 class="modal-title" id="myModalLabel" th:text="#{fulllist}">접속이력</h4>
+                                        </div>
+                                        <div class="modal-body">
+                                            <table class="table table-responsive" id="CIListTable">
+                                                <thead>
+                                                    <tr id="tablerh">
+                                                        <th th:text="#{ci_id}">ci_id</th>
+                                                        <th th:text="#{ci_type}">ci_type</th>
+                                                        <th th:text="#{ci_name}">ci_name</th>
+                                                        <th th:text="#{manufacturer}">manufacturer</th>
+                                                        <th th:text="#{model}">model</th>
+                                                        <th th:text="#{description}">description</th>
+                                                        <th th:text="#{dimensions}">dimensions</th>
+                                                        <th th:text="#{total_port}">total_port</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    <tr id="tabletr">
+                                                        <td>test-body</td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-default" data-dismiss="modal" th:text="#{cancel}">취소</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- 전체보기 끝 -->
+                            <!--nms 전체보기  -->
+                            <div class="modal modal-center fade" id="fulllist2" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+                                <div class="modal-dialog modal-50size modal-center">
+                                    <div class="modal-content modal-50size">
+                                        <div class="modal-header">
+                                            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span>
+                                            </button>
+                                            <h4 class="modal-title" id="myModalLabel" th:text="#{fulllist}">접속이력</h4>
+                                        </div>
+                                        <div class="modal-body">
+                                            <table class="table table-responsive" id="OPMDeviceListTable">
+                                                <thead>
+                                                    <tr id="tablerh">
+                                                        <th th:text="#{deviceName}">deviceName</th>
+                                                        <th th:text="#{displayName}">displayName</th>
+                                                        <th th:text="#{opm_type}">type</th>
+                                                        <th th:text="#{opm_category}">category</th>
+                                                        <th th:text="#{addedTime}">addedTime</th>
+                                                        <th th:text="#{vendorName}">vendorName</th>
+                                                        <th th:text="#{ipaddress}">ipaddress</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    <tr id="tabletr">
+                                                        <td>test-body</td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-default" data-dismiss="modal" th:text="#{cancel}">취소</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <!--nms 전체보기 끝 -->
+
+                        </div>
+                        <div class="col-md-9 no-right-padding">
+                            <div class="panel panel-wrap custom-panel">
+                                <div class="panel-title">
+                                    <span class="godo" th:text="#{detail}+#{list}">List</span>
+                                    <div class="pull-right">
+                                        <a data-target="#myModal2" data-toggle="modal" id="MainNavHelp" href="#myModal2" class="btn btn-primary-custom">
+                                            <i class="fa fa-plus" th:text="' '+#{addnew}"></i>
+                                        </a>
+                                    </div>
+                                </div>
+                                <div class="panel panel-body">
+                                    <table id="catalog-table" class="table display table-fixed text-center table-hover" cellspacing="0" width="100%">
+                                        <thead class="thead-catalog">
+                                            <tr>
+                                                <th th:text="#{id}" style="border-radius:10px 0 0 0;">ID</th>
+                                                <th th:text="#{type}" style="display:none;">Type ID</th>
+                                                <th th:text="#{name}">Name</th>
+                                                <th th:text="#{description}">Description</th>
+                                                <th th:text="#{imagetree}" style="display:none;">Image_tree</th>
+                                                <th th:text="#{imagedefault}" style="display:none;">Image_default</th>
+                                                <th th:text="#{manufacturer}+#{id}" style="display:none;">Manufacturer_id</th>
+                                                <th th:text="#{model}" style="border-radius:0 10px 0 0;">Model</th>
+                                                <th th:text="#{imgmap}" style="display:none;">Image_map</th>
+                                                <th th:text="#{totalport}" style="display:none;">Total_port</th>
+                                                <th th:text="#{height}" style="display:none;">U_height</th>
+                                                <th th:text="#{size}" style="display:none;">U_size</th>
+                                                <th th:text="#{fulldepth}" style="display:none;">Full_depth</th>
+                                                <th th:text="#{imgfront}" style="display:none;">Image_rack_front</th>
+                                                <th th:text="#{imgrear}" style="display:none;">Image_rack_rear</th>
+                                                <th th:text="#{dimension}" style="display:none;">Dimensions</th>
+                                                <th th:text="#{imgconnect}" style="display:none;">Image_linkage_connection</th>
+                                                <th th:text="#{racktype}" style="display:none;">Rack Type</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr>
+                                                <td></td>
+                                            </tr>
+                                        </tbody>
+
+                                    </table>
+                                </div>
+                                <script type="text/javascript">
+                                    /*<![CDATA[*/
+                                    /*$('#myModal2').on('shown.bs.modal', function () {
+                                      var selectedType = document.getElementById("manage-catalog").contentWindow.cms.treeView.sm().ld()._name;
+                                      
+                                      alert(selectedType);
+                                    });*/
+
+                                    $.fn.dataTableExt.sErrMode = 'none';
+                                    $(document).on("click", "#MainNavHelp", function() {
+                                        var selectedType = document.getElementById("manage-catalog").contentWindow.cms.treeView.sm().ld()._name;
+
+                                        //alert(selectedType);
+                                        $(".modal-body #type_name").val(selectedType);
+                                        /*
+	    document.getElementById("manage-catalog").contentWindow.cms.treeView.getSelectionModel().ms(function(){	
+	    	  var selectedType = document.getElementById("manage-catalog").contentWindow.cms.treeView.sm().ld()._name;
+	    	  
+	    	  getProductInfoByTypeName(selectedType);
+	  	   	});	*/
+                                        //getProductInfoByTypeName("Server");
+
+                                    });
+                                    /*$(document).on("click", "#testButton", function () {
+
+                                        document.getElementById("manage-catalog").contentWindow.cms.treeView.getSelectionModel().ms(function(){	
+                                      	  var selectedType = document.getElementById("manage-catalog").contentWindow.cms.treeView.sm().ld()._name;
+                                      	  
+                                      	  getProductInfoByTypeName(selectedType);
+                                    	   	});	 
+                                        
+                                    });		*/
+
+
+                                    var openFile = function(event, type, source) {
+                                        var input = event.target;
+
+                                        var reader = new FileReader();
+
+                                        if (type == 'createForm') {
+                                            reader.onload = function() {
+                                                var dataURL = reader.result;
+                                                //var selected = $("#image_holder_createForm option:selected").text();
+                                                //var value = $("#image_holder_createForm option:selected").val();
+                                                var output = document.getElementById(source + '_src');
+                                                output.src = dataURL;
+                                                //document.getElementById(value).val( dataURL );
+                                                value = '.modal-body #' + source;
+                                                $(value).val(dataURL);
+                                            };
+                                        } else {
+                                            reader.onload = function() {
+                                                var dataURL = reader.result;
+                                                //var selected = $("#image_holder_updateForm option:selected").text();
+                                                //var value = $("#image_holder_updateForm option:selected").val();
+                                                var output = document.getElementById(source + '_src');
+                                                output.src = dataURL;
+                                                //document.getElementById(value).val( dataURL );
+                                                value = '.updateForm #' + source;
+                                                $(value).val(dataURL);
+                                            };
+                                        }
+
+                                        reader.readAsDataURL(input.files[0]);
+                                    };
+                                    $(document).on("click", "#modifyButton", function() {
+                                        var modifydata = $("#updateForm").serializeArray();
+                                        var data = {};
+                                        $.each(modifydata,
+                                            function(i, v) {
+	                                    		if(v.value!=='NONE'){
+	                                    			data[v.name] = v.value;
+	                                    		}  
+                                            });
+                                        console.log(JSON.stringify(data));
+                                        $.ajax({
+                                            url: '/api/htbackend/updateProduct/' + $(".updateForm #id").val(),
+                                            dataType: 'text',
+                                            contentType: 'application/json',
+                                            data: JSON.stringify(data),
+                                            method: 'post',
+                                            success: function success(r) {
+                                                //setTimeout("location.reload();", 100);
+                                                alert("Updated : " + $(".updateForm #name").val());
+                                                var selectedType = document.getElementById("manage-catalog").contentWindow.cms.treeView.sm().ld().a('productTypeId');
+                                                var selectedTypeName = document.getElementById("manage-catalog").contentWindow.cms.treeView.sm().ld().getName();
+                                                if (selectedType !== '') {
+                                                    getProductInfoByType(selectedType, selectedTypeName);
+                                                }
+                                            }
+                                        });
+                                    });
+
+
+
+                                    //ld().a('productTypeId') to get product type id,
+                                    //ld().getName() to get name
+
+                                    $(document).on("click", "#createButton", function() {
+                                        var createdata = $("#createForm").serializeArray();
+                                        var data = {};
+                                        $.each(createdata,
+                                            function(i, v) {
+	                                    		if(v.value!=='NONE'){
+	                                    			data[v.name] = v.value;
+	                                    		}  
+                                            });
+                                        console.log(JSON.stringify(data));
+                                        $.ajax({
+                                            url: '/api/htbackend/registerProduct2',
+                                            dataType: 'text',
+                                            contentType: 'application/json',
+                                            data: JSON.stringify(data),
+                                            method: 'post',
+                                            success: function success(r) {
+                                                $("#createForm #id").val('');
+                                                $("#createForm #type_id").val('');
+                                                $("#createForm #name").val('');
+
+                                                $("#createForm #description").val('');
+
+                                                $("#createForm #manufacturer_id").val('');
+                                                $("#createForm #model").val('');
+
+                                                $("#createForm #total_port").val('');
+                                                $("#createForm #rack_type_id").val('');
+                                                $("#createForm #u_height").val('');
+                                                $("#createForm #u_size").val('');
+                                                $("#createForm #full_depth").val('');
+                                                $("#createForm #dimensions").val('');
+
+                                                $("#createForm #image_tree_createForm").val('');
+                                                $("#createForm #image_default_createForm").val('');
+                                                $("#createForm #image_map_createForm").val('');
+                                                $("#createForm #image_rack_front_createForm").val('');
+                                                $("#createForm #image_rack_rear_createForm").val('');
+                                                $("#createForm #image_rack_front3d_createForm").val('');
+                                                $("#createForm #image_rack_rear3d_createForm").val('');
+                                                $("#createForm #image_linkage_connection_createForm").val('');
+
+                                                $("#createForm #image_tree_createForm_src").attr('src', "/images/20x20.png");
+                                                $("#createForm #image_default_createForm_src").attr('src', "/images/50x50.png");
+                                                $("#createForm #image_map_createForm_src").attr('src', "/images/50x50.png");
+                                                $("#createForm #image_rack_front_createForm_src").attr('src', "/images/208x20.png");
+                                                $("#createForm #image_rack_rear_createForm_src").attr('src', "/images/208x20.png");
+                                                $("#createForm #image_linkage_connection_createForm_src").attr('src', "/images/100x30.png");
+                                                $("#myModal2").modal("hide");
+                                                //setTimeout("location.reload();", 100);
+                                                var selectedType = document.getElementById("manage-catalog").contentWindow.cms.treeView.sm().ld().a('productTypeId');
+                                                var selectedTypeName = document.getElementById("manage-catalog").contentWindow.cms.treeView.sm().ld().getName();
+                                                if (selectedType !== '') {
+                                                    getProductInfoByType(selectedType, selectedTypeName);
+                                                }
+                                            }
+                                        });
+                                    });
+                                    $(document).on("click", "#delete", function() {
+                                        //var mainpageid = $(this).attr('data-id');
+                                        //$("#deleteMainPage #mainpageid").val( mainpageid);
+                                    });
+
+                                    $(document).on("click", "#deleteBtn", function() {
+                                        $.ajax({
+                                            url: '/api/htbackend/deleteProduct/' + $(".updateForm #id").val(),
+                                            method: 'get',
+                                            success: function success(r) {
+                                                //alert("Deleted : " + $(".updateForm #id").val() + "\n"+r);
+                                                $("#deleteMainPage").modal("hide");
+                                                //setTimeout("location.reload();", 100);
+                                                var selectedType = document.getElementById("manage-catalog").contentWindow.cms.treeView.sm().ld().a('productTypeId');
+                                                var selectedTypeName = document.getElementById("manage-catalog").contentWindow.cms.treeView.sm().ld().getName();
+                                                if (selectedType !== '') {
+                                                    getProductInfoByType(selectedType, selectedTypeName);
+                                                }
+                                            }
+                                        });
+                                    });
+
+
+                                    //server          
+                                    //producttype = 95;
+                                    $(document).ready(function() {
+
+                                        setTimeout(function() {
+                                            document.getElementById("manage-catalog").contentWindow.cms.treeView.getSelectionModel().ms(function() {
+                                                var selectedType = document.getElementById("manage-catalog").contentWindow.cms.treeView.sm().ld().a('productTypeId');
+                                                var selectedTypeName = document.getElementById("manage-catalog").contentWindow.cms.treeView.sm().ld().getName();
+                                                if (selectedType !== '') {
+                                                    getProductInfoByType(selectedType, selectedTypeName);
+                                                }
+                                            });
+
+                                        }, 3000);
+                                        /*  document.getElementById("manage-catalog").contentWindow.cms.addListener(function(e){
+	    		    if (e.kind === 'init') {
+	    		    	  var selectedType = document.getElementById("manage-catalog").contentWindow.cms.treeView.sm().ld().a('productTypeId');
+	    		    	  
+	    		    	  getProductInfoByType(selectedType);
+	    		    }
+	    		});	*/
+                                        //getProductInfoByType(producttype);
+                                        //getProductInfoByTypeName("Server");
+                                        $('#createForm #u_height').on('focusout', function() {
+                                            var u_height = $('#createForm #u_height').val();
+                                            if (isNaN(u_height))
+                                                u_height = 1;
+                                            var file_name = "/images/208x" + 20 * u_height + ".png";
+                                            $("#createForm #image_rack_front_createForm_src").attr('src', file_name);
+                                            $("#createForm #image_rack_rear_createForm_src").attr('src', file_name);
+                                        });
+
+                                        $('#catalog-table tbody').on('click', 'tr', function() {
+                                            if ($(this).hasClass('selected')) {
+                                                $(this).removeClass('selected');
+                                            } else {
+                                                example_datatables.$('tr.selected').removeClass('selected');
+                                                $(this).addClass('selected');
+
+                                                var d = example_datatables.row(this).data();
+
+                                                $(".updateForm #id").val(d.id);
+                                                $(".updateForm #type_id").val(d.type_id);
+                                                $(".updateForm #name").val(d.name);
+
+                                                $(".updateForm #description").val(d.description);
+
+                                                $(".updateForm #manufacturer_id").val(d.manufacturer_id);
+                                                $(".updateForm #model").val(d.model);
+
+                                                $(".updateForm #total_port").val(d.total_port);
+                                                $(".updateForm #rack_type_id").val(d.rack_type_id);
+                                                $(".updateForm #u_height").val(d.u_height);
+                                                $(".updateForm #u_size").val(d.u_size);
+                                                $(".updateForm #full_depth").val(d.full_depth + '');
+
+                                                $(".updateForm #dimensions").val(d.dimensions);
+
+                                                $(".updateForm #image_tree_updateForm").val(d.image_tree);
+                                                $(".updateForm #image_default_updateForm").val(d.image_default);
+                                                $(".updateForm #image_map_updateForm").val(d.image_map);
+                                                $(".updateForm #image_rack_front_updateForm").val(d.image_rack_front);
+                                                $(".updateForm #image_rack_rear_updateForm").val(d.image_rack_rear);
+                                                $(".updateForm #image_linkage_connection_updateForm").val(d.image_linkage_connection);
+                                                $(".updateForm #image_rack_front3d_updateForm").val(d.image_rack_front3d);
+                                                $(".updateForm #image_rack_rear3d_updateForm").val(d.image_rack_rear3d);
+                                                
+                                                $(".updateForm #image_tree_updateForm_src").attr('src', d.image_tree);
+                                                $(".updateForm #image_default_updateForm_src").attr('src', d.image_default);
+                                                $(".updateForm #image_map_updateForm_src").attr('src', d.image_map);
+                                                $(".updateForm #image_rack_front_updateForm_src").attr('src', d.image_rack_front);
+                                                $(".updateForm #image_rack_rear_updateForm_src").attr('src', d.image_rack_rear);
+                                                $(".updateForm #image_linkage_connection_updateForm_src").attr('src', d.image_linkage_connection);
+                                                $(".updateForm #image_rack_front3d_updateForm_src").attr('src', d.image_rack_front3d);
+                                                $(".updateForm #image_rack_rear3d_updateForm_src").attr('src', d.image_rack_rear3d);
+                                            }
+                                        });
+                                        $.ajax({
+                                            url: '/api/htbackend/getRackType',
+                                            dataType: 'text',
+                                            method: 'get',
+                                            success: function success(r) {
+                                                console.log(r);
+                                                var rspns = eval(r);
+                                                $("#rack_type_id option").remove(); // Remove all <option> child tags.
+                                                $("#rack_type_id").append( // Append an object to the inside of the select box
+                                                    $("<option></option>") // Yes you can do this.
+                                                    .text('--- Select ---')
+                                                    .val('NONE')
+                                                );
+                                                $.each(rspns, function(index, item) { // Iterates through a collection
+                                                    $("#rack_type_id").append( // Append an object to the inside of the select box
+                                                        $("<option></option>") // Yes you can do this.
+                                                        .text(item.name)
+                                                        .val(item.id)
+                                                    );
+                                                });
+                                                $("#rack_type_id2 option").remove(); // Remove all <option> child tags.
+                                                $("#rack_type_id2").append( // Append an object to the inside of the select box
+                                                    $("<option></option>") // Yes you can do this.
+                                                    .text('--- Select ---')
+                                                    .val('NONE')
+                                                );
+                                                $.each(rspns, function(index, item) { // Iterates through a collection
+                                                    $("#rack_type_id2").append( // Append an object to the inside of the select box
+                                                        $("<option></option>") // Yes you can do this.
+                                                        .text(item.name)
+                                                        .val(item.id)
+                                                    );
+                                                });                                                
+                                            }
+                                        }); //ajax//
+                                        $.ajax({
+                                            url: '/api/htbackend/getManufacturer',
+                                            dataType: 'text',
+                                            method: 'get',
+                                            success: function success(r) {
+                                                console.log(r);
+                                                var rspns = eval(r);
+
+                                                $("#manufacturer_id option").remove(); // Remove all <option> child tags.
+                                                $("#manufacturer_id").append( // Append an object to the inside of the select box
+                                                    $("<option></option>") // Yes you can do this.
+                                                    .text('--- Select ---')
+                                                    .val('NONE')
+                                                );
+                                                $.each(rspns, function(index, item) { // Iterates through a collection
+                                                    $("#manufacturer_id").append( // Append an object to the inside of the select box
+                                                        $("<option></option>") // Yes you can do this.
+                                                        .text(item.name)
+                                                        .val(item.id)
+                                                    );
+                                                });
+                                                $("#manufacturer_id2 option").remove(); // Remove all <option> child tags.
+                                                $("#manufacturer_id2").append( // Append an object to the inside of the select box
+                                                    $("<option></option>") // Yes you can do this.
+                                                    .text('--- Select ---')
+                                                    .val('NONE')
+                                                );
+                                                $.each(rspns, function(index, item) { // Iterates through a collection
+                                                    $("#manufacturer_id2").append( // Append an object to the inside of the select box
+                                                        $("<option></option>") // Yes you can do this.
+                                                        .text(item.name)
+                                                        .val(item.id)
+                                                    );
+                                                });                                                
+                                            }
+                                        }); //ajax//
+                                    });
+
+                                    function getProductInfoByType(type, typeName) {
+                                        if (typeName === 'Cable') {
+                                            $("#createForm #image_linkage_connection_createForm_src").attr('src', "/images/50x30.png");
+                                        } else {
+                                            $("#createForm #image_linkage_connection_createForm_src").attr('src', "/images/100x30.png");
+                                        }
+                                        example_datatables = null;
+                                        if (example_datatables) example_datatables.destroy();
+
+                                        example_datatables = $('#catalog-table').DataTable({
+                                            sAjaxDataProp: ""
+                                                //,processing: true
+                                                //,serverSide: true
+                                                //,retrieve: true
+                                                //,stateSave: false
+                                                ,
+                                            paging: false
+                                                //,lengthChange: false
+                                                ,
+                                            ordering: false,
+                                            info: false,
+                                            destroy: true,
+                                            searching: false
+                                                /*,pageLength: 5*/
+                                                /*,aLengthMenu: [[5, 10, 25, -1], [5, 10, 25, "All"]]*/
+                                                //,searching: false
+                                                //,autoWidth: false
+                                                ,
+                                            columnDefs: [{
+                                                        visible: false,
+                                                        targets: [1, 4, 5, 6, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17]
+                                                    }
+                                                    //,{orderable: false, targets :[0,1,2,3, 4,5,6,7,8,9,10,11,12,13,14,15,16]}
+                                                ]
+                                                /*,order : [[0, "desc"]]*/
+                                                ,
+                                            ajax: {
+                                                url: "/api/htbackend/getProductInfo/" + type,
+                                                type: "GET"
+                                                    /*,data: function(d){
+		                tmp = new Object;
+		                tmp.datatables = 1;
+		                tmp = $.extend(tmp, d);
+		                return tmp;
+		            }*/
+                                            },
+                                            columns: [{
+                                                        "data": "id"
+                                                    }, {
+                                                        "data": "type_id"
+                                                    }, {
+                                                        "data": "name",
+                                                        "className": "blue"
+                                                    }, {
+                                                        "data": "description",
+                                                        "defaultContent": ""
+                                                    }, {
+                                                        "data": "image_tree",
+                                                        "defaultContent": ""
+                                                    }, {
+                                                        "data": "image_default",
+                                                        "defaultContent": ""
+                                                    }, {
+                                                        "data": "manufacturer_id",
+                                                        "defaultContent": ""
+                                                    }, {
+                                                        "data": "model",
+                                                        "defaultContent": ""
+                                                    }, {
+                                                        "data": "image_map",
+                                                        "defaultContent": ""
+                                                    }, {
+                                                        "data": "total_port",
+                                                        "defaultContent": ""
+                                                    }, {
+                                                        "data": "u_height",
+                                                        "defaultContent": ""
+                                                    }, {
+                                                        "data": "u_size",
+                                                        "defaultContent": ""
+                                                    }, {
+                                                        "data": "full_depth",
+                                                        "defaultContent": ""
+                                                    }, {
+                                                        "data": "image_rack_front",
+                                                        "defaultContent": ""
+                                                    }, {
+                                                        "data": "image_rack_rear",
+                                                        "defaultContent": ""
+                                                    }, {
+                                                        "data": "dimensions",
+                                                        "defaultContent": ""
+                                                    }, {
+                                                        "data": "image_linkage_connection",
+                                                        "defaultContent": ""
+                                                    }, {
+                                                        "data": "rack_type_id",
+                                                        "defaultContent": 0
+                                                    }
+                                                    /*,{
+		                "data": null,
+		                "defaultContent": "<button>Edit</button>",
+		                "targets": -1
+		              }*/
+                                                ]
+                                                /*,initComplete : function (settings, json){
+		            $('.c_y1').addClass('red');
+		            $('.c_y2').addClass('blue');
+		            $('.c_y3').addClass('green');
+		        }*/
+                                        });
+                                    };
+
+                                    function getProductInfoByTypeName(type) {
+                                        example_datatables = null;
+                                        if (example_datatables) example_datatables.destroy();
+
+                                        example_datatables = $('#catalog-table').DataTable({
+                                            sAjaxDataProp: ""
+                                                //,processing: true
+                                                //,serverSide: true
+                                                //,retrieve: true
+                                                //,stateSave: false
+                                                ,
+                                            paging: false
+                                                //,lengthChange: false
+                                                ,
+                                            ordering: false,
+                                            info: false,
+                                            destroy: true
+                                                /*,pageLength: 5*/
+                                                /*,aLengthMenu: [[5, 10, 25, -1], [5, 10, 25, "All"]]*/
+                                                //,searching: false
+                                                //,autoWidth: false
+                                                ,
+                                            columnDefs: [{
+                                                        visible: false,
+                                                        targets: [1, 4, 5, 6, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17]
+                                                    }
+                                                    //,{orderable: false, targets :[0,1,2,3, 4,5,6,7,8,9,10,11,12,13,14,15,16]}
+                                                ]
+                                                /*,order : [[0, "desc"]]*/
+                                                ,
+                                            ajax: {
+                                                url: "/api/htbackend/getProductInfoByTypeName/" + type,
+                                                type: "GET"
+                                                    /*,data: function(d){
+			                tmp = new Object;
+			                tmp.datatables = 1;
+			                tmp = $.extend(tmp, d);
+			                return tmp;
+			            }*/
+                                            },
+                                            columns: [{
+                                                        "data": "id"
+                                                    }, {
+                                                        "data": "type_id"
+                                                    }, {
+                                                        "data": "name",
+                                                        "className": "blue"
+                                                    }, {
+                                                        "data": "description",
+                                                        "defaultContent": ""
+                                                    }, {
+                                                        "data": "image_tree",
+                                                        "defaultContent": ""
+                                                    }, {
+                                                        "data": "image_default",
+                                                        "defaultContent": ""
+                                                    }, {
+                                                        "data": "manufacturer_id",
+                                                        "defaultContent": ""
+                                                    }, {
+                                                        "data": "model",
+                                                        "defaultContent": ""
+                                                    }, {
+                                                        "data": "image_map",
+                                                        "defaultContent": ""
+                                                    }, {
+                                                        "data": "total_port",
+                                                        "defaultContent": ""
+                                                    }, {
+                                                        "data": "u_height",
+                                                        "defaultContent": ""
+                                                    }, {
+                                                        "data": "u_size",
+                                                        "defaultContent": ""
+                                                    }, {
+                                                        "data": "full_depth",
+                                                        "defaultContent": ""
+                                                    }, {
+                                                        "data": "image_rack_front",
+                                                        "defaultContent": ""
+                                                    }, {
+                                                        "data": "image_rack_rear",
+                                                        "defaultContent": ""
+                                                    }, {
+                                                        "data": "dimensions",
+                                                        "defaultContent": ""
+                                                    }, {
+                                                        "data": "image_linkage_connection",
+                                                        "defaultContent": ""
+                                                    }, {
+                                                        "data": "rack_type_id",
+                                                        "defaultContent": 0 
+                                                    }
+                                                    /*,{
+			                "data": null,
+			                "defaultContent": "<button>Edit</button>",
+			                "targets": -1
+			              }*/
+                                                ]
+                                                /*,initComplete : function (settings, json){
+			            $('.c_y1').addClass('red');
+			            $('.c_y2').addClass('blue');
+			            $('.c_y3').addClass('green');
+			        }*/
+                                        });
+                                    };
+                                    /*]]>*/
+                                </script>
+                            </div>
+                            <div class="panel panel-default" style="border:none; width:100%;">
+                                <div class="updateForm">
+                                    <form class="form-horizontal input-custom" id="updateForm" style="padding-top:30px;">
+                                        <input type="hidden" name="id" id="id"></input>
+                                        <input type="hidden" name="type_id" id="type_id"></input>
+                                        <div class="form-group col-sm-6">
+                                            <label for="#{productname}" class="col-sm-3 control-label" th:text="#{productname}">productName</label>
+
+                                            <div class="col-sm-9">
+                                                <input type="text" class="form-control" name="name" id="name" th:attr="placeholder=#{productname}" />
+                                            </div>
+                                        </div>
+                                        <div class="form-group col-sm-6">
+                                            <label for="manufacturer" class="col-sm-3 control-label" th:text="#{manufacturer}">Manufacturer</label>
+                                            <div class="col-sm-9">
+                                                <select id="manufacturer_id" name="manufacturer_id" class="form-control"></select>
+                                            </div>
+                                        </div>
+                                        <div class="form-group col-sm-6">
+                                            <label for="#{modelnum}" class="col-sm-3 control-label" th:text="#{modelnum}">Model NO.</label>
+                                            <div class="col-sm-9">
+                                                <input type="text" class="form-control" name="model" id="model" th:attr="placeholder=#{modelnum}" />
+                                            </div>
+                                        </div>
+                                        <div class="form-group col-sm-6">
+                                            <label for="#{dimension}" class="col-sm-3 control-label" th:text="#{dimension}">Dimensions</label>
+                                            <div class="col-sm-9">
+                                                <input type="text" class="form-control" name="dimensions" id="dimensions" th:attr="placeholder=#{dimension}" />
+                                            </div>
+                                        </div>
+                                        <div class="form-group col-sm-6">
+                                            <label for="#{fulldepth}" class="col-sm-3 control-label" th:text="#{fulldepth}">Full Depth</label>
+                                            <div class="col-sm-9">
+                                                <select id="full_depth" name="full_depth" class="form-control">
+                                                    <option value="">--- Select ---</option>
+                                                    <option th:text="#{truetxt}" value="true"></option>
+                                                    <option th:text="#{falsetxt}" value="false"></option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="form-group col-sm-6">
+                                            <label for="#{height}" class="col-sm-3 control-label" th:text="#{height}+' (U)'">Height (U)</label>
+                                            <div class="col-sm-9">
+                                                <input type="text" class="form-control" name="u_height" id="u_height" th:attr="placeholder=#{height}" />
+                                            </div>
+                                        </div>
+                                        <div class="form-group col-sm-6">
+                                            <label for="#{height}" class="col-sm-3 control-label" th:text="#{size}+' (U)'">Size (U)</label>
+                                            <div class="col-sm-9">
+                                                <input type="text" class="form-control" name="u_size" id="u_size" th:attr="placeholder=#{size}" />
+                                            </div>
+                                        </div>
+                                        <div class="form-group col-sm-6">
+                                            <label for="#{description}" class="col-sm-3 control-label" th:text="#{description}">Description</label>
+                                            <div class="col-sm-9">
+                                                <input type="text" class="form-control" name="description" id="description" th:attr="placeholder=#{description}" />
+                                            </div>
+                                        </div>
+                                        <div class="form-group col-sm-6">
+                                            <label for="#{portcnt}" class="col-sm-3 control-label" th:text="#{portcnt}">Port Count</label>
+                                            <div class="col-sm-9">
+                                                <input type="text" class="form-control" name="total_port" id="total_port" th:attr="placeholder=#{portcnt}" />
+                                            </div>
+                                        </div>
+                                            <div class="form-group col-sm-6">
+                                                <label for="#{racktype}" class="col-sm-3 control-label" th:text="#{racktype}"></label>
+                                                <div class="col-sm-9">
+                                                    <select id="rack_type_id" name="rack_type_id" class="form-control"></select>
+                                                </div>
+                                            </div>                                             
+                                        <br />
+                                        <div class="form-group col-sm-12">
+                                            <div class="col-sm-3 text-right imageform">
+                                                <label for="#{imgview}" class="img-label" th:text="#{imgview}"></label>
+                                            </div>
+                                            <div class="col-sm-9 imageviewform" id="#{imgview}" style="padding:0px;">
+
+                                                <div class="col-sm-12 text-center row" style="padding:6px;">
+                                                    <div class="img-box panel panel-default">
+                                                        <div class="panel-heading">
+                                                            <span th:text="#{imagedefault}"></span>
+                                                        </div>
+                                                        <div class="panel-body no-padding img-sizing imagesizeform">
+                                                            <div class="pull-right">
+                                                                <button class="btn btn-sm" th:title="#{modify}"><i class="glyphicon glyphicon-pencil"></i>
+                                                                </button>
+                                                                <input type="file" class="upload" accept="image/*" onclick="this.value = null" onchange="openFile(event, 'updateForm', 'image_default_updateForm')" />
+                                                            </div>
+                                                            <img id="image_default_updateForm_src" src="/images/50x50.png" style="margin-left:30px;" />
+                                                        </div>
+                                                    </div>
+                                                    <div class="img-box panel panel-default">
+                                                        <div class="panel-heading">
+                                                            <span class="" th:text="#{imgconnect}"></span>
+                                                        </div>
+                                                        <div class="panel-body no-padding img-sizing imagesizeform">
+                                                            <div class="pull-right">
+                                                                <button class="btn btn-sm" th:title="#{modify}"><i class="glyphicon glyphicon-pencil"></i>
+                                                                </button>
+                                                                <input type="file" class="upload" accept="image/*" onclick="this.value = null" onchange="openFile(event, 'updateForm', 'image_linkage_connection_updateForm')" />
+                                                            </div>
+                                                            <img id="image_linkage_connection_updateForm_src" src="/images/100x30.png" style="margin-left:30px;" />
+                                                        </div>
+                                                    </div>
+                                                    <div class="img-box panel panel-default">
+                                                        <div class="panel-heading">
+                                                            <span class="" th:text="#{imgfront}"></span>
+                                                        </div>
+                                                        <div class="panel-body no-padding img-sizing2 imagesizeform2">
+                                                            <div class="pull-right">
+                                                                <button class="btn btn-sm" th:title="#{modify}"><i class="glyphicon glyphicon-pencil"></i>
+                                                                </button>
+                                                                <input type="file" class="upload" accept="image/*" onclick="this.value = null" onchange="openFile(event, 'updateForm', 'image_rack_front_updateForm')" />
+                                                            </div>
+                                                            <img id="image_rack_front_updateForm_src" src="/images/208x20.png" style="margin-left:30px;" />
+                                                        </div>
+                                                    </div>
+
+                                                </div>
+
+                                                <div class="col-sm-12 text-center row" style="padding:6px;">
+                                                    <div class="img-box panel panel-default">
+                                                        <div class="panel-heading">
+                                                            <span class="" th:text="#{imgmap}"></span>
+                                                        </div>
+                                                        <div class="panel-body no-padding img-sizing imagesizeform">
+                                                            <div class="pull-right">
+                                                                <button class="btn btn-sm" th:title="#{modify}"><i class="glyphicon glyphicon-pencil"></i>
+                                                                </button>
+                                                                <input type="file" class="upload" accept="image/*" onclick="this.value = null" onchange="openFile(event, 'updateForm', 'image_map_updateForm')" />
+                                                            </div>
+                                                            <img id="image_map_updateForm_src" src="/images/50x50.png" style="margin-left:30px;" />
+                                                        </div>
+                                                    </div>
+                                                    <div class="img-box panel panel-default">
+                                                        <div class="panel-heading">
+                                                            <span class="" th:text="#{imagetree}"></span>
+                                                        </div>
+                                                        <div class="panel-body no-padding img-sizing imagesizeform">
+                                                            <div class="pull-right">
+                                                                <button class="btn btn-sm" th:title="#{modify}"><i class="glyphicon glyphicon-pencil"></i>
+                                                                </button>
+                                                                <input type="file" class="upload" accept="image/*" onclick="this.value = null" onchange="openFile(event, 'updateForm', 'image_tree_updateForm')" />
+                                                            </div>
+                                                            <img id="image_tree_updateForm_src" src="/images/20x20.png" style="margin-left:30px;" />
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="img-box panel panel-default">
+                                                        <div class="panel-heading">
+                                                            <span class="" th:text="#{imgrear}"></span>
+                                                        </div>
+                                                        <div class="panel-body no-padding img-sizing2 imagesizeform2">
+                                                            <div class="pull-right">
+                                                                <button class="btn btn-sm" th:title="#{modify}"><i class="glyphicon glyphicon-pencil"></i>
+                                                                </button>
+                                                                <input type="file" class="upload" accept="image/*" onclick="this.value = null" onchange="openFile(event, 'updateForm', 'image_rack_rear_updateForm')" />
+                                                            </div>
+                                                            <img id="image_rack_rear_updateForm_src" src="/images/208x20.png" style="margin-left:30px;" />
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="col-sm-12 text-center row" style="padding:6px;">
+                                                    <div class="img-box panel panel-default">
+                                                        <div class="panel-heading">
+                                                            <span class="" th:text="'3D'+ #{imgfront}"></span>
+                                                        </div>
+                                                        <div class="panel-body no-padding img-sizing2 imagesizeform3">
+                                                            <div class="pull-right">
+                                                                <button class="btn btn-sm" th:title="#{modify}"><i class="glyphicon glyphicon-pencil"></i>
+                                                                </button>
+                                                                <input type="file" class="upload" accept="image/*" onclick="this.value = null" onchange="openFile(event, 'updateForm', 'image_rack_front3d_updateForm')" />
+                                                            </div>
+                                                            <img id="image_rack_front3d_updateForm_src" src="/images/208x20.png" style="margin-left:30px;" />
+                                                        </div>
+                                                    </div>
+                                                    <div class="img-box panel panel-default">
+                                                        <div class="panel-heading">
+                                                            <span class="" th:text="'3D'+ #{imgrear}"></span>
+                                                        </div>
+                                                        <div class="panel-body no-padding img-sizing2 imagesizeform3"><!-- 3d -->
+                                                            <div class="pull-right">
+                                                                <button class="btn btn-sm" th:title="#{modify}"><i class="glyphicon glyphicon-pencil"></i>
+                                                                </button>
+                                                                <input type="file" class="upload" accept="image/*" onclick="this.value = null" onchange="openFile(event, 'updateForm', 'image_rack_rear3d_updateForm')" />
+                                                            </div>
+                                                            <img id="image_rack_rear3d_updateForm_src" src="/images/208x20.png" style="margin-left:30px;" />
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div class=" col-sm-offset-2 col-sm-4">
+                                                <div class="col-sm-12 text-center img-select form-horizontal">
+
+                                                    <div class="form-group col-sm-1 pull-right">
+                                                        <input type="hidden" name="image_default" id="image_default_updateForm"></input>
+                                                        <input type="hidden" name="image_rack_front" id="image_rack_front_updateForm"></input>
+                                                        <input type="hidden" name="image_rack_rear" id="image_rack_rear_updateForm"></input>
+                                                        <input type="hidden" name="image_map" id="image_map_updateForm"></input>
+                                                        <input type="hidden" name="image_tree" id="image_tree_updateForm"></input>
+                                                        <input type="hidden" name="image_linkage_connection" id="image_linkage_connection_updateForm"></input>
+                                                        <input type="hidden" name="image_rack_front3d" id="image_rack_front3d_updateForm"></input>
+                                                        <input type="hidden" name="image_rack_rear3d" id="image_rack_rear3d_updateForm"></input>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </form>
+                                    <div class="form-group">
+                                        <div class="col-sm-12 text-center">
+                                            <a type="submit" class="btn btn-info-custom" th:text="#{modify}" id="modifyButton">수정</a>
+                                            <button class="btn btn-danger-custom" data-toggle="modal" data-target="#deleteMainPage" href="#deleteMainPage" id="delete">삭제</button>
+                                        </div>
+                                    </div>
+                                    <div class="clearfix"></div>
+                                    <br />
+                                    <br />
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="modal fade" id="deleteMainPage" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+                            <div class="modal-dialog">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <button type="button" class="close" id="modalDelete" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span>
+                                        </button>
+                                        <h4 class="modal-title" id="myModalLabel" th:text="#{delete}">삭제</h4>
+                                    </div>
+                                    <div class="modal-body">
+                                        <input type="hidden" id="mainpageid" value=""></input>
+                                        <span th:text="#{delmsg}">삭제하시겠습니까?</span>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-primary-custom" id="deleteBtn" th:text="#{delete}">삭제</button>
+                                        <button type="button" class="btn btn-default" data-dismiss="modal" th:text="#{cancel}">취소</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="modal fade" id="myModal2" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+                            <div class="modal-dialog modal-lg">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span>
+                                        </button>
+                                        <h4 class="modal-title" id="myModalLabel" th:text="#{addnew}">신규등록</h4>
+                                    </div>
+                                    <div class="modal-body">
+
+                                        <form class="form-horizontal input-custom" id="createForm">
+                                            <input type="hidden" name="type_name" id="type_name"></input>
+                                            <div class="form-group col-sm-6">
+                                                <label for="#{is_nms}" class="col-sm-3 control-label" th:text="#{is_nms}"></label>
+                                                <div class="col-sm-9">
+                                                    <select id="is_nms" name="is_nms" class="form-control">
+                                                        <option value="">--- Select ---</option>
+                                                        <option th:text="#{truesync}" value="true"></option>
+                                                        <option th:text="#{falsesync}" value="false"></option>
+                                                    </select>
+                                                </div>
+                                            </div>
+                                            <div class="form-group col-sm-6">
+                                                <label for="#{is_product}" class="col-sm-3 control-label" th:text="#{is_product}"></label>
+                                                <div class="col-sm-9">
+                                                    <select id="is_product" name="is_product" class="form-control">
+                                                        <option value="">--- Select ---</option>
+                                                        <option th:text="#{true}" value="true"></option>
+                                                        <option th:text="#{false}" value="false"></option>
+                                                    </select>
+                                                </div>
+                                            </div>
+                                            <div class="form-group col-sm-6">
+                                                <label for="#{productname}" class="col-sm-3 control-label" th:text="#{productname}"></label>
+
+
+                                                <div class="col-sm-9">
+                                                    <input type="text" class="form-control" name="name" id="name" th:attr="placeholder=#{productname}" />
+                                                </div>
+                                            </div>
+                                            <div class="form-group col-sm-6">
+                                                <label for="manufacturer_id2" class="col-sm-3 control-label" th:text="#{manufacturer}"></label>
+                                                <div class="col-sm-9">
+                                                    <select id="manufacturer_id2" name="manufacturer_id" class="form-control"></select>
+                                                </div>
+                                            </div>
+                                            <div class="form-group col-sm-6">
+                                                <label for="#{modelnum}" class="col-sm-3 control-label" th:text="#{modelnum}"></label>
+                                                <div class="col-sm-9">
+                                                    <input type="text" class="form-control" name="model" id="model" th:attr="placeholder=#{modelnum}" />
+                                                </div>
+                                            </div>
+                                            <div class="form-group col-sm-6">
+                                                <label for="#{dimension}" class="col-sm-3 control-label" th:text="#{dimension}"></label>
+                                                <div class="col-sm-9">
+                                                    <input type="text" class="form-control" name="dimensions" id="dimensions" th:attr="placeholder=#{dimension}" />
+                                                </div>
+                                            </div>
+                                            <div class="form-group col-sm-6">
+                                                <label for="#{fulldepth}" class="col-sm-3 control-label" th:text="#{fulldepth}"></label>
+                                                <div class="col-sm-9">
+                                                    <select id="full_depth" name="full_depth" class="form-control">
+                                                        <option value="">--- Select ---</option>
+                                                        <option th:text="#{truetxt}" value="true"></option>
+                                                        <option th:text="#{falsetxt}" value="false"></option>
+                                                    </select>
+                                                </div>
+                                            </div>
+                                            <div class="form-group col-sm-6">
+                                                <label for="#{height}" class="col-sm-3 control-label" th:text="#{height}+' (U)'"></label>
+                                                <div class="col-sm-9">
+                                                    <input type="text" class="form-control" name="u_height" id="u_height" th:attr="placeholder=#{height}" />
+                                                </div>
+                                            </div>
+                                            <div class="form-group col-sm-6">
+                                                <label for="#{height}" class="col-sm-3 control-label" th:text="#{size}+' (U)'"></label>
+                                                <div class="col-sm-9">
+                                                    <input type="text" class="form-control" name="u_size" id="u_size" th:attr="placeholder=#{size}" />
+                                                </div>
+                                            </div>
+                                            <div class="form-group col-sm-6">
+                                                <label for="#{description}" class="col-sm-3 control-label" th:text="#{description}"></label>
+                                                <div class="col-sm-9">
+                                                    <input type="text" class="form-control" name="description" id="description" th:attr="placeholder=#{description}" />
+                                                </div>
+                                            </div>
+                                            <div class="form-group col-sm-6">
+                                                <label for="#{portcnt}" class="col-sm-3 control-label" th:text="#{portcnt}"></label>
+                                                <div class="col-sm-9">
+                                                    <input type="text" class="form-control" name="total_port" id="total_port" th:attr="placeholder=#{portcnt}" />
+                                                </div>
+                                            </div>
+                                            <div class="form-group col-sm-6">
+                                                <label for="#{racktype}" class="col-sm-3 control-label" th:text="#{racktype}"></label>
+                                                <div class="col-sm-9">
+                                                    <select id="rack_type_id2" name="rack_type_id" class="form-control"></select>
+                                                </div>
+                                            </div>                                            
+                                            <br />
+                                            <div class="form-group col-sm-12" style="margin:auto;">
+
+                                                <div class="col-sm-9" id="#{imgview}" style="margin:auto;width:800px;">
+                                                    <div class="col-sm-12 text-center nopadding">
+                                                        <div class="img-box panel panel-default">
+                                                            <div class="panel-heading">
+                                                                <span class="" th:text="#{imagedefault}"></span>
+                                                            </div>
+                                                            <div class="panel-body no-padding img-sizing">
+                                                                <div class="pull-right">
+                                                                    <button class="btn btn-sm" th:title="#{modify}" style="top:16px;"><i class="glyphicon glyphicon-pencil"></i>
+                                                                    </button>
+                                                                    <input type="file" class="upload" accept="image/*" onclick="this.value = null" onchange="openFile(event, 'createForm', 'image_default_createForm')" />
+                                                                </div>
+                                                                <img id="image_default_createForm_src" src="/images/50x50.png" style="margin-left:30px;" />
+                                                            </div>
+                                                        </div>
+                                                        <div class="img-box panel panel-default">
+                                                            <div class="panel-heading">
+                                                                <span class="" th:text="#{imgconnect}"></span>
+                                                            </div>
+                                                            <div class="panel-body no-padding img-sizing">
+                                                                <div class="pull-right">
+                                                                    <button class="btn btn-sm" th:title="#{modify}" style="top:16px;"><i class="glyphicon glyphicon-pencil"></i>
+                                                                    </button>
+                                                                    <input type="file" class="upload" accept="image/*" onclick="this.value = null" onchange="openFile(event, 'createForm', 'image_linkage_connection_createForm')" />
+                                                                </div>
+                                                                <img id="image_linkage_connection_createForm_src" src="/images/100x30.png" style="margin-left:30px;" />
+                                                            </div>
+                                                        </div>
+                                                        <div class="img-box panel panel-default">
+                                                            <div class="panel-heading">
+                                                                <span class="" th:text="#{imgfront}"></span>
+                                                            </div>
+                                                            <div class="panel-body no-padding img-sizing3">
+                                                                <div class="pull-right">
+                                                                    <button class="btn btn-sm" th:title="#{modify}" style="top:16px;"><i class="glyphicon glyphicon-pencil"></i>
+                                                                    </button>
+                                                                    <input type="file" class="upload" accept="image/*" onclick="this.value = null" onchange="openFile(event, 'createForm', 'image_rack_front_createForm')" />
+                                                                </div>
+                                                                <img id="image_rack_front_createForm_src" src="/images/208x20.png" style="margin-left:30px;" />
+                                                            </div>
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="col-sm-12 text-center nopadding">
+                                                        <div class="img-box panel panel-default">
+                                                            <div class="panel-heading">
+                                                                <span class="" th:text="#{imgmap}"></span>
+                                                            </div>
+                                                            <div class="panel-body no-padding img-sizing">
+                                                                <div class="pull-right">
+                                                                    <button class="btn btn-sm" th:title="#{modify}" style="top:16px;"><i class="glyphicon glyphicon-pencil"></i>
+                                                                    </button>
+                                                                    <input type="file" class="upload" accept="image/*" onclick="this.value = null" onchange="openFile(event, 'createForm', 'image_map_createForm')" />
+                                                                </div>
+                                                                <img id="image_map_createForm_src" src="/images/50x50.png" style="margin-left:30px;" />
+                                                            </div>
+                                                        </div>
+                                                        <div class="img-box panel panel-default">
+                                                            <div class="panel-heading">
+                                                                <span class="" th:text="#{imagetree}"></span>
+                                                            </div>
+                                                            <div class="panel-body no-padding img-sizing">
+                                                                <div class="pull-right">
+                                                                    <button class="btn btn-sm" th:title="#{modify}" style="top:16px;"><i class="glyphicon glyphicon-pencil"></i>
+                                                                    </button>
+                                                                    <input type="file" class="upload" accept="image/*" onclick="this.value = null" onchange="openFile(event, 'createForm', 'image_tree_createForm')" />
+                                                                </div>
+                                                                <img id="image_tree_createForm_src" src="/images/20x20.png" style="margin-left:30px;" />
+                                                            </div>
+                                                        </div>
+                                                        <div class="img-box panel panel-default">
+                                                            <div class="panel-heading">
+                                                                <span class="" th:text="#{imgrear}"></span>
+                                                            </div>
+                                                            <div class="panel-body no-padding img-sizing3">
+                                                                <div class="pull-right">
+                                                                    <button class="btn btn-sm" th:title="#{modify}" style="top:16px;"><i class="glyphicon glyphicon-pencil"></i>
+                                                                    </button>
+                                                                    <input type="file" class="upload" accept="image/*" onclick="this.value = null" onchange="openFile(event, 'createForm', 'image_rack_rear_createForm')" />
+                                                                </div>
+                                                                <img id="image_rack_rear_createForm_src" src="/images/208x20.png" style="margin-left:30px;" />
+                                                            </div>
+                                                        </div>
+	                                                    <div class="img-box panel panel-default">
+	                                                        <div class="panel-heading">
+	                                                            <span class="" th:text="'3D'+ #{imgfront}"></span>
+	                                                        </div>
+	                                                        <div class="panel-body no-padding img-sizing2" style="width: 363px;">
+	                                                            <div class="pull-right uploadInput">
+	                                                                <button class="btn btn-sm" th:title="#{modify}"><i class="glyphicon glyphicon-pencil"></i>
+	                                                                </button>
+	                                                                <input type="file" class="upload" accept="image/*" onclick="this.value = null" onchange="openFile(event, 'createForm', 'image_rack_front3d_createForm')" />
+	                                                            </div>
+	                                                            <img id="image_rack_front3d_createForm_src" src="/images/208x20.png" style="margin-left:30px;" />
+	                                                        </div>
+	                                                    </div>
+	                                                    <div class="img-box panel panel-default">
+	                                                        <div class="panel-heading">
+	                                                            <span class="" th:text="'3D'+ #{imgrear}"></span>
+	                                                        </div>
+	                                                        <div class="panel-body no-padding img-sizing2" style="width: 363px;"><!-- 3d -->
+	                                                            <div class="pull-right uploadInput">
+	                                                                <button class="btn btn-sm" th:title="#{modify}"><i class="glyphicon glyphicon-pencil"></i>
+	                                                                </button>
+	                                                                <input type="file" class="upload" accept="image/*" onclick="this.value = null" onchange="openFile(event, 'createForm', 'image_rack_rear3d_createForm')" />
+	                                                            </div>
+	                                                            <img id="image_rack_rear3d_createForm_src" src="/images/208x20.png" style="margin-left:30px;" />
+	                                                        </div>
+	                                                    </div>
+	                                                </div>                                                    
+                                                </div>
+
+                                                <div class="col-sm-12">
+                                                    <div class="col-sm-12 text-center img-select form-horizontal">
+
+                                                        <div class="form-group col-sm-12">
+                                                            <input type="hidden" name="image_default" id="image_default_createForm"></input>
+                                                            <input type="hidden" name="image_rack_front" id="image_rack_front_createForm"></input>
+                                                            <input type="hidden" name="image_rack_rear" id="image_rack_rear_createForm"></input>
+                                                            <input type="hidden" name="image_map" id="image_map_createForm"></input>
+                                                            <input type="hidden" name="image_tree" id="image_tree_createForm"></input>
+                                                            <input type="hidden" name="image_linkage_connection" id="image_linkage_connection_createForm"></input>
+                                                            <input type="hidden" name="image_rack_front3d" id="image_rack_front3d_createForm"></input>
+                                                            <input type="hidden" name="image_rack_rear3d" id="image_rack_rear3d_createForm"></input>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </form>
+                                        <div class="clearfix"></div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-primary-custom" th:text="#{create}" id="createButton">등록</button>
+                                            <button type="button" class="btn btn-default" data-dismiss="modal" th:text="#{cancel}">취소</button>
+                                        </div>
+                                    </div>
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+                <!-- /.content -->
+            </div>
+        </div>
+        <!-- /.content-wrapper -->
+    </div>
+    <!-- ./wrapper -->
+</body>
+
+</html>

@@ -1,0 +1,3760 @@
+package com.i52soft.lscable.cms.controller;
+
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.UnsupportedEncodingException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+
+import org.apache.http.NameValuePair;
+import org.apache.http.client.entity.UrlEncodedFormEntity;
+import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClients;
+import org.apache.http.message.BasicNameValuePair;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.ModelAndView;
+
+import com.i52soft.lscable.cms.common.IPAddress;
+import com.i52soft.lscable.cms.domain.CMSSiteVO;
+import com.i52soft.lscable.cms.domain.ChartWidgetVO;
+import com.i52soft.lscable.cms.domain.ConnectionVO;
+import com.i52soft.lscable.cms.domain.DeviceParam;
+import com.i52soft.lscable.cms.domain.EndUserVO;
+import com.i52soft.lscable.cms.domain.EntityVO;
+import com.i52soft.lscable.cms.domain.InterfaceVO;
+import com.i52soft.lscable.cms.domain.LinkageConnectionVO;
+import com.i52soft.lscable.cms.domain.MainPageLayoutVO;
+import com.i52soft.lscable.cms.domain.MapParam;
+import com.i52soft.lscable.cms.domain.MapWidgetVO;
+import com.i52soft.lscable.cms.domain.NetworkSwitchVO;
+import com.i52soft.lscable.cms.domain.NetworkVO;
+import com.i52soft.lscable.cms.domain.PPInvalidVO;
+import com.i52soft.lscable.cms.domain.ProductVO;
+import com.i52soft.lscable.cms.domain.RegionVO;
+import com.i52soft.lscable.cms.domain.SampleWidgetVO;
+import com.i52soft.lscable.cms.domain.SampleWidgetVO2;
+import com.i52soft.lscable.cms.domain.SiteTreeNodeVO;
+import com.i52soft.lscable.cms.domain.SiteTreePlacementVO;
+import com.i52soft.lscable.cms.domain.SiteTreeRackspacePositionVO;
+import com.i52soft.lscable.cms.domain.SiteTreeVO;
+import com.i52soft.lscable.cms.domain.SystemUserVO;
+import com.i52soft.lscable.cms.domain.WidgetParam;
+import com.i52soft.lscable.cms.service.HTBackendService;
+import com.i52soft.lscable.cms.service.WidgetDataProviderService;
+
+@RestController
+public class HTBackendRestController {
+
+	private final Logger logger = LoggerFactory.getLogger(this.getClass());
+	@Autowired
+	private Environment env;
+
+	@Autowired
+	private HTBackendService service;
+	
+	@Autowired
+	WidgetDataProviderService widgetService;
+
+	@RequestMapping(value = "/api/htbackend/getAvailableWidgetForBuildingLayout", method = RequestMethod.GET)
+	public List<SampleWidgetVO> getAvailableWidgetForBuildingLayout() {
+		return service.getAvailableWidgetForBuildingLayout();
+	}
+
+	@RequestMapping(value = "/api/htbackend/getAvailableLayoutForBuildingLayout", method = RequestMethod.GET)
+	public List<String> getAvailableLayoutForBuildingLayout() {
+		return service.getAvailableLayoutForBuildingLayout();
+	}
+
+	@RequestMapping(value = "/api/htbackend/getAvailableLayoutForBuildingLayout2", method = RequestMethod.GET)
+	public List<HashMap> getAvailableLayoutForBuildingLayout2() {
+		return service.getAvailableLayoutForBuildingLayout2();
+	}
+
+	@RequestMapping(value = "/api/htbackend/getAvailableWidgetForLayoutSize/{layoutsize}", method = RequestMethod.GET)
+	public List<HashMap> getAvailableWidgetForLayoutSize(@PathVariable(value = "layoutsize") String layoutsize) {
+		return service.getAvailableWidgetForLayoutSize(layoutsize);
+	}
+
+	@RequestMapping(value = "/api/htbackend/getAllWidgetTypeForSize/{layoutsize}", method = RequestMethod.GET)
+	public List<HashMap> getAllWidgetTypeForSize(@PathVariable(value = "layoutsize") String layoutsize) {
+		return service.getAllWidgetTypeForSize(layoutsize);
+	}
+
+	@RequestMapping(value = "/api/htbackend/getWidgetTypeForMainPage", method = RequestMethod.GET)
+	public List<HashMap> getWidgetTypeForMainPage() {
+		return service.getWidgetTypeForMainPage();
+	}
+
+	@RequestMapping(value = "/api/htbackend/getOPMUrlBase", method = RequestMethod.GET)
+	public String getOPMUrlBase(HttpSession session) {
+		String rtnVal = "";
+		JSONObject json = new JSONObject();
+		json.put("url", env.getProperty("system.nms.ip4"));
+		rtnVal = json.toString();
+		return rtnVal;
+		
+	}	
+	@RequestMapping(value = "/api/htbackend/getOPMPortBase", method = RequestMethod.GET)
+	public String getOPMPortBase(HttpSession session) {
+		String rtnVal = "";
+		JSONObject json = new JSONObject();
+		json.put("port", env.getProperty("system.nms.port"));
+		rtnVal = json.toString();
+		return rtnVal;
+		
+	}	
+	
+	@RequestMapping(value = "/api/htbackend/insertWidgetForBuildingLayout", method = RequestMethod.POST)
+	public SampleWidgetVO2 insertWidgetForBuildingLayout(SampleWidgetVO2 vo) {
+		service.insertWidgetForBuildingLayout(vo);
+		return vo;
+	}
+
+	@RequestMapping(value = "/api/htbackend/deleteWidgetForBuildingLayout/{id}", method = RequestMethod.GET)
+	public int deleteWidgetForBuildingLayout(@PathVariable(value = "id") int id) {
+		int count = service.deleteWidgetForBuildingLayout(id);
+		return count;
+	}
+
+	@RequestMapping(value = "/api/htbackend/getOPMDeviceType", method = RequestMethod.GET)
+	public String getOPMDeviceType(HttpSession session) {
+		String apiKey = (String) session.getAttribute("apiKey");
+
+		// http://192.168.0.79/api/json/device/getCategoryList?apiKey=1bdcc65c731477fe7ea53323adb59937
+		if (apiKey == null || apiKey.isEmpty()) {
+			apiKey = env.getProperty("system.nms.apiKey");
+			if (apiKey == null || apiKey.isEmpty()) {
+				apiKey = "1bdcc65c731477fe7ea53323adb59937";
+			}
+		}
+		String NMS_URL = env.getProperty("system.nms.ip4");
+		if (NMS_URL == null || NMS_URL.isEmpty()) {
+			NMS_URL = "http://192.168.0.79/";
+		}
+		CloseableHttpClient httpClient = HttpClients.createDefault();
+		HttpGet httpGet = new HttpGet(NMS_URL + "api/json/device/getCategoryList?apiKey=" + apiKey);
+		httpGet.addHeader("User-Agent", "Mozilla/5.0");
+		CloseableHttpResponse httpResponse = null;
+		String rtnVal = "";
+		try {
+			httpResponse = httpClient.execute(httpGet);
+			BufferedReader reader = new BufferedReader(new InputStreamReader(httpResponse.getEntity().getContent()));
+
+			String inputLine;
+			StringBuffer response = new StringBuffer();
+
+			while ((inputLine = reader.readLine()) != null) {
+				response.append(inputLine);
+			}
+			reader.close();
+
+			httpClient.close();
+
+			JSONObject json = new JSONObject(response.toString());
+			json.put("MapWidget", "MapWidget");
+			rtnVal = json.toString();
+
+		} catch (IOException | JSONException e) {
+			e.printStackTrace();
+		}
+		return rtnVal;
+	}	
+
+	@RequestMapping(value = { "/api/htbackend/searchRackListForDCIMWidget",
+			"/api/htbackend/searchRackListForDCIMWidget/"}, method = RequestMethod.GET)
+	public List<HashMap> searchRackListForDCIMWidget(HttpSession session
+			, @RequestParam HashMap<String, Object> requestParams) {
+		Map<String, Integer> map = new HashMap<>();
+		String area_id = (String)requestParams.get("area_id");
+		Integer area_id_t = null;
+		if(area_id != null && !area_id.isEmpty())
+		{
+			area_id_t=Integer.parseInt(area_id);
+		} 
+		
+		map.put("area_id", (area_id_t));
+		return service.getRackListForDCIM(map);
+	}
+	
+	@RequestMapping(value = { "/api/htbackend/searchDeviceListForFloor/{category}",
+			"/api/htbackend/searchDeviceListForFloor/",
+			"/api/htbackend/searchDeviceListForFloor" }, method = RequestMethod.GET)
+	public String searchDeviceListForFloor(HttpSession session,
+			@PathVariable(value = "category", required = false) String category,
+			@RequestParam(value = "searchstring", required = false) String searchstring) {
+		String apiKey = (String) session.getAttribute("apiKey");
+		Boolean searchingmapwidget = false;
+		if (apiKey == null || apiKey.isEmpty()) {
+			apiKey = env.getProperty("system.nms.apiKey");
+			if (apiKey == null || apiKey.isEmpty()) {
+				apiKey = "1bdcc65c731477fe7ea53323adb59937";
+			}
+		}
+		// String category = "Switch";
+		// http://192.168.0.79/api/json/device/listDevices?apiKey=1bdcc65c731477fe7ea53323adb59937
+
+		String NMS_URL = env.getProperty("system.nms.ip4");
+		if (NMS_URL == null || NMS_URL.isEmpty()) {
+			NMS_URL = "http://192.168.0.79/";
+		}
+		String searchUrl = NMS_URL + "api/json/device/listDevices?apiKey=" + apiKey;
+		String cat = "";
+		if (category != null) {
+			cat = category;
+		}
+
+		if (cat.isEmpty() || cat.equalsIgnoreCase("all")) {
+			
+		} else {
+
+			searchUrl += "&category=" + cat;
+		}
+
+		if (searchstring != null && !searchstring.isEmpty()) {
+			searchUrl += "&deviceName=" + searchstring;
+		}
+
+		CloseableHttpClient httpClient = HttpClients.createDefault();
+		HttpGet httpGet = new HttpGet(searchUrl);
+		httpGet.addHeader("User-Agent", "Mozilla/5.0");
+		CloseableHttpResponse httpResponse = null;
+		String rtnVal = "";
+		try {
+			httpResponse = httpClient.execute(httpGet);
+			BufferedReader reader = new BufferedReader(new InputStreamReader(httpResponse.getEntity().getContent()));
+
+			String inputLine;
+			StringBuffer response = new StringBuffer();
+
+			while ((inputLine = reader.readLine()) != null) {
+				response.append(inputLine);
+			}
+			reader.close();
+
+			httpClient.close();
+
+			JSONObject jsono = null;
+			JSONArray jsona = null;
+
+			try {
+				jsono = new JSONObject(response.toString());
+				// TODO
+				if (searchingmapwidget) {
+					List<HashMap> val = service.searchMapWidget();
+					if (val == null) {
+						return jsono.toString();
+					} else {
+						jsono = null;
+						jsona = new JSONArray(val);
+					}
+				}
+			} catch (Exception e) {
+				try {
+					jsona = new JSONArray(response.toString());
+				} catch (JSONException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+
+				if (searchingmapwidget) {
+					List<HashMap> val = service.searchMapWidget();
+					try {
+						jsona = concatArray(jsona, new JSONArray(val));
+					} catch (JSONException e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+					}
+				}
+			}
+
+			if (jsono != null)
+				rtnVal += jsono.toString();
+			if (jsona != null)
+				rtnVal += jsona.toString();
+
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		return rtnVal;
+	}	
+	
+	@RequestMapping(value = { "/api/htbackend/searchDeviceListForMapWidget/{category}",
+			"/api/htbackend/searchDeviceListForMapWidget/",
+			"/api/htbackend/searchDeviceListForMapWidget" }, method = RequestMethod.GET)
+	public String searchDeviceListForMapWidget(HttpSession session,
+			@PathVariable(value = "category", required = false) String category,
+			@RequestParam(value = "searchstring", required = false) String searchstring) {
+		String apiKey = (String) session.getAttribute("apiKey");
+		Boolean searchingmapwidget = false;
+		if (apiKey == null || apiKey.isEmpty()) {
+			apiKey = env.getProperty("system.nms.apiKey");
+			if (apiKey == null || apiKey.isEmpty()) {
+				apiKey = "1bdcc65c731477fe7ea53323adb59937";
+			}
+		}
+		// String category = "Switch";
+		// http://192.168.0.79/api/json/device/listDevices?apiKey=1bdcc65c731477fe7ea53323adb59937
+
+		String NMS_URL = env.getProperty("system.nms.ip4");
+		if (NMS_URL == null || NMS_URL.isEmpty()) {
+			NMS_URL = "http://192.168.0.79/";
+		}
+		String searchUrl = NMS_URL + "api/json/device/listDevices?apiKey=" + apiKey;
+		String cat = "";
+		if (category != null) {
+			cat = category;
+		}
+
+		if (cat.isEmpty() || cat.equalsIgnoreCase("all")) {
+			searchingmapwidget = true;
+		} else {
+			if (cat.equalsIgnoreCase("MapWidget")) {
+				searchingmapwidget = true;
+			}
+			searchUrl += "&category=" + cat;
+		}
+
+		if (searchstring != null && !searchstring.isEmpty()) {
+			searchUrl += "&deviceName=" + searchstring;
+		}
+
+		CloseableHttpClient httpClient = HttpClients.createDefault();
+		HttpGet httpGet = new HttpGet(searchUrl);
+		httpGet.addHeader("User-Agent", "Mozilla/5.0");
+		CloseableHttpResponse httpResponse = null;
+		String rtnVal = "";
+		try {
+			httpResponse = httpClient.execute(httpGet);
+			BufferedReader reader = new BufferedReader(new InputStreamReader(httpResponse.getEntity().getContent()));
+
+			String inputLine;
+			StringBuffer response = new StringBuffer();
+
+			while ((inputLine = reader.readLine()) != null) {
+				response.append(inputLine);
+			}
+			reader.close();
+
+			httpClient.close();
+
+			JSONObject jsono = null;
+			JSONArray jsona = null;
+
+			try {
+				jsono = new JSONObject(response.toString());
+				// TODO
+				if (searchingmapwidget) {
+					List<HashMap> val = service.searchMapWidget();
+					if (val == null) {
+						return jsono.toString();
+					} else {
+						jsono = null;
+						jsona = new JSONArray(val);
+					}
+				}
+			} catch (Exception e) {
+				try {
+					jsona = new JSONArray(response.toString());
+				} catch (JSONException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+
+				if (searchingmapwidget) {
+					List<HashMap> val = service.searchMapWidget();
+					try {
+						jsona = concatArray(jsona, new JSONArray(val));
+					} catch (JSONException e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+					}
+				}
+			}
+
+			if (jsono != null)
+				rtnVal += jsono.toString();
+			if (jsona != null)
+				rtnVal += jsona.toString();
+
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		return rtnVal;
+	}
+
+	@RequestMapping(value = { "/api/htbackend/getOPMDeviceList/{category}", "/api/htbackend/getOPMDeviceList/",
+			"/api/htbackend/getOPMDeviceList" }, method = RequestMethod.GET)
+	public String getOPMDeviceList(HttpSession session,
+			@PathVariable(value = "category", required = false) String category) {
+
+		String apiKey = (String) session.getAttribute("apiKey");
+		Boolean searchingmapwidget = false;
+		if (apiKey == null || apiKey.isEmpty()) {
+			apiKey = env.getProperty("system.nms.apiKey");
+			if (apiKey == null || apiKey.isEmpty()) {
+				apiKey = "1bdcc65c731477fe7ea53323adb59937";
+			}
+		}
+
+		String NMS_URL = env.getProperty("system.nms.ip4");
+		if (NMS_URL == null || NMS_URL.isEmpty()) {
+			NMS_URL = "http://192.168.0.79/";
+		}
+		String searchUrl = NMS_URL + "api/json/device/listDevices?apiKey=" + apiKey;
+		String cat = "";
+		if (category != null) {
+			cat = category;
+		}
+
+		if (cat.isEmpty() || cat.equalsIgnoreCase("all")) {
+
+		} else {
+			searchUrl += "&category=" + cat;
+		}
+
+		CloseableHttpClient httpClient = HttpClients.createDefault();
+		HttpGet httpGet = new HttpGet(searchUrl);
+		httpGet.addHeader("User-Agent", "Mozilla/5.0");
+		CloseableHttpResponse httpResponse = null;
+		String rtnVal = "";
+		try {
+			httpResponse = httpClient.execute(httpGet);
+			BufferedReader reader = new BufferedReader(new InputStreamReader(httpResponse.getEntity().getContent()));
+
+			String inputLine;
+			StringBuffer response = new StringBuffer();
+
+			while ((inputLine = reader.readLine()) != null) {
+				response.append(inputLine);
+			}
+			reader.close();
+
+			httpClient.close();
+
+			JSONObject jsono = null;
+			JSONArray jsona = null;
+
+			try {
+				jsono = new JSONObject(response.toString());
+
+			} catch (Exception e) {
+				try {
+					jsona = new JSONArray(response.toString());
+				} catch (JSONException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+
+			}
+
+			if (jsono != null)
+				rtnVal += jsono.toString();
+			if (jsona != null)
+				rtnVal += jsona.toString();
+
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+
+		return rtnVal;
+	}
+
+	private JSONArray concatArray(JSONArray... arrs) throws JSONException {
+		JSONArray result = new JSONArray();
+		for (JSONArray arr : arrs) {
+			for (int i = 0; i < arr.length(); i++) {
+				result.put(arr.get(i));
+			}
+		}
+		return result;
+	}
+
+	@Transactional(rollbackFor = Exception.class)
+	@RequestMapping(value = { "/api/htbackend/saveMapWidgetOnly/{id}", "/api/htbackend/saveMapWidgetOnly/",
+			"/api/htbackend/saveMapWidgetOnly" }, method = RequestMethod.POST)
+	public MapWidgetVO saveMapWidgetOnly(@PathVariable(value = "id", required = false) Integer id,
+			@RequestBody MapWidgetVO vo) {
+		int widgetId = 0;
+		if (id != null) {
+			widgetId = id.intValue();
+		}
+		if (widgetId > 0) {
+			vo.setId(widgetId);
+			service.updateMainPageWidget(vo);
+			service.deleteAllDeviceFromMapWidget(widgetId);
+			List<DeviceParam> devices = vo.getDevices();
+			if (devices != null) {
+				for (DeviceParam device : devices) {
+					// Get id from lscms_cms_device
+					int deviceId = (int) service.getDeviceId(device.getDeviceName());
+					if (deviceId == 0) {
+						device.setProductId(1);
+						service.insertDeviceInfo(device);
+						deviceId = device.getId();
+					} else {
+						device.setId(deviceId);
+					}
+					Map<String, Object> map = new HashMap<String, Object>();
+					map.put("widgetId", widgetId);
+					map.put("deviceId", deviceId);
+					map.put("displayName", device.getDisplayName());
+					service.insertDeviceIntoMapWidget(map);
+				}
+			}
+
+			service.deleteAllSubMapWidgetFromMapWidget(widgetId);
+			List<MapParam> submaps = vo.getSubmaps();
+			if (submaps != null) {
+				for (MapParam submap : submaps) {
+					Map<String, Object> map = new HashMap<String, Object>();
+					map.put("widgetId", widgetId);
+					map.put("submapId", submap.getDeviceName());
+					map.put("displayName", submap.getDisplayName());
+					service.insertSubMapWidgetIntoMapWidget(map);
+				}
+			}
+
+		} else {
+			service.insertMainPageWidget(vo);
+			widgetId = vo.getId();
+
+			List<DeviceParam> devices = vo.getDevices();
+			if (devices != null) {
+				for (DeviceParam device : devices) {
+					// Get id from lscms_cms_device
+					int deviceId = (int) service.getDeviceId(device.getDeviceName());
+					if (deviceId == 0) {
+						device.setProductId(1);
+						service.insertDeviceInfo(device);
+						deviceId = device.getId();
+					} else {
+						device.setId(deviceId);
+					}
+					Map<String, Object> map = new HashMap<String, Object>();
+					map.put("widgetId", widgetId);
+					map.put("deviceId", deviceId);
+					map.put("displayName", device.getDisplayName());
+					service.insertDeviceIntoMapWidget(map);
+				}
+			}
+
+			// service.deleteMapWidgetFromMapWidget(widgetId);
+			// #{widgetId}, #{displayName}
+			Map<String, Object> mapo = new HashMap<String, Object>();
+			mapo.put("widgetId", widgetId);
+			mapo.put("displayName", vo.getDisplay_name());
+			service.insertMapWidgetIntoMapWidget(mapo);
+			List<MapParam> submaps = vo.getSubmaps();
+			if (submaps != null) {
+				for (MapParam submap : submaps) {
+					Map<String, Object> map = new HashMap<String, Object>();
+					map.put("widgetId", widgetId);
+					map.put("submapId", submap.getDeviceName());
+					map.put("displayName", submap.getDisplayName());
+					service.insertSubMapWidgetIntoMapWidget(map);
+				}
+			}
+
+		}
+		return vo;
+	}
+
+
+	@Transactional(rollbackFor = Exception.class)
+	@RequestMapping(value = { "/api/htbackend/saveDCIMWidget/{id}", "/api/htbackend/saveDCIMWidget/",
+			"/api/htbackend/saveDCIMWidget" }, method = RequestMethod.POST)
+	public MapWidgetVO saveDCIMWidget(@PathVariable(value = "id", required = false) Integer id,
+			@RequestBody MapWidgetVO vo) {
+		int widgetId = 0;
+		if (id != null) {
+			widgetId = id.intValue();
+		}
+		if (widgetId > 0) {
+			vo.setId(widgetId);
+			service.updateMainPageWidget(vo);
+			service.deleteAllDeviceFromMapWidget(widgetId);
+			List<DeviceParam> devices = vo.getDevices();
+			if (devices != null) {
+				for (DeviceParam device : devices) {
+					Map<String, Object> map = new HashMap<String, Object>();
+					map.put("widgetId", widgetId);
+					map.put("deviceId", device.getId());
+					map.put("displayName", device.getDisplayName());
+					service.insertDeviceIntoMapWidget(map);
+				}
+			}
+		} else {
+			service.insertMainPageWidget(vo);
+			widgetId = vo.getId();
+
+			List<DeviceParam> devices = vo.getDevices();
+			if (devices != null) {
+				for (DeviceParam device : devices) {
+
+					Map<String, Object> map = new HashMap<String, Object>();
+					map.put("widgetId", widgetId);
+					map.put("deviceId", device.getId());
+					map.put("displayName", device.getDisplayName());
+					service.insertDeviceIntoMapWidget(map);
+				}
+			}
+		}
+		return vo;
+	}
+	
+	@Transactional(rollbackFor = Exception.class)
+	@RequestMapping(value = { "/api/htbackend/saveMapWidget/{id}", "/api/htbackend/saveMapWidget/",
+			"/api/htbackend/saveMapWidget" }, method = RequestMethod.POST)
+	public MapWidgetVO saveMapWidget(@PathVariable(value = "id", required = false) Integer id,
+			@RequestBody MapWidgetVO vo) {
+		int widgetId = 0;
+		if (id != null) {
+			widgetId = id.intValue();
+		}
+		if (widgetId > 0) {
+			vo.setId(widgetId);
+
+			Map<String, Object> map1 = new HashMap<String, Object>();
+			map1.put("mainpage_id", vo.getMainpage_id());
+			map1.put("rowindex", vo.getRowindex());
+			map1.put("colindex", vo.getColindex());
+			map1.put("widget_id", vo.getId());
+			service.updateMainPageWidgetLayout(map1);
+
+			service.updateMainPageWidget(vo);
+			service.deleteAllDeviceFromMapWidget(widgetId);
+			List<DeviceParam> devices = vo.getDevices();
+			if (devices != null) {
+				for (DeviceParam device : devices) {
+					// Get id from lscms_cms_device
+					int deviceId = (int) service.getDeviceId(device.getDeviceName());
+					if (deviceId == 0) {
+						device.setProductId(1);
+						service.insertDeviceInfo(device);
+						deviceId = device.getId();
+					} else {
+						device.setId(deviceId);
+					}
+					Map<String, Object> map = new HashMap<String, Object>();
+					map.put("widgetId", widgetId);
+					map.put("deviceId", deviceId);
+					map.put("displayName", device.getDisplayName());
+					service.insertDeviceIntoMapWidget(map);
+				}
+			}
+
+			service.deleteAllSubMapWidgetFromMapWidget(widgetId);
+			List<MapParam> submaps = vo.getSubmaps();
+			if (submaps != null) {
+				for (MapParam submap : submaps) {
+					Map<String, Object> map = new HashMap<String, Object>();
+					map.put("widgetId", widgetId);
+					map.put("submapId", submap.getDeviceName());
+					map.put("displayName", submap.getDisplayName());
+					service.insertSubMapWidgetIntoMapWidget(map);
+				}
+			}
+
+		} else {
+			service.insertMainPageWidget(vo);
+			widgetId = vo.getId();
+
+			Map<String, Object> map1 = new HashMap<String, Object>();
+			map1.put("mainpage_id", vo.getMainpage_id());
+			map1.put("rowindex", vo.getRowindex());
+			map1.put("colindex", vo.getColindex());
+			map1.put("widget_id", vo.getId());
+			service.updateMainPageWidgetLayout(map1);
+
+			List<DeviceParam> devices = vo.getDevices();
+			if (devices != null) {
+				for (DeviceParam device : devices) {
+					// Get id from lscms_cms_device
+					int deviceId = (int) service.getDeviceId(device.getDeviceName());
+					if (deviceId == 0) {
+						device.setProductId(1);
+						service.insertDeviceInfo(device);
+						deviceId = device.getId();
+					} else {
+						device.setId(deviceId);
+					}
+					Map<String, Object> map = new HashMap<String, Object>();
+					map.put("widgetId", widgetId);
+					map.put("deviceId", deviceId);
+					map.put("displayName", device.getDisplayName());
+					service.insertDeviceIntoMapWidget(map);
+				}
+			}
+
+			// service.deleteMapWidgetFromMapWidget(widgetId);
+			// #{widgetId}, #{displayName}
+			Map<String, Object> mapo = new HashMap<String, Object>();
+			mapo.put("widgetId", widgetId);
+			mapo.put("displayName", vo.getDisplay_name());
+			service.insertMapWidgetIntoMapWidget(mapo);
+			List<MapParam> submaps = vo.getSubmaps();
+			if (submaps != null) {
+				for (MapParam submap : submaps) {
+					Map<String, Object> map = new HashMap<String, Object>();
+					map.put("widgetId", widgetId);
+					map.put("submapId", submap.getDeviceName());
+					map.put("displayName", submap.getDisplayName());
+					service.insertSubMapWidgetIntoMapWidget(map);
+				}
+			}
+		}
+		return vo;
+	}
+
+	@Transactional(rollbackFor = Exception.class)
+	@RequestMapping(value = "/api/htbackend/deleteMapWidget/{id}", method = RequestMethod.GET)
+	public int deleteMapWidget(@PathVariable(value = "id") int id) {
+		service.deleteAllDeviceFromMapWidget(id);
+		service.deleteAllFromMapWidgetTree(id);
+		service.updateMainPageLayoutToNull(id);
+		int count = service.deleteMainPageWidget(id);
+
+		return count;
+	}
+
+	@RequestMapping(value = { "/api/htbackend/getAlarmStatusOfMapWidget/{id}",
+			"/api/htbackend/getAlarmStatusOfMapWidget/",
+			"/api/htbackend/getAlarmStatusOfMapWidget" }, method = RequestMethod.GET)
+	public List<HashMap> getAlarmStatusOfMapWidget(@PathVariable(value = "id", required = false) Integer id) {
+		int widgetId = 0;
+		if (id != null) {
+			widgetId = id.intValue();
+		}
+		List<HashMap> rtnVal = null;
+		if (widgetId > 0) {
+			Map<String, Integer> map = new HashMap<String, Integer>();
+			map.put("id", widgetId);
+			rtnVal = service.getAlarmStatusOfMapWidget(map);
+
+		} else {
+			rtnVal = service.getAlarmStatusOfMapWidget();
+		}
+		return rtnVal;
+	}
+	
+	@RequestMapping(value = "/api/htbackend/getMapWidgetModelData/{id}", method = RequestMethod.GET)
+	public List<HashMap> getMapWidgetModelData(@PathVariable(value = "id") int id) {
+		return service.getMainPageWidgetModelData(id);
+	}
+
+	@RequestMapping(value = "/api/htbackend/getDCIMWidgetModelData/{id}", method = RequestMethod.GET)
+	public List<HashMap> getDCIMWidgetModelData(@PathVariable(value = "id") int id) {
+		return service.getMainPageWidgetModelData(id);
+	}
+	
+	@RequestMapping(value = "/api/htbackend/getProductMapIcon", method = RequestMethod.GET)
+	public List<HashMap> getProductMapIcon() {
+		return service.getProductMapIcon();
+	}
+
+	@RequestMapping(value = "/api/htbackend/getCIList", method = RequestMethod.GET)
+	public List<HashMap> getCIList() {
+		return service.getCIList();
+	}
+
+	@RequestMapping(value = "/api/htbackend/getImagesForProduct/{id}", method = RequestMethod.GET)
+	public List<HashMap> getImagesForProduct(@PathVariable(value = "id") int id) {
+		return service.getImagesForProduct(id);
+	}
+
+	@RequestMapping(value = "/api/htbackend/getProductTree", method = RequestMethod.GET)
+	public String getProductTree() {
+		return service.getProductTree();
+	}
+
+	@RequestMapping(value = "/api/htbackend/saveProductTree", method = RequestMethod.POST)
+	public void saveProductTree(@RequestBody String content_data) {
+		service.saveProductTree(content_data);
+	}
+
+	@RequestMapping(value = "/api/htbackend/getProductType", method = RequestMethod.GET)
+	public List<HashMap> getProductType() {
+		return service.getProductType();
+	}
+
+	@RequestMapping(value = "/htbackend/createMainPageLayout", method = RequestMethod.POST)
+	public MainPageLayoutVO createMainPageLayout(HttpSession session, MainPageLayoutVO vo) {
+
+		Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
+		String systemUserName = null;
+		String systemUserRole = null;
+		if (principal instanceof UserDetails) {
+			systemUserName = ((UserDetails) principal).getUsername();
+			systemUserRole = ((UserDetails) principal).getAuthorities().iterator().next().getAuthority();
+		}
+		logger.debug("systemUserName=" + systemUserName + " systemUserRole=" + systemUserRole);
+		if (systemUserRole == null || systemUserName == null) {
+			systemUserRole = (String) session.getAttribute("systemUserRole");
+			systemUserName = (String) session.getAttribute("systemUserName");
+		}
+		vo.setCreator_name(systemUserName);
+		service.createMainPageLayout(vo);
+		return vo;
+	}
+
+	@Transactional(rollbackFor = Exception.class)
+	@RequestMapping(value = "/api/htbackend/updateMainPageLayout/{id}", method = RequestMethod.POST)
+	public MainPageLayoutVO updateMainPageLayout(@PathVariable(value = "id") int id, MainPageLayoutVO vo) {
+		if (id > 0) {
+
+			service.updateMainPageLayout(vo);
+
+			service.deleteAllWidgetFromMainPage(id);
+			List<WidgetParam> widgets = vo.getWidgets();
+			if (widgets != null) {
+				for (WidgetParam widget : widgets) {
+
+					Map<String, Object> map = new HashMap<String, Object>();
+					map.put("mainpage_id", id);
+					map.put("widget_id", widget.getId());
+					map.put("description", widget.getDescription());
+					map.put("title", widget.getTitle());
+					map.put("rowspan", widget.getRowspan());
+					map.put("colspan", widget.getColspan());
+					map.put("rowindex", widget.getRowindex());
+					map.put("colindex", widget.getColindex());
+					service.insertWidgetIntoMainPage(map);
+				}
+			}
+		}
+		return vo;
+	}
+
+	@RequestMapping(value = "/api/htbackend/updateMainPageLayout2/{id}", method = RequestMethod.POST)
+	public MainPageLayoutVO updateMainPageLayout2(@PathVariable(value = "id") int id,
+			@RequestBody MainPageLayoutVO vo) {
+		if (id > 0) {
+			vo.setId(id);
+			service.updateMainPageLayout2(vo);
+		}
+		return vo;
+	}
+
+	@Transactional(rollbackFor = Exception.class)
+	@RequestMapping(value = "/htbackend/deleteMainPageLayout/{id}", method = RequestMethod.GET)
+	public int deleteMainPageLayout(HttpSession session, @PathVariable(value = "id") int id) {
+		if (id > 0) {
+			Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
+			String systemUserName = null;
+			String systemUserRole = null;
+			if (principal instanceof UserDetails) {
+				systemUserName = ((UserDetails) principal).getUsername();
+				systemUserRole = ((UserDetails) principal).getAuthorities().iterator().next().getAuthority();
+			}
+			logger.debug("systemUserName=" + systemUserName + " systemUserRole=" + systemUserRole);
+			if (systemUserRole == null || systemUserName == null) {
+				systemUserRole = (String) session.getAttribute("systemUserRole");
+				systemUserName = (String) session.getAttribute("systemUserName");
+			}
+
+			if (systemUserRole.equalsIgnoreCase("Administrators")) {
+				service.deleteAllWidgetFromMainPage(id);
+				service.deleteAllDefaultTable(id);
+				service.deleteAllDefaultAdminTable(id);
+				return service.deleteMainPageLayout(id);
+			}
+		}
+		return 0;
+	}
+
+	@RequestMapping(value = "/api/htbackend/getProductInfo/{type}", method = RequestMethod.GET)
+	public List<HashMap> getProductInfo(@PathVariable(value = "type") int type) {
+		return service.getProductInfo(type);
+	}
+
+	@RequestMapping(value = "/api/htbackend/getProductInfoByTypeName/{type}", method = RequestMethod.GET)
+	public List<HashMap> getProductInfoByTypeName(@PathVariable(value = "type") String type) {
+		return service.getProductInfoByTypeName(type);
+	}
+
+	@RequestMapping(value = "/api/htbackend/getManufacturer", method = RequestMethod.GET)
+	public List<HashMap> getManufacturer() {
+		return service.getManufacturer();
+	}
+
+	@RequestMapping(value = "/api/htbackend/getRackType", method = RequestMethod.GET)
+	public List<HashMap> getRackType() {
+		return service.getRackType();
+	}
+	
+	@RequestMapping(value = "/api/htbackend/registerProduct", method = RequestMethod.POST)
+	public ProductVO registerProduct(@RequestBody ProductVO vo) {
+		service.registerProduct(vo);
+		return vo;
+	}
+
+	@Transactional(rollbackFor = Exception.class)
+	@RequestMapping(value = "/api/htbackend/registerProduct2", method = RequestMethod.POST)
+	public ProductVO registerProduct2(@RequestBody ProductVO vo) {
+		service.registerProduct2(vo);
+		service.insert3DTexture(vo);
+		return vo;
+	}
+
+	@Transactional(rollbackFor = Exception.class)
+	@RequestMapping(value = "/api/htbackend/updateProduct/{productid}", method = RequestMethod.POST)
+	public ProductVO updateProduct(@PathVariable(value = "productid") int productid, @RequestBody ProductVO vo) {
+		if (productid > 0) {
+			service.delete3DTexture(vo.getId());
+			service.updateProduct(vo);
+			service.insert3DTexture(vo);
+		}
+		return vo;
+	}
+
+	@Transactional(rollbackFor = Exception.class)
+	@RequestMapping(value = "/api/htbackend/deleteProduct/{productid}", method = RequestMethod.GET)
+	public int deleteProduct(@PathVariable(value = "productid") int productid) {
+		int count = service.deleteProduct(productid);
+		service.delete3DTexture(productid);
+		return count;
+	}
+
+	@RequestMapping(value = "/api/htbackend/getEndUser", method = RequestMethod.GET)
+	public List<HashMap> getEndUser() {
+		return service.getEndUser();
+	}
+
+	@Transactional(rollbackFor = Exception.class)
+	@RequestMapping(value = "/api/htbackend/registerEndUser", method = RequestMethod.POST)
+	public EndUserVO registerEndUser(@RequestBody EndUserVO vo) {
+		service.registerEndUser(vo);
+		String[] macs = vo.getMac_address().split(",");
+		for(String mac : macs){
+			Map<String, Object> map1 = new HashMap<String, Object>();
+			map1.put("mac_address", mac);
+			map1.put("enduser_id", vo.getId());
+			service.insertEndUserMac(map1);
+			
+			//service.deleteTempUser(mac);
+		}		
+		return vo;
+	}
+
+	@Transactional(rollbackFor = Exception.class)
+	@RequestMapping(value = "/api/htbackend/registerBulkEndUser", method = RequestMethod.POST)
+	public List<EndUserVO> registerBulkEndUser(@RequestBody List<EndUserVO> vo) {
+		Map<String, Object> map = new HashMap<String, Object>();
+		map.put("list", vo);
+		service.registerBulkEndUser(map);
+		
+		for(EndUserVO user : vo){
+			String[] macs = user.getMac_address().split(",");
+			for(String mac : macs){
+				Map<String, Object> map1 = new HashMap<String, Object>();
+				map1.put("mac_address", mac);
+				map1.put("enduser_id", user.getId());
+				service.insertEndUserMac(map1);
+			}
+		}			
+		return vo;
+	}
+
+	@Transactional(rollbackFor = Exception.class)
+	@RequestMapping(value = "/api/htbackend/updateEndUser/{enduserid}", method = RequestMethod.POST)
+	public EndUserVO updateEndUser(@PathVariable(value = "enduserid") int enduserid, @RequestBody EndUserVO vo) {
+		if (enduserid > 0) {
+			service.deleteEndUserMac(vo.getId());
+			service.updateEndUser(vo);
+			String[] macs = vo.getMac_address().split(",");
+			for(String mac : macs){
+				Map<String, Object> map1 = new HashMap<String, Object>();
+				map1.put("mac_address", mac);
+				map1.put("enduser_id", vo.getId());
+				service.insertEndUserMac(map1);
+			}
+		}
+		return vo;
+	}
+
+	@Transactional(rollbackFor = Exception.class)
+	@RequestMapping(value = "/api/htbackend/deleteEndUser/{enduserid}", method = RequestMethod.GET)
+	public int deleteEndUser(@PathVariable(value = "enduserid") int enduserid) {
+		service.deleteEndUserMac(enduserid);
+		int count = service.deleteEndUser(enduserid);
+		return count;
+	}
+
+	@Transactional(rollbackFor = Exception.class)
+	@RequestMapping(value = "/api/htbackend/deleteAllEndUser", method = RequestMethod.GET)
+	public int deleteAllEndUser() {
+		service.deleteAllEndUserMac();
+		int count = service.deleteAllEndUser();
+		return count;
+	}
+
+	@RequestMapping(value = "/api/htbackend/getSystemUser", method = RequestMethod.GET)
+	public List<HashMap> getSystemUser() {
+		return service.getSystemUser();
+	}
+
+	@RequestMapping(value = "/api/htbackend/registerSystemUser", method = RequestMethod.POST)
+	public String registerSystemUser(HttpSession session, SystemUserVO vo) {
+
+		String apiKey = (String) session.getAttribute("apiKey");
+
+		if (apiKey == null || apiKey.isEmpty()) {
+			apiKey = env.getProperty("system.nms.apiKey");
+			if (apiKey == null || apiKey.isEmpty()) {
+				apiKey = "1bdcc65c731477fe7ea53323adb59937";
+			}
+		}
+
+		String NMS_URL = env.getProperty("system.nms.ip4");
+		if (NMS_URL == null || NMS_URL.isEmpty()) {
+			NMS_URL = "http://192.168.0.79/";
+		}
+		String postUrl = NMS_URL + "api/json/admin/addUser";
+		// String postUrl = NMS_URL+"api/json/admin/addUser?apiKey="+apiKey;
+		// postUrl +=
+		// "&userName="+vo.getUsername()+"&password="+vo.getPassword()+"&privilege="+vo.getGroup_name();
+		//http://192.168.0.79/api/json/admin/addUser?apiKey=1bdcc65c731477fe7ea53323adb59937&userName=robin@test.com&privilege=Administrators&password=1234&emailId=robin@test.com&tZone=Asia/Seoul
+		CloseableHttpClient httpClient = HttpClients.createDefault();
+		HttpPost httpPost = new HttpPost(postUrl);
+		httpPost.addHeader("User-Agent", "Mozilla/5.0");
+
+		List<NameValuePair> params = new ArrayList<NameValuePair>();
+		params.add(new BasicNameValuePair("apiKey", apiKey));
+		params.add(new BasicNameValuePair("userName", vo.getUsername()));
+		params.add(new BasicNameValuePair("password", vo.getPassword()));
+		params.add(new BasicNameValuePair("privilege", vo.getGroup_name()));
+		params.add(new BasicNameValuePair("tZone", vo.getTimezone_name()));
+		params.add(new BasicNameValuePair("emailId", vo.getEmail()));
+
+		try {
+			httpPost.setEntity(new UrlEncodedFormEntity(params));
+		} catch (UnsupportedEncodingException e1) {
+			e1.printStackTrace();
+		}
+
+		CloseableHttpResponse httpResponse = null;
+		String rtnVal = "";
+		try {
+			httpResponse = httpClient.execute(httpPost);
+			BufferedReader reader = new BufferedReader(new InputStreamReader(httpResponse.getEntity().getContent()));
+
+			String inputLine;
+			StringBuffer response = new StringBuffer();
+
+			while ((inputLine = reader.readLine()) != null) {
+				response.append(inputLine);
+			}
+			reader.close();
+
+			httpClient.close();
+			JSONObject jsono = new JSONObject(response.toString());
+			if(jsono.has("result")){				
+				service.registerSystemUser(vo);
+				service.registerSystemUserGroup(vo);
+			}else if(jsono.has("error")){
+
+			}
+
+			rtnVal = jsono.toString();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		return rtnVal;
+	}
+
+	@Transactional(rollbackFor = Exception.class)
+	@RequestMapping(value = "/api/htbackend/updateSystemUser/{systemuserid}", method = RequestMethod.POST)
+	public SystemUserVO updateSystemUser(@PathVariable(value = "systemuserid") int systemuserid, SystemUserVO vo) {
+		if (systemuserid > 0) {
+			service.updateSystemUser(vo);
+			service.deleteSystemUserGroup(vo.getSystemuser_id());
+			service.registerSystemUserGroup(vo);			
+		}
+		return vo;
+	}
+
+	@RequestMapping(value = "/api/htbackend/changeSystemUserPassword", method = RequestMethod.POST)
+	public String changeSystemUserPassword(HttpSession session, SystemUserVO vo) {
+		String apiKey = (String) session.getAttribute("apiKey");
+
+		if (apiKey == null || apiKey.isEmpty()) {
+			apiKey = env.getProperty("system.nms.apiKey");
+			if (apiKey == null || apiKey.isEmpty()) {
+				apiKey = "1bdcc65c731477fe7ea53323adb59937";
+			}
+		}
+
+		String NMS_URL = env.getProperty("system.nms.ip4");
+		if (NMS_URL == null || NMS_URL.isEmpty()) {
+			NMS_URL = "http://192.168.0.79/";
+		}
+		String rtnVal = "";
+		{			
+			String postUrl = NMS_URL + "api/json/admin/changePassword";
+			//http://192.168.0.79:80/api/json/admin/changePassword?apiKey=1bdcc65c731477fe7ea53323adb59937&userName=david@test.com&newPassword=12345&oldPassword=1234
+			CloseableHttpClient httpClient = HttpClients.createDefault();
+			HttpPost httpPost = new HttpPost(postUrl);
+			httpPost.addHeader("User-Agent", "Mozilla/5.0");
+
+			List<NameValuePair> params = new ArrayList<NameValuePair>();
+			params.add(new BasicNameValuePair("apiKey", apiKey));
+			params.add(new BasicNameValuePair("userName", vo.getUsername()));
+			params.add(new BasicNameValuePair("newPassword", vo.getNewPassword()));
+			params.add(new BasicNameValuePair("oldPassword", vo.getOldPassword()));
+			logger.debug(vo.getUsername() + " " + vo.getNewPassword() + " " + vo.getOldPassword());
+			try {
+				httpPost.setEntity(new UrlEncodedFormEntity(params));
+			} catch (UnsupportedEncodingException e1) {
+				e1.printStackTrace();
+			}
+
+			CloseableHttpResponse httpResponse = null;
+
+			try {
+				httpResponse = httpClient.execute(httpPost);
+				BufferedReader reader = new BufferedReader(new InputStreamReader(httpResponse.getEntity().getContent()));
+
+				String inputLine;
+				StringBuffer response = new StringBuffer();
+
+				while ((inputLine = reader.readLine()) != null) {
+					response.append(inputLine);
+				}
+				reader.close();
+
+				httpClient.close();
+				logger.debug(response.toString());
+				JSONObject jsono = new JSONObject(response.toString());
+
+				rtnVal = jsono.toString();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			
+		}
+		return rtnVal;		
+
+	}
+	
+	@Transactional(rollbackFor = Exception.class)
+	@RequestMapping(value = "/api/htbackend/deleteSystemUser/{systemuserid}", method = RequestMethod.GET)
+	public String deleteSystemUser(HttpSession session, @PathVariable(value = "systemuserid") int systemuserid) {
+		String userName = service.getSystemUserNameById(systemuserid);
+
+		String apiKey = (String) session.getAttribute("apiKey");
+
+		if (apiKey == null || apiKey.isEmpty()) {
+			apiKey = env.getProperty("system.nms.apiKey");
+			if (apiKey == null || apiKey.isEmpty()) {
+				apiKey = "1bdcc65c731477fe7ea53323adb59937";
+			}
+		}
+
+		String NMS_URL = env.getProperty("system.nms.ip4");
+		if (NMS_URL == null || NMS_URL.isEmpty()) {
+			NMS_URL = "http://192.168.0.79/";
+		}
+		//http://192.168.0.79/api/json/admin/deleteUser?apiKey=1bdcc65c731477fe7ea53323adb59937&userId=1206
+		//&userName=david1@test.com
+		String postUrl = NMS_URL + "api/json/admin/deleteUser?apiKey=" + apiKey;
+		postUrl += "&userName=" + userName;
+
+		CloseableHttpClient httpClient = HttpClients.createDefault();
+		HttpPost httpPost = new HttpPost(postUrl);
+		httpPost.addHeader("User-Agent", "Mozilla/5.0");
+		CloseableHttpResponse httpResponse = null;
+		String rtnVal = "";
+		try {
+			httpResponse = httpClient.execute(httpPost);
+			BufferedReader reader = new BufferedReader(new InputStreamReader(httpResponse.getEntity().getContent()));
+
+			String inputLine;
+			StringBuffer response = new StringBuffer();
+
+			while ((inputLine = reader.readLine()) != null) {
+				response.append(inputLine);
+			}
+			reader.close();
+
+			httpClient.close();
+			JSONObject jsono = new JSONObject(response.toString());
+			//if(jsono.has("result"))
+			{				
+				service.deleteSystemUserMainpage(systemuserid);
+				service.deleteSystemUserAdminMainpage(systemuserid);
+				service.deleteSystemUserGroup(systemuserid);
+				service.deleteSystemUser(systemuserid);
+			}/*else if(jsono.has("error")){
+
+			}*/
+
+			rtnVal = jsono.toString();
+
+
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		return rtnVal;
+	}
+
+	@RequestMapping(value = "/api/htbackend/getSystemGroup", method = RequestMethod.GET)
+	public List<HashMap> getSystemGroup() {
+		return service.getSystemGroup();
+	}
+	
+	@RequestMapping(value = "/api/htbackend/getTimeZone", method = RequestMethod.GET)
+	public String getTimeZone(HttpSession session) {
+		String apiKey = (String) session.getAttribute("apiKey");
+
+		if (apiKey == null || apiKey.isEmpty()) {
+			apiKey = env.getProperty("system.nms.apiKey");
+			if (apiKey == null || apiKey.isEmpty()) {
+				apiKey = "1bdcc65c731477fe7ea53323adb59937";
+			}
+		}
+		String NMS_URL = env.getProperty("system.nms.ip4");
+		if (NMS_URL == null || NMS_URL.isEmpty()) {
+			NMS_URL = "http://192.168.0.79/";
+		}
+		CloseableHttpClient httpClient = HttpClients.createDefault();
+
+		//http://192.168.0.79/api/json/nfaadmin/getCurrentTimeZone?apiKey=1bdcc65c731477fe7ea53323adb59937
+		HttpGet httpGet = new HttpGet(NMS_URL + "api/json/nfaadmin/getCurrentTimeZone?apiKey=" + apiKey);
+		httpGet.addHeader("User-Agent", "Mozilla/5.0");
+		CloseableHttpResponse httpResponse = null;
+		String rtnVal = "";
+		try {
+			httpResponse = httpClient.execute(httpGet);
+			BufferedReader reader = new BufferedReader(new InputStreamReader(httpResponse.getEntity().getContent()));
+
+			String inputLine;
+			StringBuffer response = new StringBuffer();
+
+			while ((inputLine = reader.readLine()) != null) {
+				response.append(inputLine);
+			}
+			reader.close();
+
+			httpClient.close();
+
+			logger.debug(response.toString());
+			JSONObject json = new JSONObject(response.toString());
+			rtnVal = json.toString();
+
+		} catch (IOException | JSONException e) {
+			e.printStackTrace();
+		}
+		return rtnVal;
+	}
+	
+	@RequestMapping(value = "/api/htbackend/getSiteTreeModelData/{siteid}", method = RequestMethod.GET)
+	public List<HashMap> getSiteTreeModelData(@PathVariable(value = "siteid") int siteid) {
+		return service.getSiteTreeModelData(siteid);
+	}
+
+	@RequestMapping(value = { "/api/htbackend/getAvailableNodeTypeAsChild/{nodetype}",
+			"/api/htbackend/getAvailableNodeTypeAsChild/",
+			"/api/htbackend/getAvailableNodeTypeAsChild" }, method = RequestMethod.GET)
+	public List<HashMap> getAvailableNodeTypeAsChild(
+			@PathVariable(value = "nodetype", required = false) Integer nodetype) {
+		int type = 0;
+		if (nodetype != null) {
+			type = nodetype.intValue();
+		}
+		Map<String, Integer> map = new HashMap<String, Integer>();
+		map.put("type", type);
+		return service.getAvailableNodeTypeAsChild(map);
+
+	}
+
+	@RequestMapping(value = { "/api/htbackend/getAvailableNodeTypeAllInOne" }, method = RequestMethod.GET)
+	public List<HashMap> getAvailableNodeTypeAllInOne() {
+
+		return service.getAvailableNodeTypeAllInOne();
+
+	}
+
+	@RequestMapping(value = "/api/htbackend/getProductByType/{type}", method = RequestMethod.GET)
+	public List<HashMap> getProductByType(@PathVariable(value = "type") int type) {
+		return service.getProductByType(type);
+	}
+
+	@RequestMapping(value = "/api/htbackend/checkDuplicateName", method = RequestMethod.GET)
+	public List<HashMap> checkDuplicateName(@RequestParam(value = "siteid", required = true) int siteid,
+			@RequestParam(value = "name", required = true) String name) {
+		Map<String, Object> map = new HashMap<String, Object>();
+		map.put("siteid", siteid);
+		map.put("name", name);
+		return service.checkDuplicateName(map);
+	}
+
+	@RequestMapping(value = "/api/htbackend/createCMSSite", method = RequestMethod.POST)
+	public CMSSiteVO registerCMSSite(CMSSiteVO vo) {
+		service.createCMSSite(vo);
+		return vo;
+	}
+
+	@Transactional(rollbackFor = Exception.class)
+	@RequestMapping(value = "/api/htbackend/registerCMSSiteRoot", method = RequestMethod.POST)
+	public SiteTreeNodeVO registerCMSSiteRoot(@RequestBody SiteTreeNodeVO vo) {
+		EntityVO entityParam = vo.getEntityParam();
+		int categoryid = service.getCategoryID("Site");
+		entityParam.setCategory_id(categoryid);
+
+		service.insertEntityParam(entityParam);
+		int entityid = entityParam.getId();
+		SiteTreeVO siteTreeParam = vo.getSiteTreeParam();
+		siteTreeParam.setEntity_id(entityid);
+		siteTreeParam.setLevel(0);
+		siteTreeParam.setLevel_rank(1);
+		int typeid = service.getTypeID("Site");
+		siteTreeParam.setType_id(typeid);
+		service.insertSiteTreeParam(siteTreeParam);
+		return vo;
+	}
+
+	@RequestMapping(value = "/api/htbackend/updateCMSSiteRoot/{siteid}", method = RequestMethod.POST)
+	public int updateCMSSiteRoot(@PathVariable(value = "siteid") int siteid, CMSSiteVO vo) {
+		vo.setId(siteid);
+		return service.updateCMSSiteRoot(vo);
+	}
+
+	@RequestMapping(value = "/api/htbackend/getSiteDetail/{siteid}", method = RequestMethod.GET)
+	public List<HashMap> getSiteDetail(@PathVariable(value = "siteid") int siteid) {
+		return service.getSiteDetail(siteid);
+	}
+
+	@RequestMapping(value = "/api/htbackend/saveSiteDetail", method = RequestMethod.POST)
+	public CMSSiteVO saveSiteDetail(@RequestBody CMSSiteVO vo) {
+		service.saveSiteDetail(vo);
+		return vo;
+	}
+
+	@RequestMapping(value = { "/api/htbackend/getSubRegion/{parent_region}", "/api/htbackend/getSubRegion/",
+			"/api/htbackend/getSubRegion" }, method = RequestMethod.GET)
+	public List<HashMap> getSubRegion(@PathVariable(value = "parent_region", required = false) Integer parent_region) {
+		int parent_id = 0;
+		if (parent_region != null) {
+			parent_id = parent_region.intValue();
+		}
+		Map<String, Integer> map = new HashMap<String, Integer>();
+		map.put("parent_id", parent_id);
+		return service.getSubRegion(map);
+	}
+
+	@RequestMapping(value = "/api/htbackend/checkDuplicateSystemUserId/{id}", method = RequestMethod.GET)
+	public List<HashMap> checkDuplicateSystemUserId(@PathVariable(value = "id") String id) {
+		return service.checkDuplicateSystemUserId(id);
+	}
+
+	@RequestMapping(value = "/api/htbackend/getSampleWidgetPreviewImage/{samplewidgetid}", method = RequestMethod.GET)
+	public List<SampleWidgetVO> getSampleWidgetPreviewImage(
+			@PathVariable(value = "samplewidgetid") int samplewidgetid) {
+		return service.getSampleWidgetPreviewImage(samplewidgetid);
+	}
+
+	@RequestMapping(value = "/api/htbackend/addManufacturer", method = RequestMethod.POST)
+	public RegionVO addManufacturer(RegionVO vo) {
+		service.addManufacturer(vo);
+		return vo;
+	}
+
+	@RequestMapping(value = "/api/htbackend/updateManufacturer", method = RequestMethod.POST)
+	public RegionVO updateManufacturer(RegionVO vo) {
+		service.updateManufacturer(vo);
+		return vo;
+	}
+
+	@RequestMapping(value = "/api/htbackend/deleteManufacturer/{id}", method = RequestMethod.GET)
+	public int deleteManufacturer(@PathVariable(value = "id") int id) {
+		int count = service.deleteManufacturer(id);
+		return count;
+	}
+
+	@RequestMapping(value = "/api/htbackend/addRegion", method = RequestMethod.POST)
+	public RegionVO addRegion(RegionVO vo) {
+		service.addRegion(vo);
+		return vo;
+
+	}
+
+	@RequestMapping(value = "/api/htbackend/updateRegion", method = RequestMethod.POST)
+	public RegionVO updateRegion(RegionVO vo) {
+		service.updateRegion(vo);
+		return vo;
+	}
+
+	@RequestMapping(value = "/api/htbackend/deleteRegion/{id}", method = RequestMethod.GET)
+	public String deleteRegion(@PathVariable(value = "id") int id) {
+		String rtnVal = "";
+		JSONObject json = new JSONObject();
+		int checkFlag = service.isRegionAvailableForDeletion(id);
+		if (checkFlag == 1) {
+			int count = service.deleteRegionChildren(id);
+			count += service.deleteRegionSelf(id);
+			try {
+				json.put("Result", "Success");
+			} catch (JSONException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			rtnVal = json.toString();
+		} else {
+			try {
+				json.put("Result", "Failure");
+			} catch (JSONException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			rtnVal = json.toString();
+		}
+		return rtnVal;
+	}
+
+	@RequestMapping(value = "/api/htbackend/getAllRegion", method = RequestMethod.GET)
+	public List<HashMap> getAllRegion() {
+
+		return service.getAllRegion();
+
+	}
+
+	@RequestMapping(value = "/htbackend/getCMSSite", method = RequestMethod.GET)
+	public List<HashMap> getCMSSite(HttpSession session) {
+
+		Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
+		String systemUserName = null;
+		String systemUserRole = null;
+		if (principal instanceof UserDetails) {
+			systemUserName = ((UserDetails) principal).getUsername();
+			systemUserRole = ((UserDetails) principal).getAuthorities().iterator().next().getAuthority();
+		}
+		logger.debug("systemUserName=" + systemUserName + " systemUserRole=" + systemUserRole);
+		if (systemUserRole == null || systemUserName == null) {
+			systemUserRole = (String) session.getAttribute("systemUserRole");
+			systemUserName = (String) session.getAttribute("systemUserName");
+		}
+		Map<String, String> map = new HashMap<String, String>();
+		map.put("systemUserRole", systemUserRole);
+		map.put("systemUserName", systemUserName);
+		return service.getCMSSite(map);
+
+	}
+
+	@RequestMapping(value = "/api/htbackend/removeSite/{siteid}", method = RequestMethod.GET)
+	public int removeSite(@PathVariable(value = "siteid") int id) {
+		int count = service.removeSite(id);
+		return count;
+	}
+
+	@RequestMapping(value = "/api/htbackend/saveSiteTreeModelData/{siteid}", method = RequestMethod.POST)
+	public int saveSiteTreeModelData(@PathVariable(value = "siteid") int siteid, @RequestBody String jsonstr) {
+		Map<String, Object> map = new HashMap<String, Object>();
+		map.put("siteid", new Integer(siteid));
+		map.put("sitetreejson_data", jsonstr);
+		int count = service.saveSiteTreeModelData(map);
+		return count;
+	}
+
+	@Transactional(rollbackFor = Exception.class)
+	@RequestMapping(value = { "/api/htbackend/resyncWithNMS/{nodeid}" }, method = RequestMethod.POST)
+	public SiteTreeNodeVO resyncWithNMS(@PathVariable(value = "nodeid") Integer nodeid,
+			@RequestBody SiteTreeNodeVO vo) {
+		int id = nodeid.intValue();
+		{ // update interfaces
+			EntityVO entityParam = vo.getEntityParam();
+			int entityid = entityParam.getId();
+			int category = entityParam.getCategory_id();
+			int total_port = 0;
+			Integer total_port_ = service.getTotalPortByCategory(category);
+			if (total_port_ != null)
+				total_port = total_port_.intValue();
+			for (int i = 1; i <= total_port; i++) {
+				InterfaceVO ivo = new InterfaceVO();
+				ivo.setEntity_id(entityid);
+				ivo.setName(i + "");
+				Map<String, String> map2 = new HashMap<String, String>();
+				map2.put("switch_name", entityParam.getOpm_name());
+				map2.put("portno", i + "");
+				HashMap<String, Object> info = service.getNMSInterfaceInfo(map2);
+				if (info != null) {
+					String desc = (String) info.get("ifdescr");
+					String mac = (String) info.get("macaddress");
+					Long ifindex = (Long) info.get("ifindex");
+					if (desc != null)
+						ivo.setDescription(desc);
+					if (mac != null)
+						ivo.setMac_address(mac);
+					if (ifindex != null)
+						ivo.setIfindex(ifindex.intValue());
+				}
+
+				service.updateInterface(ivo);
+			}
+		}
+		return vo;
+	}
+
+	@Transactional(rollbackFor = Exception.class)
+    @RequestMapping(value ={"/api/htbackend/saveSiteTreeNodeDetail/{nodeid}", "/api/htbackend/saveSiteTreeNodeDetail/", "/api/htbackend/saveSiteTreeNodeDetail"}, method = RequestMethod.POST)
+    public SiteTreeNodeVO saveSiteTreeNodeDetail(@PathVariable(value = "nodeid", required = false) Integer nodeid,     @RequestBody SiteTreeNodeVO vo) {
+         int id = 0;
+      if (nodeid != null) {
+         id = nodeid.intValue();
+       }
+       if(id > 0){  //update
+          //entity
+          EntityVO entityParam = vo.getEntityParam();
+          service.updateEntityParam(entityParam);
+          //sitetree
+          SiteTreeVO siteTreeParam = vo.getSiteTreeParam();
+          service.updateSiteTreeParam(siteTreeParam);
+          
+          //check if entity was zombie for mapwidget
+         int entityid = entityParam.getId();
+          //insert interfaces for entity
+         int category = entityParam.getCategory_id();
+         int total_port = 0;
+         Integer total_port_ = service.getTotalPortByCategory(category);
+         if(total_port_ != null)
+            total_port = total_port_.intValue();
+         int total_port2 = 0;
+         Integer total_port2_ = service.getTotalPortByEntity(entityid);
+         if(total_port2_ != null)
+             total_port2 = total_port2_.intValue();         
+         if(total_port>0 && total_port2==0){
+             for(int i=1; i<=total_port; i++){
+                InterfaceVO ivo = new InterfaceVO();
+                ivo.setEntity_id(entityid);
+                ivo.setName(i+"");
+                  Map<String, String> map2 = new HashMap<String, String>();
+                  map2.put("switch_name", entityParam.getOpm_name());
+                  map2.put("portno", i+"");
+                HashMap<String, Object> info = service.getNMSInterfaceInfo(map2);
+                if(info != null){
+                    String desc = (String)info.get("ifdescr");
+                    String mac = (String)info.get("macaddress");
+                    Long ifindex = (Long)info.get("ifindex");
+                    if(desc != null)
+                       ivo.setDescription(desc);
+                    if(mac != null)
+                       ivo.setMac_address(mac);  
+                    if(ifindex != null)
+                       ivo.setIfindex(ifindex.intValue());   
+                }
+          
+                service.insertInterface(ivo);
+             }        	  
+          }
+          int type = siteTreeParam.getType_id();
+          //String inCondition = "('Rackspace', 'Floor')";
+           Map<String, Object> map = new HashMap<String, Object>();
+           map.put("type", type);
+           map.put("name", "Rackspace");
+          
+          int rtnVal = service.checkTypeMatch(map);
+          map.put("name", "Floor");
+          rtnVal += service.checkTypeMatch(map);
+          //Rackspace or Floor
+          if(rtnVal >= 1){
+             //Rackspace
+               map.put("name", "Rackspace");                  
+              rtnVal = service.checkTypeMatch(map);
+             if(rtnVal == 1){
+                //delete lscms_cms_sitetree_rackspace_position
+                service.deleteRackspacePositionByNodeID(id);
+             }             
+            //delete lscms_cms_sitetree_placement_entity
+            service.deleteChildrenEntityFromPlacement(id);
+            //delete lscms_cms_sitetree_placement
+            service.deleteSiteTreePlacement(id);
+ 
+            //Insert
+              //Rackspace or Floor
+              if(vo.getJson_data() != null && !vo.getJson_data().isEmpty()){
+                  SiteTreePlacementVO placement = new SiteTreePlacementVO();
+                  placement.setJson_data(vo.getJson_data());
+                  int sitetreeid = siteTreeParam.getId();
+                  placement.setSitetree_id(sitetreeid);
+                  service.insertSiteTreePlacement(placement);
+                  int sitetree_placement_id = placement.getId();
+                  List<Integer> children = vo.getChildrenEntity();
+                  if(children != null){
+                        for(Integer entity : children) {
+                           Map<String, Integer> map2 = new HashMap<String, Integer>();
+                           map2.put("sitetree_placement_id", sitetree_placement_id);
+                           map2.put("entity_id", entity);
+                           service.insertChildrenEntityIntoPlacement(map2);
+                        }
+                  }
+                 
+                 if(rtnVal == 1){
+                    List<SiteTreeRackspacePositionVO> rackPositions = vo.getRackPositionParam();
+                    if(rackPositions != null){
+                            for(SiteTreeRackspacePositionVO rackPosition : rackPositions) {
+                               rackPosition.setSitetree_placement_id(sitetree_placement_id);
+                               service.insertRackspacePosition(rackPosition);
+                            }   
+                    }
+                        /*if( vo.getRackPositionParam() != null &&  !vo.getRackPositionParam().isEmpty()){
+                            List<SiteTreeRackspacePositionVO> rackPositions = vo.getRackPositionParam();
+                            for(SiteTreeRackspacePositionVO rackPosition : rackPositions) {
+                               service.insertRackspacePosition(rackPosition);
+                            }        
+                        } */
+                 }  
+              }             
+            
+          }          
+       }else{  //insert
+          //entity
+          EntityVO entityParam = vo.getEntityParam();
+          /*String opm_name = entityParam.getOpm_name();
+          if(opm_name != null && !opm_name.isEmpty()){
+             String ip = service.getNMSIPInfo(opm_name);
+             entityParam.setIp(ip);
+          }*/
+          
+          service.insertEntityParam(entityParam);
+          int entityid = entityParam.getId();
+           //insert interfaces for entity
+          int category = entityParam.getCategory_id();
+          int total_port = 0;
+          Integer total_port_ = service.getTotalPortByCategory(category);
+          if(total_port_ != null)
+             total_port = total_port_.intValue();
+          for(int i=1; i<=total_port; i++){
+             InterfaceVO ivo = new InterfaceVO();
+             ivo.setEntity_id(entityid);
+             ivo.setName(i+"");
+               Map<String, String> map2 = new HashMap<String, String>();
+               map2.put("switch_name", entityParam.getOpm_name());
+               map2.put("portno", i+"");
+             HashMap<String, Object> info = service.getNMSInterfaceInfo(map2);
+             if(info != null){
+                 String desc = (String)info.get("ifdescr");
+                 String mac = (String)info.get("macaddress");
+                 Long ifindex = (Long)info.get("ifindex");
+                 if(desc != null)
+                    ivo.setDescription(desc);
+                 if(mac != null)
+                    ivo.setMac_address(mac);  
+                 if(ifindex != null)
+                    ivo.setIfindex(ifindex.intValue());   
+             }
+       
+             service.insertInterface(ivo);
+          }
+
+          //sitetree          
+          SiteTreeVO siteTreeParam = vo.getSiteTreeParam();
+          siteTreeParam.setEntity_id(entityid);
+          service.insertSiteTreeParam(siteTreeParam);    
+          int sitetreeid = siteTreeParam.getId();
+
+          int type = siteTreeParam.getType_id();
+          //String inCondition = "('Rackspace', 'Floor')";
+           Map<String, Object> map = new HashMap<String, Object>();
+           map.put("type", type);
+           map.put("name", "Rackspace");
+          
+          int rtnVal = service.checkTypeMatch(map);
+          map.put("name", "Floor");
+          rtnVal += service.checkTypeMatch(map);
+          //Rackspace or Floor
+          if(rtnVal >= 1){
+              //Rackspace or Floor
+              if(vo.getJson_data() != null && !vo.getJson_data().isEmpty()){
+                  SiteTreePlacementVO placement = new SiteTreePlacementVO();
+                  placement.setJson_data(vo.getJson_data());
+                  placement.setSitetree_id(sitetreeid);
+                  service.insertSiteTreePlacement(placement);
+                  int sitetree_placement_id = placement.getId();
+                  List<Integer> children = vo.getChildrenEntity();
+                  if(children != null){
+                        for(Integer entity : children) {
+                           Map<String, Integer> map2 = new HashMap<String, Integer>();
+                           map2.put("sitetree_placement_id", sitetree_placement_id);
+                           map2.put("entity_id", entity);
+                           service.insertChildrenEntityIntoPlacement(map2);
+                        }
+                  }
+
+                 
+                 //Rackspace
+                   map.put("name", "Rackspace");                  
+                  rtnVal = service.checkTypeMatch(map);
+                 if(rtnVal == 1){
+                    List<SiteTreeRackspacePositionVO> rackPositions = vo.getRackPositionParam();
+                    if(rackPositions != null){
+                            for(SiteTreeRackspacePositionVO rackPosition : rackPositions) {
+                               rackPosition.setSitetree_placement_id(sitetree_placement_id);
+                               service.insertRackspacePosition(rackPosition);
+                            }   
+                    }
+                        /*if( vo.getRackPositionParam() != null &&  !vo.getRackPositionParam().isEmpty()){
+                            List<SiteTreeRackspacePositionVO> rackPositions = vo.getRackPositionParam();
+                            for(SiteTreeRackspacePositionVO rackPosition : rackPositions) {
+                               service.insertRackspacePosition(rackPosition);
+                            }        
+                        } */
+                 }  
+              }           
+          }               
+       }
+        return vo;
+    }   
+
+	@RequestMapping(value = "/api/htbackend/getSiteTreeNodeDetail/{nodeid}", method = RequestMethod.GET)
+	public List<HashMap> getSiteTreeNodeDetail(@PathVariable(value = "nodeid") int id) {
+		return service.getSiteTreeNodeDetail(id);
+	}
+
+	@Transactional(rollbackFor = Exception.class)
+	private int removeRackspace(HashMap entityToRemove) {
+		Integer entityid = (Integer) entityToRemove.get("entity_id");
+		Integer typeid = (Integer) entityToRemove.get("type_id");
+		Integer nodeid = (Integer) entityToRemove.get("node_id");
+		service.deleteRackspacePositionByNodeID(nodeid);
+		service.deleteChildrenEntityByNodeID(nodeid);
+		// delete lscms_cms_sitetree_placement_entity
+		service.deleteChildrenEntityFromPlacement(nodeid);
+		// delete lscms_cms_sitetree_placement
+		service.deleteSiteTreePlacement(nodeid);
+		service.deleteEntityByEntityID(entityid);
+		// TODO : delete entity rack
+		int count = service.removeNode(nodeid);
+		return count;
+	}
+
+	@Transactional(rollbackFor = Exception.class)
+	private int removeFloor(HashMap entityToRemove) {
+		Integer entityid = (Integer) entityToRemove.get("entity_id");
+		Integer typeid = (Integer) entityToRemove.get("type_id");
+		Integer nodeid = (Integer) entityToRemove.get("node_id");
+		int count = 0;
+		List<Integer> rackspaces = service.getRackspacesAsChildren(nodeid);
+		if (rackspaces != null) {
+			for (Integer rackspace : rackspaces) {
+				HashMap rackspaceToRemove = service.getEntityInfoByEntityID(rackspace);
+				if (rackspaceToRemove != null) {
+					count += removeRackspace(rackspaceToRemove);
+				}
+			}
+		}
+		service.deleteChildrenEntityByNodeID(nodeid);
+		// delete lscms_cms_sitetree_placement_entity
+		service.deleteChildrenEntityFromPlacement(nodeid);
+		// delete lscms_cms_sitetree_placement
+		service.deleteSiteTreePlacement(nodeid);
+		service.deleteEntityByEntityID(entityid);
+		// TODO : delete entity area
+		count += service.removeNode(nodeid);
+		return count;
+	}
+
+	@Transactional(rollbackFor = Exception.class)
+	@RequestMapping(value = "/api/htbackend/removeNode/{nodeid}", method = RequestMethod.GET)
+	public int removeNode(@PathVariable(value = "nodeid") int id) {
+		HashMap entityToRemove = service.getEntityInfoByNodeID(id);
+		if (entityToRemove != null) {
+			Integer entityid = (Integer) entityToRemove.get("entity_id");
+			Integer typeid = (Integer) entityToRemove.get("type_id");
+			Integer nodeid = (Integer) entityToRemove.get("node_id");
+			Map<String, Object> map = new HashMap<String, Object>();
+			map.put("type", typeid);
+			map.put("name", "Rackspace");
+			int rtnVal = service.checkTypeMatch(map);
+			if (rtnVal == 1) {
+				return removeRackspace(entityToRemove);
+			} else {
+				map.put("name", "Floor");
+				rtnVal = service.checkTypeMatch(map);
+				if (rtnVal == 1) {
+					return removeFloor(entityToRemove);
+				} else {
+					// TODO : tree leaf only, not building
+					service.deleteEntityByEntityID(entityid);
+					int count = service.removeNode(id);
+					return count;
+				}
+			}
+		}
+		return 0;
+	}
+
+	@RequestMapping(value = "/api/htbackend/getCMSSiteBySiteID/{siteid}", method = RequestMethod.GET)
+	public List<HashMap> getCMSSiteBySiteID(@PathVariable(value = "siteid") int id) {
+		return service.getCMSSiteBySiteID(id);
+	}
+
+	@RequestMapping(value = "/api/htbackend/changeSiteTreeParentNode", method = RequestMethod.POST)
+	public SiteTreeVO changeSiteTreeParentNode(@RequestBody SiteTreeVO vo) {
+		service.changeSiteTreeParentNode(vo);
+		return vo;
+	}
+
+	//////////////////////////////////
+
+	@RequestMapping(value = "/api/htbackend/getLinkageConnectionModelDataOld/{nodeid}", method = RequestMethod.GET)
+	public List<HashMap> getLinkageConnectionModelDataOld(@PathVariable(value = "nodeid") int nodeid) {
+		return service.getLinkageConnectionModelData(nodeid);
+	}
+
+	@Transactional(rollbackFor = Exception.class)
+	@RequestMapping(value = "/api/htbackend/saveLinkageConnectionDetailOld", method = RequestMethod.POST)
+	public LinkageConnectionVO saveLinkageConnectionDetailOld(@RequestBody LinkageConnectionVO vo) {
+		int id = vo.getId();
+		if (id > 0) { // update
+			// lscms_cms_linkage_connection
+			service.updateLinkageConnection(vo);
+			int linkageconnectionid = vo.getId();
+
+			// delete lscms_cms_linkage_connection_patchpanel
+			service.deletePPFromLinkageConnection(linkageconnectionid);
+			// lscms_cms_linkage_connection_patchpanel
+			List<HashMap> patchpanels = vo.getPatchpanels();
+			if (patchpanels != null) {
+				boolean isfirst = true;
+				for (HashMap<String, Integer> patchpanel : patchpanels) {
+					Map<String, Object> map = new HashMap<String, Object>();
+					map.put("sitetree_id", patchpanel.get("nodeid"));
+					map.put("linkage_connection_id", linkageconnectionid);
+					if (isfirst) {
+						isfirst = false;
+						map.put("is_basis", true);
+					} else
+						map.put("is_basis", false);
+					service.insertPPIntoLinkageConnection(map);
+				}
+			}
+
+			service.deleteLinkageConnectionDetail(linkageconnectionid);
+			// lscms_cms_linkage_connection_interface list
+			List<ConnectionVO> linkedelements = vo.getLinkedelements();
+			if (linkedelements != null) {
+				for (ConnectionVO linkedelement : linkedelements) {
+					// get interface id
+					Map<String, Object> mapi = new HashMap<String, Object>();
+					mapi.put("nodeid", linkedelement.getInterface_a().getNodeid());
+					mapi.put("name", linkedelement.getInterface_a().getPortname());
+					int if_a_id = service.getInterfaceIDByNodeID(mapi);
+					linkedelement.getInterface_a().setId(if_a_id);
+					mapi.put("nodeid", linkedelement.getInterface_b().getNodeid());
+					mapi.put("name", linkedelement.getInterface_b().getPortname());
+					int if_b_id = service.getInterfaceIDByNodeID(mapi);
+
+					Map<String, Integer> map = new HashMap<String, Integer>();
+					map.put("interface_a_id", if_a_id);
+					map.put("interface_b_id", if_b_id);
+					map.put("connector_id", linkedelement.getConnector().getCategory_id());
+					map.put("linkage_connection_id", linkageconnectionid);
+					service.insertLinkageConnectionDetail(map);
+				}
+			}
+
+		} else { // insert
+			// lscms_cms_linkage_connection
+			service.insertLinkageConnection(vo);
+			int linkageconnectionid = vo.getId();
+			// lscms_cms_linkage_connection_patchpanel
+			List<HashMap> patchpanels = vo.getPatchpanels();
+			if (patchpanels != null) {
+				boolean isfirst = true;
+				for (HashMap<String, Integer> patchpanel : patchpanels) {
+					Map<String, Object> map = new HashMap<String, Object>();
+					map.put("sitetree_id", patchpanel.get("nodeid"));
+					map.put("linkage_connection_id", linkageconnectionid);
+					if (isfirst) {
+						isfirst = false;
+						map.put("is_basis", true);
+					} else
+						map.put("is_basis", false);
+					service.insertPPIntoLinkageConnection(map);
+				}
+			}
+
+			// lscms_cms_linkage_connection_interface list
+			List<ConnectionVO> linkedelements = vo.getLinkedelements();
+			if (linkedelements != null) {
+				for (ConnectionVO linkedelement : linkedelements) {
+					// get interface id
+					Map<String, Object> mapi = new HashMap<String, Object>();
+					mapi.put("nodeid", linkedelement.getInterface_a().getNodeid());
+					mapi.put("name", linkedelement.getInterface_a().getPortname());
+					int if_a_id = service.getInterfaceIDByNodeID(mapi);
+					linkedelement.getInterface_a().setId(if_a_id);
+					mapi.put("nodeid", linkedelement.getInterface_b().getNodeid());
+					mapi.put("name", linkedelement.getInterface_b().getPortname());
+					int if_b_id = service.getInterfaceIDByNodeID(mapi);
+					linkedelement.getInterface_b().setId(if_b_id);
+
+					Map<String, Integer> map = new HashMap<String, Integer>();
+					map.put("interface_a_id", if_a_id);
+					map.put("interface_b_id", if_b_id);
+					map.put("connector_id", linkedelement.getConnector().getCategory_id());
+					map.put("linkage_connection_id", linkageconnectionid);
+					service.insertLinkageConnectionDetail(map);
+				}
+			}
+
+		}
+		return vo;
+	}
+
+	///////////////////////////////////
+
+	@RequestMapping(value = "/api/htbackend/getLinkageConnectionModelData/{nodeid}", method = RequestMethod.GET)
+	public HashMap<String, Object> getLinkageConnectionModelData(@PathVariable(value = "nodeid") int nodeid) {
+		List<Integer> connectionids = service.getLinkageConnectionIDByNodeID(nodeid);
+		HashMap<String, Object> rtnVal = new HashMap<String, Object>();
+
+		if (connectionids != null && !connectionids.isEmpty()) {
+			List<HashMap> list = new ArrayList<HashMap>();
+			for (int j = 0; j < connectionids.size(); j++) {
+				Integer connectionid = connectionids.get(j);
+				list.addAll(service.getLinkageConnectionModelData2(connectionid));
+			}
+
+			Map<String, Integer> map = new HashMap<String, Integer>();
+			map.put("basispatchpanel_id", nodeid);
+			map.put("linkage_connection_id", connectionids.get(0));
+			List<HashMap> list2 = service.getLinkageConnectionModelDataInvalid(map);
+
+			if (!list.isEmpty()) {
+				List<HashMap> newlist = new ArrayList<HashMap>();
+				for (int i = 0; i < list.size(); i++) {
+					HashMap item = list.get(i);
+
+					HashMap<String, Object> value = new HashMap<String, Object>();
+					HashMap<String, Object> interface_a = new HashMap<String, Object>();
+					interface_a.put("nodeid", (int) item.get("a_nodeid"));
+					interface_a.put("portname", (String) item.get("a_portname"));
+					HashMap<String, Object> interface_b = new HashMap<String, Object>();
+					interface_b.put("nodeid", (int) item.get("b_nodeid"));
+					interface_b.put("portname", (String) item.get("b_portname"));
+					HashMap<String, Object> connector = new HashMap<String, Object>();
+					connector.put("connector_id", (int) item.get("connector_id"));
+
+					value.put("interface_a", interface_a);
+					value.put("interface_b", interface_b);
+					value.put("connector", connector);
+					newlist.add(value);
+				}
+				rtnVal.put("linkedelements", newlist);
+			}
+			rtnVal.put("id", connectionids.get(0));
+			rtnVal.put("invalid", list2);
+			Boolean is_basis = null;
+			Map<String, Integer> map2 = new HashMap<String, Integer>();
+			map2.put("patchpanel_id", nodeid);
+			map2.put("linkage_connection_id", connectionids.get(0));
+			is_basis = service.isBasisPatchPanel(map2);
+			if (is_basis == null) {
+				is_basis = false;
+			}
+			rtnVal.put("is_basis", is_basis);
+		}
+		return rtnVal;
+
+	}
+
+	@RequestMapping(value = "/api/htbackend/getLinkageConnectionDetail/{nodeid}", method = RequestMethod.GET)
+	public List<HashMap> getLinkageConnectionDetail(@PathVariable(value = "nodeid") int nodeid) {
+		return service.getLinkageConnectionDetail(nodeid);
+	}
+
+	@Transactional(rollbackFor = Exception.class)
+	@RequestMapping(value = "/api/htbackend/saveLinkageConnectionDetail", method = RequestMethod.POST)
+	public LinkageConnectionVO saveLinkageConnectionDetail(@RequestBody LinkageConnectionVO vo) {
+		int id = vo.getId();
+		int basispatchpanelid = 0;
+		if (id > 0) { // update
+			// lscms_cms_linkage_connection
+			service.updateLinkageConnection(vo);
+			int linkageconnectionid = vo.getId();
+
+			// delete lscms_cms_linkage_connection_patchpanel
+			service.deletePPFromLinkageConnection(linkageconnectionid);
+			// lscms_cms_linkage_connection_patchpanel
+			List<HashMap> patchpanels = vo.getPatchpanels();
+			if (patchpanels != null) {
+				basispatchpanelid = (int) patchpanels.get(0).get("nodeid");
+				boolean isfirst = true;
+				for (HashMap<String, Integer> patchpanel : patchpanels) {
+					Map<String, Object> map = new HashMap<String, Object>();
+					map.put("sitetree_id", patchpanel.get("nodeid"));
+					map.put("linkage_connection_id", linkageconnectionid);
+					if (isfirst) {
+						isfirst = false;
+						map.put("is_basis", true);
+					} else
+						map.put("is_basis", false);
+					service.insertPPIntoLinkageConnection(map);
+				}
+			}
+
+			service.deleteLinkageConnectionDetail(linkageconnectionid);
+
+			// lscms_cms_linkage_connection_interface list
+			List<ConnectionVO> linkedelements = vo.getLinkedelements();
+			if (linkedelements != null) {
+				for (ConnectionVO linkedelement : linkedelements) {
+					// get interface id
+					Map<String, Object> mapi = new HashMap<String, Object>();
+					mapi.put("nodeid", linkedelement.getInterface_a().getNodeid());
+					mapi.put("name", linkedelement.getInterface_a().getPortname());
+					int if_a_id = service.getInterfaceIDByNodeID(mapi);
+					linkedelement.getInterface_a().setId(if_a_id);
+					mapi.put("nodeid", linkedelement.getInterface_b().getNodeid());
+					mapi.put("name", linkedelement.getInterface_b().getPortname());
+					int if_b_id = service.getInterfaceIDByNodeID(mapi);
+
+					Map<String, Integer> map = new HashMap<String, Integer>();
+					map.put("interface_a_id", if_a_id);
+					map.put("interface_b_id", if_b_id);
+					map.put("connector_id", linkedelement.getConnector().getCategory_id());
+					map.put("linkage_connection_id", linkageconnectionid);
+					service.insertLinkageConnectionDetail(map);
+				}
+			}
+
+			service.deleteLinkageConnectionInvalid(linkageconnectionid);
+			List<PPInvalidVO> invalids = vo.getInvalid();
+			if (invalids != null) {
+				for (PPInvalidVO invalid : invalids) {
+					invalid.setLinkage_connection_id(linkageconnectionid);
+					invalid.setBasispatchpanel_id(basispatchpanelid);
+					if (invalid.getCategory_id() > 0) {
+						service.insertLinkageConnectionInvalidCable(invalid);
+					} else {
+						service.insertLinkageConnectionInvalidDevice(invalid);
+					}
+
+				}
+			}
+
+			service.deleteLinkageConnectionSwitchTopoDetail(linkageconnectionid);
+			List<ConnectionVO> switchtopos = vo.getSwitchtopo();
+			if (switchtopos != null) {
+				for (ConnectionVO switchtopo : switchtopos) {
+					// get interface id
+					Map<String, Object> mapi = new HashMap<String, Object>();
+					mapi.put("nodeid", switchtopo.getInterface_a().getNodeid());
+					mapi.put("name", switchtopo.getInterface_a().getPortname());
+					int if_a_id = service.getInterfaceIDByNodeID(mapi);
+					switchtopo.getInterface_a().setId(if_a_id);
+					mapi.put("nodeid", switchtopo.getInterface_b().getNodeid());
+					mapi.put("name", switchtopo.getInterface_b().getPortname());
+					int if_b_id = service.getInterfaceIDByNodeID(mapi);
+
+					Map<String, Integer> map = new HashMap<String, Integer>();
+					map.put("interface_a_id", if_a_id);
+					map.put("interface_b_id", if_b_id);
+					map.put("connector_id", switchtopo.getConnector().getCategory_id());
+					map.put("linkage_connection_id", linkageconnectionid);
+					service.insertLinkageConnectionSwitchTopoDetail(map);
+				}
+			}
+		} else { // insert
+			// lscms_cms_linkage_connection
+			service.insertLinkageConnection(vo);
+			int linkageconnectionid = vo.getId();
+			// lscms_cms_linkage_connection_patchpanel
+			List<HashMap> patchpanels = vo.getPatchpanels();
+			if (patchpanels != null) {
+				basispatchpanelid = (int) patchpanels.get(0).get("nodeid");
+				boolean isfirst = true;
+				for (HashMap<String, Integer> patchpanel : patchpanels) {
+					Map<String, Object> map = new HashMap<String, Object>();
+					map.put("sitetree_id", patchpanel.get("nodeid"));
+					map.put("linkage_connection_id", linkageconnectionid);
+					if (isfirst) {
+						isfirst = false;
+						map.put("is_basis", true);
+					} else
+						map.put("is_basis", false);
+					service.insertPPIntoLinkageConnection(map);
+				}
+			}
+
+			// lscms_cms_linkage_connection_interface list
+			List<ConnectionVO> linkedelements = vo.getLinkedelements();
+			if (linkedelements != null) {
+				for (ConnectionVO linkedelement : linkedelements) {
+					// get interface id
+					Map<String, Object> mapi = new HashMap<String, Object>();
+					mapi.put("nodeid", linkedelement.getInterface_a().getNodeid());
+					mapi.put("name", linkedelement.getInterface_a().getPortname());
+					int if_a_id = service.getInterfaceIDByNodeID(mapi);
+					linkedelement.getInterface_a().setId(if_a_id);
+					mapi.put("nodeid", linkedelement.getInterface_b().getNodeid());
+					mapi.put("name", linkedelement.getInterface_b().getPortname());
+					int if_b_id = service.getInterfaceIDByNodeID(mapi);
+					linkedelement.getInterface_b().setId(if_b_id);
+
+					Map<String, Integer> map = new HashMap<String, Integer>();
+					map.put("interface_a_id", if_a_id);
+					map.put("interface_b_id", if_b_id);
+					map.put("connector_id", linkedelement.getConnector().getCategory_id());
+					map.put("linkage_connection_id", linkageconnectionid);
+					service.insertLinkageConnectionDetail(map);
+				}
+			}
+
+			List<PPInvalidVO> invalids = vo.getInvalid();
+			if (invalids != null) {
+				for (PPInvalidVO invalid : invalids) {
+					invalid.setLinkage_connection_id(linkageconnectionid);
+					invalid.setBasispatchpanel_id(basispatchpanelid);
+					if (invalid.getCategory_id() > 0) {
+						service.insertLinkageConnectionInvalidCable(invalid);
+					} else {
+						service.insertLinkageConnectionInvalidDevice(invalid);
+					}
+
+				}
+			}
+			List<ConnectionVO> switchtopos = vo.getSwitchtopo();
+			if (switchtopos != null) {
+				for (ConnectionVO switchtopo : switchtopos) {
+					// get interface id
+					Map<String, Object> mapi = new HashMap<String, Object>();
+					mapi.put("nodeid", switchtopo.getInterface_a().getNodeid());
+					mapi.put("name", switchtopo.getInterface_a().getPortname());
+					int if_a_id = service.getInterfaceIDByNodeID(mapi);
+					switchtopo.getInterface_a().setId(if_a_id);
+					mapi.put("nodeid", switchtopo.getInterface_b().getNodeid());
+					mapi.put("name", switchtopo.getInterface_b().getPortname());
+					int if_b_id = service.getInterfaceIDByNodeID(mapi);
+
+					Map<String, Integer> map = new HashMap<String, Integer>();
+					map.put("interface_a_id", if_a_id);
+					map.put("interface_b_id", if_b_id);
+					map.put("connector_id", switchtopo.getConnector().getCategory_id());
+					map.put("linkage_connection_id", linkageconnectionid);
+					service.insertLinkageConnectionSwitchTopoDetail(map);
+				}
+			}
+		}
+		return vo;
+	}
+
+	@Transactional(rollbackFor = Exception.class)
+	@RequestMapping(value = "/api/htbackend/removeLinkageConnection/{linkageid}", method = RequestMethod.GET)
+	public void removeLinkageConnection(@PathVariable(value = "linkageid") int id) {
+
+		// delete lscms_cms_linkage_connection_patchpanel
+		service.deletePPFromLinkageConnection(id);
+
+		service.deleteLinkageConnectionInvalid(id);
+		// delete lscms_cms_linkage_connection_interface
+		service.deleteLinkageConnectionDetail(id);
+
+		service.deleteLinkageConnectionSwitchTopoDetail(id);
+		// lscms_cms_linkage_connection
+		service.removeLinkageConnection(id);
+
+	}
+
+	@RequestMapping(value = "/api/htbackend/getCableIcon", method = RequestMethod.GET)
+	public List<HashMap> getCableIcon() {
+		return service.getCableIcon();
+	}
+
+	@RequestMapping(value = "/api/htbackend/checkDandDAvailability/{nodeid}/{portname}", method = RequestMethod.GET)
+	public List<HashMap> checkDandDAvailability(@PathVariable(value = "nodeid") int nodeid,
+			@PathVariable(value = "portname") String portname) {
+		Map<String, Object> map = new HashMap<String, Object>();
+		map.put("nodeid", nodeid);
+		map.put("portname", portname);
+		return service.checkDandDAvailability(map);
+	}
+
+	@RequestMapping(value = "/api/htbackend/getNetwork", method = RequestMethod.GET)
+	public List<HashMap> getNetwork() {
+		List<HashMap> list = service.getNetwork();
+		for (HashMap item : list) {
+			Integer networkid = (Integer) item.get("id");
+			if (networkid != null) {
+				List<HashMap> l2switches = service.getNetworkL2Switch(networkid);
+				List<HashMap> l3switches = service.getNetworkL3Switch(networkid);
+				item.put("l2switches", l2switches);
+				item.put("l3switches", l3switches);
+			}
+		}
+		return list;
+	}
+
+	@RequestMapping(value = "/api/htbackend/getL3Gateway", method = RequestMethod.GET)
+	public List<HashMap> getL3Gateway(@RequestParam(value = "q", required = true) String keyword) {
+		return service.getL3Gateway(keyword);
+	}
+
+	@RequestMapping(value = "/api/htbackend/getL2Switch", method = RequestMethod.GET)
+	public List<HashMap> getL2Switch(@RequestParam(value = "q", required = true) String keyword) {
+		return service.getL2Switch(keyword);
+	}
+
+	@Transactional(rollbackFor = Exception.class)
+	@RequestMapping(value = "/api/htbackend/registerNetwork", method = RequestMethod.POST)
+	public NetworkVO registerNetwork(@RequestBody NetworkVO vo) {
+		service.registerNetwork(vo);
+
+		IPAddress ip1 = new IPAddress(vo.getStart_ipaddress());
+		IPAddress ip2 = new IPAddress(vo.getEnd_ipaddress());
+		IPAddress current = new IPAddress(vo.getStart_ipaddress());
+		final int from = ip1.getValue();
+		final int to = ip2.getValue();
+
+		for (int i = from; i <= to; i++) {
+			// System.out.println(current.toString());
+			List<HashMap> ipaddress = service.checkDuplicateIPAddress(current.toString());
+
+			if (ipaddress == null || ipaddress.isEmpty()) {
+				Map<String, Object> map = new HashMap<String, Object>();
+				map.put("address", current.toString());
+				map.put("network_id", vo.getId());
+				service.registerIPAddress(map);
+			} else if (ipaddress.get(0).get("is_deleted") != null) {
+				Map<String, Object> map = new HashMap<String, Object>();
+				map.put("id", ipaddress.get(0).get("id"));
+				map.put("is_deleted", false);
+				map.put("description", ipaddress.get(0).get("description"));
+				map.put("address", current.toString());
+				map.put("network_id", vo.getId());
+				service.updateIPAddress(map);
+			}
+
+			current = current.next();
+		}
+		int network_id = vo.getId();
+		List<NetworkSwitchVO> switches = vo.getSwitches();
+		if (switches != null) {
+			for (NetworkSwitchVO _switch : switches) {
+				_switch.setNetwork_id(network_id);
+				service.insertNetworkSwitch(_switch);
+			}
+		}
+		return vo;
+	}
+
+	@Transactional(rollbackFor = Exception.class)
+	@RequestMapping(value = "/api/htbackend/updateNetwork/{networkid}", method = RequestMethod.POST)
+	public NetworkVO updateNetwork(@PathVariable(value = "networkid") int networkid, @RequestBody NetworkVO vo) {
+		if (networkid > 0) {
+			service.deleteNetworkSwitch(vo.getId());
+			service.updateNetwork(vo);
+
+			IPAddress ip1 = new IPAddress(vo.getStart_ipaddress());
+			IPAddress ip2 = new IPAddress(vo.getEnd_ipaddress());
+			IPAddress current = new IPAddress(vo.getStart_ipaddress());
+			final int from = ip1.getValue();
+			final int to = ip2.getValue();
+
+			for (int i = from; i <= to; i++) {
+				// System.out.println(current.toString());
+				List<HashMap> ipaddress = service.checkDuplicateIPAddress(current.toString());
+
+				if (ipaddress == null || ipaddress.isEmpty()) {
+					Map<String, Object> map = new HashMap<String, Object>();
+					map.put("address", current.toString());
+					map.put("network_id", networkid);
+					map.put("description", "");
+					service.registerIPAddress(map);
+				} else if (ipaddress.get(0).get("is_deleted") != null) {
+					Map<String, Object> map = new HashMap<String, Object>();
+					map.put("id", ipaddress.get(0).get("id"));
+					map.put("is_deleted", false);
+					map.put("description", ipaddress.get(0).get("description"));
+					map.put("address", current.toString());
+					map.put("network_id", networkid);
+					service.updateIPAddress(map);
+				}
+
+				current = current.next();
+			}
+
+			List<NetworkSwitchVO> switches = vo.getSwitches();
+			if (switches != null) {
+				for (NetworkSwitchVO _switch : switches) {
+					_switch.setNetwork_id(vo.getId());
+					service.insertNetworkSwitch(_switch);
+				}
+			}
+
+		}
+		return vo;
+	}
+
+	@Transactional(rollbackFor = Exception.class)
+	@RequestMapping(value = "/api/htbackend/deleteNetwork/{networkid}", method = RequestMethod.GET)
+	public int deleteNetwork(@PathVariable(value = "networkid") int networkid) {
+		service.deleteNetworkSwitch(networkid);
+		int count = service.deleteNetwork(networkid);
+		return count;
+	}
+
+	@RequestMapping(value = "/api/htbackend/getIPAddress", method = RequestMethod.GET)
+	public List<HashMap> getIPAddress() {
+		return service.getIPAddress();
+	}
+
+	@RequestMapping(value = "/api/htbackend/registerIPAddress", method = RequestMethod.POST)
+	public HashMap registerIPAddress(@RequestBody HashMap vo) {
+		service.registerIPAddress(vo);
+		return vo;
+	}
+
+	@RequestMapping(value = "/api/htbackend/updateIPAddress/{ipid}", method = RequestMethod.POST)
+	public HashMap updateIPAddress(@PathVariable(value = "ipid") int ipid, @RequestBody HashMap vo) {
+		if (ipid > 0) {
+			service.updateIPAddress(vo);
+		}
+		return vo;
+	}
+
+	@RequestMapping(value = "/api/htbackend/deleteIPAddress/{ipid}", method = RequestMethod.GET)
+	public int deleteIPAddress(@PathVariable(value = "ipid") int ipid) {
+		// delete
+		int count = service.deleteIPAddress(ipid);
+		return count;
+	}
+
+	@RequestMapping(value = "/api/htbackend/getOutletPortStatus/{nodeid}", method = RequestMethod.GET)
+	public List<HashMap> getOutletPortStatus(@PathVariable(value = "nodeid") int nodeid) {
+		List<HashMap> rtnVal = new ArrayList<HashMap>();
+		Map<String, Object> map = new HashMap<String, Object>();
+		map.put("nodeid", nodeid);
+
+		List<String> portNames = service.getOutletPortName(nodeid);
+		for (String portName : portNames) {
+			map.put("portname", portName);
+			List<HashMap> portStatus = service.getOutletPortStatus(map);
+			if (!portStatus.isEmpty()){
+				rtnVal.addAll(portStatus);
+			}else{
+//				Map<String, Object> map2 = new HashMap<String, Object>();
+//				map2.put("outletport", portName);
+//				rtnVal.add((HashMap) map2);
+			}
+				
+		}
+
+		return rtnVal;
+	}
+	@RequestMapping(value = "/api/htbackend/getOutletPortStatus2/{nodeid}", method = RequestMethod.GET)
+	public List<HashMap> getOutletPortStatus2(@PathVariable(value = "nodeid") int nodeid) {
+		List<HashMap> rtnVal = new ArrayList<HashMap>();
+		Map<String, Object> map = new HashMap<String, Object>();
+		map.put("nodeid", nodeid);
+
+		List<String> portNames = service.getOutletPortName(nodeid);
+		for (String portName : portNames) {
+			map.put("portname", portName);
+			List<HashMap> portStatus = service.getOutletPortStatus(map);
+			if (!portStatus.isEmpty()){
+				rtnVal.addAll(portStatus);
+			}else{
+				Map<String, Object> map2 = new HashMap<String, Object>();
+				map2.put("outletport", portName);
+				map2.put("ifoperstatus", 0);				
+				rtnVal.add((HashMap) map2);
+			}
+				
+		}
+
+		return rtnVal;
+	}
+
+	@RequestMapping(value = "/api/htbackend/getPatchPanelPortStatus/{nodeid}", method = RequestMethod.GET)
+	public List<HashMap> getPatchPanelPortStatus(@PathVariable(value = "nodeid") int nodeid) {
+		List<HashMap> rtnVal = new ArrayList<HashMap>();
+		Map<String, Object> map = new HashMap<String, Object>();
+		map.put("node_id", nodeid);
+		/*
+		Integer site_id = service.getSiteIdbyNodeId(nodeid);
+		map.put("site_id", site_id);*/
+		return service.getPatchPanelPortStatus(map);
+	
+	}
+	
+	@RequestMapping(value = "/api/htbackend/getConnectionDiagramOutlet/{nodeid}", method = RequestMethod.GET)
+	public List<HashMap> getConnectionDiagramOutlet(@PathVariable(value = "nodeid") int nodeid) {
+		Map<String, Object> map = new HashMap<String, Object>();
+		map.put("nodeid", nodeid);
+		map.put("portname", '1');
+
+		List<HashMap> down = service.getConnectionDiagramBottomUp(map);
+		return down;
+	}
+
+	@RequestMapping(value = "/api/htbackend/getConnectionDiagram/{nodeid}", method = RequestMethod.GET)
+	public List<HashMap> getConnectionDiagram(@PathVariable(value = "nodeid") int nodeid,
+			@RequestParam(value = "portname", required = true) String portname) {
+		Map<String, Object> map = new HashMap<String, Object>();
+		map.put("nodeid", nodeid);
+		map.put("portname", portname);
+		List<HashMap> switchtopo = service.getConnectionDiagramSwitchTopo(map);
+		if (switchtopo != null && !switchtopo.isEmpty()) {
+			return switchtopo;
+		}
+		List<HashMap> top = service.getConnectionDiagramTopDown(map);
+		List<HashMap> down = service.getConnectionDiagramBottomUp(map);
+		if (down == null || down.isEmpty()) {
+
+			if (top != null && !top.isEmpty()) {
+				String switch_macaddress = (String) top.get((0)).get("mac_address");
+				map.put("switch_mac", switch_macaddress);
+				List<HashMap> enduser = service.getConnectionDiagramEndUser(map);
+				if (!enduser.isEmpty()) {
+					HashMap last = top.get(top.size() - 1);
+					last.put("connectorimage", enduser.get(0).get("connectorimage"));
+					enduser.get(0).put("connectorimage", null);
+					top.addAll(enduser);
+				} else {
+					List<HashMap> unauthorized = service.getConnectionDiagramUnauthorized(map);
+					if (!unauthorized.isEmpty()) {
+						HashMap last = top.get(top.size() - 1);
+						last.put("connectorimage", unauthorized.get(0).get("connectorimage"));
+						unauthorized.get(0).put("connectorimage", null);
+						top.addAll(unauthorized);
+					}
+				}
+
+			}
+			return top;
+		}
+		String switch_macaddress = (String) down.get(0).get("mac_address");
+		map.put("switch_mac", switch_macaddress);
+		List<HashMap> enduser = service.getConnectionDiagramEndUser(map);
+		if (top == null || top.isEmpty()) {
+			if (!enduser.isEmpty()) {
+				HashMap last = down.get(down.size() - 1);
+				last.put("connectorimage", enduser.get(0).get("connectorimage"));
+				enduser.get(0).put("connectorimage", null);
+				down.addAll(enduser);
+			} else {
+				List<HashMap> unauthorized = service.getConnectionDiagramUnauthorized(map);
+				if (!unauthorized.isEmpty()) {
+					HashMap last = down.get(down.size() - 1);
+					last.put("connectorimage", unauthorized.get(0).get("connectorimage"));
+					unauthorized.get(0).put("connectorimage", null);
+					down.addAll(unauthorized);
+				}
+			}
+
+			return down;
+		} else {
+			down.remove(down.size() - 1);
+			down.addAll(top);
+
+			if (!enduser.isEmpty()) {
+				HashMap last = down.get(down.size() - 1);
+				last.put("connectorimage", enduser.get(0).get("connectorimage"));
+				enduser.get(0).put("connectorimage", null);
+				down.addAll(enduser);
+			} else {
+				List<HashMap> unauthorized = service.getConnectionDiagramUnauthorized(map);
+				if (!unauthorized.isEmpty()) {
+					HashMap last = down.get(down.size() - 1);
+					last.put("connectorimage", unauthorized.get(0).get("connectorimage"));
+					unauthorized.get(0).put("connectorimage", null);
+					down.addAll(unauthorized);
+				}
+			}
+
+		}
+		return down;
+	}
+
+	@RequestMapping(value = "/api/htbackend/getOutletUsageHistory/{nodeid}", method = RequestMethod.GET)
+	public List<HashMap> getOutletUsageHistory(@PathVariable(value = "nodeid") int nodeid,
+			@RequestParam(value = "portname", required = true) String portname) {
+		Map<String, Object> map = new HashMap<String, Object>();
+		map.put("nodeid", nodeid);
+		map.put("portname", portname);
+		List<HashMap> down = service.getConnectionDiagramBottomUp(map);
+		if (down != null && !down.isEmpty()) {
+			map.put("switch_macaddress", down.get(0).get("mac_address"));
+		}
+		return service.getOutletUsageHistory(map);
+	}
+
+	@RequestMapping(value = "/api/htbackend/getSwitchPortUsageHistory/{nodeid}", method = RequestMethod.GET)
+	public List<HashMap> getSwitchPortUsageHistory(@PathVariable(value = "nodeid") int nodeid,
+			@RequestParam(value = "portname", required = true) String portname) {
+		Map<String, Object> map = new HashMap<String, Object>();
+		map.put("nodeid", nodeid);
+		map.put("portname", portname);
+		String mac = service.getSwitchMac(map);
+		if (mac != null && !mac.isEmpty()) {
+			map.put("switch_macaddress", mac);
+		}
+		return service.getOutletUsageHistory(map);
+	}
+	
+	@RequestMapping(value = "/api/htbackend/getNetworkNodePortStatus/{nodeid}", method = RequestMethod.GET)
+	public List<HashMap> getNetworkNodePortStatus(@PathVariable(value = "nodeid") int nodeid) {
+		return service.getNetworkNodePortStatus(nodeid);
+	}
+
+	@RequestMapping(value = "/api/htbackend/getAlarmStatus/{nodeid}", method = RequestMethod.GET)
+	public List<HashMap> getAlarmStatus(@PathVariable(value = "nodeid") int nodeid) {
+		return service.getAlarmStatus(nodeid);
+	}
+
+	@RequestMapping(value = "/api/htbackend/getChildrensAlarmStatus/{nodeid}", method = RequestMethod.GET)
+	public List<HashMap> getChildrensAlarmStatus(@PathVariable(value = "nodeid") int nodeid) {
+		return service.getChildrensAlarmStatus(nodeid);
+	}
+
+	@RequestMapping(value = "/api/htbackend/getChildrensDirectStatus/{nodeid}", method = RequestMethod.GET)
+	public List<HashMap> getChildrensDirectStatus(@PathVariable(value = "nodeid") int nodeid) {
+		return service.getChildrensDirectStatus(nodeid);
+	}
+
+	@RequestMapping(value = "/htbackend/searchIPTerminal", method = RequestMethod.GET)
+	public List<HashMap> searchIPTerminal(HttpSession session,
+			@RequestParam(value = "keyword", required = false) String keyword) {
+
+		Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
+		String systemUserName = null;
+		String systemUserRole = null;
+		if (principal instanceof UserDetails) {
+			systemUserName = ((UserDetails) principal).getUsername();
+			systemUserRole = ((UserDetails) principal).getAuthorities().iterator().next().getAuthority();
+		}
+		logger.debug("systemUserName=" + systemUserName + " systemUserRole=" + systemUserRole);
+		if (systemUserRole == null || systemUserName == null) {
+			systemUserRole = (String) session.getAttribute("systemUserRole");
+			systemUserName = (String) session.getAttribute("systemUserName");
+		}
+		Map<String, String> map = new HashMap<String, String>();
+		map.put("keyword", keyword);
+		if (systemUserRole.equalsIgnoreCase("Administrators")) {
+			return service.searchIPTerminal(map);
+		} else {
+			map.put("systemUserName", systemUserName);
+			return service.searchIPTerminal(map);
+		}
+
+	}
+
+	@RequestMapping(value = "/api/htbackend/getUsageHistory20181111", method = RequestMethod.GET)
+	public List<HashMap> getUsageHistory20181111(@RequestParam(value = "mac_address", required = true) String mac_address) {
+		List<String> macs = Arrays.asList(mac_address.split("[\\s,]+"));
+		List<HashMap> rtnVal = new ArrayList<HashMap>();
+		for(String mac : macs){
+			rtnVal.addAll(service.getUsageHistory(mac));
+		}
+		return rtnVal;
+	}
+	@RequestMapping(value = "/api/htbackend/getUsageHistory", method = RequestMethod.GET)
+	public List<HashMap> getUsageHistory(@RequestParam(value = "enduser_name", required = true) String enduser_name) {
+		return service.getUsageHistory(enduser_name);
+	}
+	@RequestMapping(value = "/api/htbackend/getConnectionDiagramIPAM", method = RequestMethod.GET)
+	public List<HashMap> getConnectionDiagramIPAM(
+			@RequestParam(value = "mac_address", required = true) String mac_address) {
+
+		List<HashMap> top = service.getConnectionDiagramTopDownIPAM(mac_address);
+		List<HashMap> down = service.getConnectionDiagramBottomUpIPAM(mac_address);
+		if (down == null || down.isEmpty()) {
+			if (top != null && !top.isEmpty()) {
+				Map<String, Object> map = new HashMap<String, Object>();
+				String switch_macaddress = (String) top.get((0)).get("mac_address");
+				map.put("switch_mac", switch_macaddress);
+				List<HashMap> enduser = service.getConnectionDiagramEndUser(map);
+
+				if (!enduser.isEmpty()) {
+					HashMap last = top.get(top.size() - 1);
+					last.put("connectorimage", enduser.get(0).get("connectorimage"));
+					enduser.get(0).put("connectorimage", null);
+					top.addAll(enduser);
+				} else {
+					List<HashMap> unauthorized = service.getConnectionDiagramUnauthorized(map);
+					if (!unauthorized.isEmpty()) {
+						HashMap last = top.get(top.size() - 1);
+						last.put("connectorimage", unauthorized.get(0).get("connectorimage"));
+						unauthorized.get(0).put("connectorimage", null);
+						top.addAll(unauthorized);
+					}
+				}
+
+			}
+			return top;
+		}
+		Map<String, Object> map = new HashMap<String, Object>();
+		String switch_macaddress = (String) down.get((0)).get("mac_address");
+		map.put("switch_mac", switch_macaddress);
+		List<HashMap> enduser = service.getConnectionDiagramEndUser(map);
+		if (top == null || top.isEmpty()) {
+			if (!enduser.isEmpty()) {
+				HashMap last = down.get(down.size() - 1);
+				last.put("connectorimage", enduser.get(0).get("connectorimage"));
+				enduser.get(0).put("connectorimage", null);
+				down.addAll(enduser);
+			} else {
+				List<HashMap> unauthorized = service.getConnectionDiagramUnauthorized(map);
+				if (!unauthorized.isEmpty()) {
+					HashMap last = down.get(down.size() - 1);
+					last.put("connectorimage", unauthorized.get(0).get("connectorimage"));
+					unauthorized.get(0).put("connectorimage", null);
+					down.addAll(unauthorized);
+				}
+			}
+
+			return down;
+		} else {
+			down.remove(down.size() - 1);
+			down.addAll(top);
+
+			if (!enduser.isEmpty()) {
+				HashMap last = down.get(down.size() - 1);
+				last.put("connectorimage", enduser.get(0).get("connectorimage"));
+				enduser.get(0).put("connectorimage", null);
+				down.addAll(enduser);
+			} else {
+				List<HashMap> unauthorized = service.getConnectionDiagramUnauthorized(map);
+				if (!unauthorized.isEmpty()) {
+					HashMap last = down.get(down.size() - 1);
+					last.put("connectorimage", unauthorized.get(0).get("connectorimage"));
+					unauthorized.get(0).put("connectorimage", null);
+					down.addAll(unauthorized);
+				}
+			}
+
+		}
+		return down;
+	}
+
+	@RequestMapping(value = "/api/htbackend/searchCMSEntity", method = RequestMethod.GET)
+	public List<HashMap> searchCMSEntity(@RequestParam(value = "keyword", required = false) String keyword,
+			@RequestParam(value = "type", required = false) Integer type, 
+			@RequestParam(value = "site_id", required = false) Integer site_id
+			, @RequestParam(value = "bld_entity_id", required = false) Integer bld_entity_id) {
+
+		Map<String, Object> map = new HashMap<String, Object>();
+		map.put("keyword", keyword);
+		map.put("type", type);
+		map.put("site_id", site_id);
+		map.put("bld_entity_id", bld_entity_id);
+		List<HashMap> list = service.searchCMSEntity(map);
+		// service.getSiteTreeHierarchy();
+		return list;
+
+	}
+	@RequestMapping(value = "/api/htbackend/searchCMSEntitySummary", method = RequestMethod.GET)
+	public List<HashMap> searchCMSEntitySummary(@RequestParam(value = "keyword", required = false) String keyword,
+			@RequestParam(value = "type", required = false) Integer type, 
+			@RequestParam(value = "site_id", required = false) Integer site_id
+			, @RequestParam(value = "bld_entity_id", required = false) Integer bld_entity_id
+			, @RequestParam(value = "floorflag", required = false) String floorflag) {
+
+		Map<String, Object> map = new HashMap<String, Object>();
+		map.put("keyword", keyword);
+		map.put("type", type);
+		map.put("site_id", site_id);
+		map.put("bld_entity_id", bld_entity_id);
+		map.put("floorflag", floorflag);
+		List<HashMap> list = service.searchCMSEntitySummary(map);
+		// service.getSiteTreeHierarchy();
+		return list;
+
+	}
+
+	@RequestMapping(value = "/api/htbackend/getAuthList", method = RequestMethod.GET)
+	public List<HashMap> getAuthList(@RequestParam(value = "siteid", required = true) Integer siteid) {
+		return service.getAuthList(siteid);
+	}
+
+	@RequestMapping(value = "/api/htbackend/getAvailableSystemUser", method = RequestMethod.GET)
+	public List<HashMap> getAvailableSystemUser(@RequestParam(value = "siteid", required = true) Integer siteid) {
+		return service.getAvailableSystemUser(siteid);
+	}
+
+	@RequestMapping(value = "/api/htbackend/addAuthorizedSystemUser", method = RequestMethod.GET)
+	public int addAuthorizedSystemUser(@RequestParam(value = "cms_site_id", required = true) Integer cms_site_id,
+			@RequestParam(value = "systemuser_id", required = true) Integer systemuser_id) {
+		Map<String, Object> map = new HashMap<String, Object>();
+		map.put("cms_site_id", cms_site_id);
+		map.put("systemuser_id", systemuser_id);
+		return service.addAuthorizedSystemUser(map);
+	}
+
+	@RequestMapping(value = "/api/htbackend/removeAuthorizedSystemUser", method = RequestMethod.GET)
+	public int removeAuthorizedSystemUser(@RequestParam(value = "cms_site_id", required = true) Integer cms_site_id,
+			@RequestParam(value = "systemuser_id", required = true) Integer systemuser_id) {
+		Map<String, Object> map = new HashMap<String, Object>();
+		map.put("cms_site_id", cms_site_id);
+		map.put("systemuser_id", systemuser_id);
+		return service.removeAuthorizedSystemUser(map);
+	}
+
+	@RequestMapping(value = "/api/htbackend/getAuthList2", method = RequestMethod.GET)
+	public List<HashMap> getAuthList2(@RequestParam(value = "mainpageid", required = true) Integer mainpageid) {
+		return service.getAuthList2(mainpageid);
+	}
+
+	@RequestMapping(value = "/api/htbackend/getAvailableSystemUser2", method = RequestMethod.GET)
+	public List<HashMap> getAvailableSystemUser2(
+			@RequestParam(value = "mainpageid", required = true) Integer mainpageid) {
+		return service.getAvailableSystemUser2(mainpageid);
+	}
+
+	@RequestMapping(value = "/api/htbackend/addAuthorizedSystemUser2", method = RequestMethod.GET)
+	public int addAuthorizedSystemUser2(@RequestParam(value = "mainpage_id", required = true) Integer mainpage_id,
+			@RequestParam(value = "systemuser_id", required = true) Integer systemuser_id) {
+		Map<String, Object> map = new HashMap<String, Object>();
+		map.put("mainpage_id", mainpage_id);
+		map.put("systemuser_id", systemuser_id);
+		return service.addAuthorizedSystemUser2(map);
+	}
+
+	@RequestMapping(value = "/api/htbackend/removeAuthorizedSystemUser2", method = RequestMethod.GET)
+	public int removeAuthorizedSystemUser2(@RequestParam(value = "mainpage_id", required = true) Integer mainpage_id,
+			@RequestParam(value = "systemuser_id", required = true) Integer systemuser_id) {
+		Map<String, Object> map = new HashMap<String, Object>();
+		map.put("mainpage_id", mainpage_id);
+		map.put("systemuser_id", systemuser_id);
+		return service.removeAuthorizedSystemUser2(map);
+	}
+
+	@RequestMapping(value = "/api/htbackend/getMainPageLayoutByPageID/{id}", method = RequestMethod.GET)
+	public List<HashMap> getMainPageLayoutByPageID(@PathVariable(value = "id") int id) {
+		return service.getMainPageLayoutByPageID(id);
+	}
+
+	@RequestMapping(value = "/api/htbackend/getAvailableLayoutTheme", method = RequestMethod.GET)
+	public List<HashMap> getAvailableLayoutTheme() {
+		return service.getAvailableLayoutTheme();
+	}
+
+	@Transactional(rollbackFor = Exception.class)
+	@RequestMapping(value = "/htbackend/setToDefaultMainPageLayout/{mainpageid}", method = RequestMethod.GET)
+	public int setToDefaultMainPageLayout(HttpSession session, @PathVariable(value = "mainpageid") int mainpageid) {
+
+		Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
+		String systemUserName = null;
+		String systemUserRole = null;
+		if (principal instanceof UserDetails) {
+			systemUserName = ((UserDetails) principal).getUsername();
+			systemUserRole = ((UserDetails) principal).getAuthorities().iterator().next().getAuthority();
+		}
+		logger.debug("systemUserName=" + systemUserName + " systemUserRole=" + systemUserRole);
+		if (systemUserRole == null || systemUserName == null) {
+			systemUserRole = (String) session.getAttribute("systemUserRole");
+			systemUserName = (String) session.getAttribute("systemUserName");
+		}
+		Map<String, Object> map = new HashMap<String, Object>();
+		map.put("systemUserRole", systemUserRole);
+		map.put("systemUserName", systemUserName);
+		map.put("mainpage_id", mainpageid);
+
+		if (systemUserRole.equalsIgnoreCase("Administrators")) {
+			int count = service.setToDefaultMainPageLayoutAdmin(map);
+			if (count == 0) {
+				count = service.addDefaultMainPageLayoutAdmin(map);
+			}
+			return count;
+		}
+		service.setToDefaultMainPageLayoutReset(map);
+		return service.setToDefaultMainPageLayout(map);
+	}
+	
+	@Transactional(rollbackFor = Exception.class)
+	@RequestMapping(value = "/api/htbackend/registerSiteTreeInBulk", method = RequestMethod.POST)
+	public HashMap registerSiteTreeInBulk(@RequestBody HashMap vo) {
+		Integer node_id = (Integer) vo.get("id");
+		Integer site_id = (Integer) vo.get("site_id");
+		ArrayList<Object> children = (ArrayList<Object>) vo.get("children");
+		Iterator<Object> itr = children.iterator();
+		int level_rank_child = 1;
+		int cnt = 0;
+		while (itr.hasNext()) {
+			Object node = itr.next();
+			processNode(site_id, node_id, 1, level_rank_child++, (HashMap) node);
+			logger.debug(">>>>>>>>>>>>iterator=" + (cnt++));
+		}
+
+		return vo;
+	}
+
+	private void processNode(int site_id, Integer parent_id, int level, int level_rank, HashMap vo) {
+
+		// entityParam
+		String asset_tag = (String) vo.get("asset_tag");
+		String comments = (String) vo.get("comments");
+		String displayname = (String) vo.get("displayname");
+		String ip = (String) vo.get("ip");
+		String name = (String) vo.get("name");
+		String opm_category = (String) vo.get("opm_category");
+		String opm_name = (String) vo.get("opm_name");
+		String shape = (String) vo.get("shape");
+		Integer category_id = (Integer) vo.get("category_id");
+
+		// siteTreeParam
+		Integer type_id = (Integer) vo.get("type");
+
+		EntityVO entityParam = new EntityVO();
+		if (asset_tag != null)
+			entityParam.setAsset_tag(asset_tag);
+		if (category_id != null)
+			entityParam.setCategory_id(category_id);
+		if (comments != null)
+			entityParam.setComments(comments);
+		if (displayname != null)
+			entityParam.setDisplayname(displayname);
+		if (ip != null)
+			entityParam.setIp(ip);
+		if (name != null)
+			entityParam.setName(name);
+		if (opm_category != null)
+			entityParam.setOpm_category(opm_category);
+		if (opm_name != null)
+			entityParam.setOpm_name(opm_name);
+		if (shape != null)
+			entityParam.setShape(shape);
+
+		service.insertEntityParam(entityParam);
+		int entityid = entityParam.getId();
+		// vo.put("id", entityid);
+		vo.put("entityParam", entityParam);
+
+		// insert interfaces for entity
+		int category = entityParam.getCategory_id();
+		int total_port = 0;
+		Integer total_port_ = service.getTotalPortByCategory(category);
+		if (total_port_ != null)
+			total_port = total_port_.intValue();
+		for (int i = 1; i <= total_port; i++) {
+			InterfaceVO ivo = new InterfaceVO();
+			ivo.setEntity_id(entityid);
+			ivo.setName(i + "");
+			Map<String, String> map2 = new HashMap<String, String>();
+			map2.put("switch_name", entityParam.getOpm_name());
+			map2.put("portno", i + "");
+			HashMap<String, Object> info = service.getNMSInterfaceInfo(map2);
+			if (info != null) {
+				String desc = (String) info.get("ifdescr");
+				String mac = (String) info.get("macaddress");
+				Long ifindex = (Long) info.get("ifindex");
+				if (desc != null)
+					ivo.setDescription(desc);
+				if (mac != null)
+					ivo.setMac_address(mac);
+				if (ifindex != null)
+					ivo.setIfindex(ifindex.intValue());
+			}
+
+			service.insertInterface(ivo);
+		}
+
+		// sitetree
+		SiteTreeVO siteTreeParam = new SiteTreeVO();
+		// vo.put("entity_id", entityid);
+		siteTreeParam.setEntity_id(entityid);
+		// vo.put("level", level);
+		siteTreeParam.setLevel(level);
+		// vo.put("level_rank", level_rank);
+		siteTreeParam.setLevel_rank(level_rank);
+		// vo.put("parent_id", parent_id);
+		siteTreeParam.setParent_id(parent_id);
+		// vo.put("site_id", site_id);
+		siteTreeParam.setSite_id(site_id);
+		// vo.put("type_id", type_id);
+		siteTreeParam.setType_id(type_id);
+
+		service.insertSiteTreeParam(siteTreeParam);
+		int sitetreeid = siteTreeParam.getId();
+
+		vo.put("siteTreeParam", siteTreeParam);
+
+		int type = siteTreeParam.getType_id();
+		// String inCondition = "('Rackspace', 'Floor')";
+		Map<String, Object> map = new HashMap<String, Object>();
+		map.put("type", type);
+		map.put("name", "Rackspace");
+
+		int rtnVal = service.checkTypeMatch(map);
+		map.put("name", "Floor");
+		rtnVal += service.checkTypeMatch(map);
+
+		int sitetree_placement_id = 0;
+		// Rackspace or Floor
+		if (rtnVal >= 1) {
+			// Rackspace or Floor
+			String json_data = (String) vo.get("json_data");
+			if (json_data == null) {
+				json_data = "";
+			}
+			SiteTreePlacementVO placement = new SiteTreePlacementVO();
+			placement.setJson_data(json_data);
+			placement.setSitetree_id(sitetreeid);
+			service.insertSiteTreePlacement(placement);
+			sitetree_placement_id = placement.getId();
+
+		}
+
+		ArrayList<Object> children = (ArrayList<Object>) vo.get("children");
+		if (children != null) {
+			List<Integer> childrenEntity = new ArrayList<Integer>();
+			List<Integer> positionRack = new ArrayList<Integer>();
+			Iterator<Object> itr = children.iterator();
+			int level_rank_child = 1;
+			while (itr.hasNext()) {
+				HashMap node = (HashMap) itr.next();
+				processNode(site_id, sitetreeid, level + 1, level_rank_child++, node);
+
+				map.put("name", "Area");
+				map.put("type", node.get("type"));
+				if (service.checkTypeMatch(map) > 0) {
+					ArrayList<Object> grandchildren = (ArrayList<Object>) node.get("children");
+					Iterator<Object> granditr = grandchildren.iterator();
+					while (granditr.hasNext()) {
+						HashMap grandnode = (HashMap) granditr.next();
+						childrenEntity.add((((EntityVO) grandnode.get("entityParam")).getId()));
+					}
+
+				} else {
+					map.put("name", "Rack");
+					map.put("type", node.get("type"));
+					if (service.checkTypeMatch(map) > 0) {
+						ArrayList<Object> grandchildren = (ArrayList<Object>) node.get("children");
+						Iterator<Object> granditr = grandchildren.iterator();
+						while (granditr.hasNext()) {
+							HashMap grandnode = (HashMap) granditr.next();
+							childrenEntity.add((((EntityVO) grandnode.get("entityParam")).getId()));
+							positionRack.add(level_rank_child - 1);
+						}
+					} else { // Floor
+						childrenEntity.add((((EntityVO) node.get("entityParam")).getId()));
+					}
+
+				}
+			}
+			if (rtnVal >= 1 && sitetree_placement_id > 0) {
+				vo.put("childrenEntity", childrenEntity);
+				for (Integer entity : childrenEntity) {
+					Map<String, Integer> map2 = new HashMap<String, Integer>();
+					map2.put("sitetree_placement_id", sitetree_placement_id);
+					map2.put("entity_id", entity);
+					service.insertChildrenEntityIntoPlacement(map2);
+				}
+
+				map.put("name", "Rackspace");
+				map.put("type", type);
+				rtnVal = service.checkTypeMatch(map);
+				if (rtnVal == 1) {
+
+					if (positionRack.size() > 0) {
+						List<SiteTreeRackspacePositionVO> rackPositions = new ArrayList<SiteTreeRackspacePositionVO>();
+						int u_index = 1;
+						int rack_index = positionRack.get(0);
+						for (int index = 0; index < childrenEntity.size(); index++) {
+							SiteTreeRackspacePositionVO rackPosition = new SiteTreeRackspacePositionVO();
+							rackPosition.setSitetree_palcement_entity_id(childrenEntity.get(index));
+							rackPosition.setPosition_front(true);
+							rackPosition.setPosition_rack(positionRack.get(index));
+							rackPosition.setSitetree_placement_id(sitetree_placement_id);
+							if (rack_index != positionRack.get(index)) {
+								u_index = 1;
+								rack_index = positionRack.get(index);
+							}
+							rackPosition.setPosition_u(u_index);
+							Integer u_height = service.getUHeightBuyEntityID(childrenEntity.get(index));
+							if (u_height != null) {
+								u_index += u_height;
+							} else {
+								u_index++;
+							}
+							service.insertRackspacePosition(rackPosition);
+							rackPositions.add(rackPosition);
+						}
+						vo.put("rackPositions", rackPositions);
+					}
+
+				}
+			}
+		}
+
+	}
+
+	@RequestMapping(value = "/api/htbackend/scanNetwork/{networkid}", method = RequestMethod.GET)
+	public String scanNetwork(@PathVariable(value = "networkid") int id) {
+
+		String NMS_URL = env.getProperty("system.nms.ip4");
+		if (NMS_URL == null || NMS_URL.isEmpty()) {
+			NMS_URL = "http://192.168.0.79/";
+		}
+		CloseableHttpClient httpClient = HttpClients.createDefault();
+		HttpGet httpGet = new HttpGet(NMS_URL + "servlet/IpamRequestServlet?req_id=scan_now&network_id=" + id);
+		httpGet.addHeader("User-Agent", "Mozilla/5.0");
+		CloseableHttpResponse httpResponse = null;
+		String rtnVal = "";
+		try {
+			httpResponse = httpClient.execute(httpGet);
+			BufferedReader reader = new BufferedReader(new InputStreamReader(httpResponse.getEntity().getContent()));
+
+			String inputLine;
+			StringBuffer response = new StringBuffer();
+
+			while ((inputLine = reader.readLine()) != null) {
+				response.append(inputLine);
+			}
+			reader.close();
+			// System.out.println(response.toString());
+			httpClient.close();
+
+			JSONObject json = new JSONObject();
+			json.put("Result", response.toString());
+			rtnVal = json.toString();
+
+		} catch (IOException | JSONException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		return rtnVal;
+
+	}
+
+	@RequestMapping(value = "/api/htbackend/manageSwitchPort", method = RequestMethod.GET)
+	public String manageSwitchPort(@RequestParam HashMap<String, String> requestParams) {
+		String req_id = requestParams.get("req_id");
+		String ifindex = requestParams.get("ifindex");
+		String opm_name = requestParams.get("opm_name");
+		String NMS_URL = env.getProperty("system.nms.ip4");
+		if (NMS_URL == null || NMS_URL.isEmpty()) {
+			NMS_URL = "http://192.168.0.79/";
+		}
+		CloseableHttpClient httpClient = HttpClients.createDefault();
+		HttpGet httpGet = new HttpGet(NMS_URL + "servlet/IpamRequestServlet?req_id=" + req_id + "&ifindex=" + ifindex
+				+ "&switch_name=" + opm_name);
+		httpGet.addHeader("User-Agent", "Mozilla/5.0");
+		CloseableHttpResponse httpResponse = null;
+		String rtnVal = "";
+		try {
+			httpResponse = httpClient.execute(httpGet);
+			BufferedReader reader = new BufferedReader(new InputStreamReader(httpResponse.getEntity().getContent()));
+
+			String inputLine;
+			StringBuffer response = new StringBuffer();
+
+			while ((inputLine = reader.readLine()) != null) {
+				response.append(inputLine);
+			}
+			reader.close();
+			// print result
+			// System.out.println(response.toString());
+			httpClient.close();
+
+			JSONObject json = new JSONObject();
+			if(response.toString().equalsIgnoreCase("SUCCESS")){
+				if(req_id.equalsIgnoreCase("port_up")){
+					json.put("Message", env.getProperty("system.message.portup.success"));
+				}else{
+					json.put("Message", env.getProperty("system.message.portdown.success"));
+				}
+			}else{
+				System.out.println(response.toString());
+				if(req_id.equalsIgnoreCase("port_up")){
+					json.put("Message", env.getProperty("system.message.portup.failure"));
+				}else{
+					json.put("Message", env.getProperty("system.message.portdown.failure"));
+				}
+			}
+			rtnVal = json.toString();
+
+		} catch (IOException | JSONException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			if(req_id.equalsIgnoreCase("port_up")){
+				rtnVal = new JSONObject().put("Message", env.getProperty("system.message.portup.failure")).toString();
+			}else{
+				rtnVal = new JSONObject().put("Message", env.getProperty("system.message.portdown.failure")).toString();
+			}			
+		}
+
+		return rtnVal;
+
+	}
+
+	@RequestMapping(value = "/api/htbackend/getMainPageLayoutDetail/{mainpageid}", method = RequestMethod.GET)
+	public String getMainPageLayoutDetail(@PathVariable(value = "mainpageid") int id) {
+		HashMap mainpage = service.getMainPageLayoutModelData(id);
+
+		JSONObject json = new JSONObject();
+		try {
+			json.put("mainpage", mainpage);
+		} catch (JSONException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		List<HashMap> widgets = service.getMainPageLayoutDetail(id);
+		try {
+			json.put("widgets", widgets);
+		} catch (JSONException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		return json.toString();
+	}
+
+	@Transactional(rollbackFor = Exception.class)
+	@RequestMapping(value = "/api/htbackend/saveMainPageLayoutDetail/{mainpageid}", method = RequestMethod.POST)
+	public int saveMainPageLayoutDetail(@PathVariable(value = "mainpageid") int id, @RequestBody HashMap vo) {
+		// put widget into mainpage_widget if widgetList is not empty
+
+		List<HashMap> widgetList = (List<HashMap>) vo.get("widgetList");
+		if (widgetList != null) {
+			for (HashMap<String, Object> widget : widgetList) {
+				Map<String, Object> map = new HashMap<String, Object>();
+				map.put("mainpage_id", id);
+				map.put("widget_id", widget.get("widget_id"));
+				map.put("samplewidget_id", widget.get("samplewidget_id"));
+				map.put("title", widget.get("title"));
+				map.put("rowindex", widget.get("rowindex"));
+				map.put("colindex", widget.get("colindex"));
+				if (widget.get("widget_id") != null) {
+					service.updateMainPageWidgetLayout(map);
+				} else {
+					// service.deleteAllWidgetFromMainPage(id);
+					service.deleteWidgetFromMainPage(map);
+					service.insertMainPageWidgetLayout(map);
+				}
+			}
+		}
+
+		Map<String, Object> map = new HashMap<String, Object>();
+		map.put("json_data", vo.get("json_data"));
+		map.put("id", id);
+
+		return service.saveMainPageLayoutDetail(map);
+	}
+
+	@RequestMapping(value = "/api/htbackend/resetMainPageWidget/{widgetid}", method = RequestMethod.GET)
+	public int resetMainPageWidget(@PathVariable(value = "widgetid") int widget_id,
+			@RequestParam(value = "mainpageid", required = true) int mainpageid) {
+		Map<String, Object> map = new HashMap<String, Object>();
+		map.put("mainpage_id", new Integer(mainpageid));
+		map.put("widget_id", new Integer(widget_id));
+		return service.resetMainPageWidget(map);
+	}
+
+	@RequestMapping(value = "/api/htbackend/openCMSViewer", method = RequestMethod.GET)
+	public void openCMSViewer(HttpServletResponse response,
+			@RequestParam(value = "devicename", required = true) String devicename) throws IOException {
+		// get site_id and node_id for devicename
+		String site_id = "";
+		String node_id = "";
+		String url = "/CMS404";
+		HashMap<String, Object> info = service.getCMSInfoForDevice(devicename);
+		if (info != null) {
+			Integer site_idl = (Integer) info.get("site_id");
+			Integer node_idl = (Integer) info.get("node_id");
+			if (site_idl != null) {
+				site_id = site_idl.toString();
+			} else {
+				response.sendRedirect(url);
+				return;
+			}
+			if (node_idl != null) {
+				node_id = node_idl.toString();
+			} else {
+				response.sendRedirect(url);
+				return;
+			}
+			url = "/ht/viewing-site-tree.html?siteid=" + site_id + "&nodeid=" + node_id;
+		}
+
+		response.sendRedirect(url);
+	}
+	@RequestMapping(value = "/api/htbackend/openDCIMEditor", method = RequestMethod.GET)
+	public void openDCIMEditor(HttpServletResponse response,
+			@RequestParam(value = "area_id", required = true) String area_id) throws IOException {
+		String url = "error";
+		Map<String, Object> map = new HashMap<String, Object>();
+
+		map.put("area_id", (area_id));
+		List<HashMap> info = service.getAreaDCIMWidget(map);
+		if (info != null && info.size()>0) {
+			
+			Integer dcim_widget_id = (Integer) info.get(0).get("dcim_widget_id");
+			Integer widgettype_id = (Integer) info.get(0).get("widgettype_id");
+			//dcim/preview-dcim-widget.html?widget_id=433&area_id=59080
+			url = "/ht/dcim-widget.html?widget_id=" + dcim_widget_id + "&area_id=" + area_id + "&widgetType=" + widgettype_id;
+		}else{
+			Integer widgettype_id = service.getDCIMWidgetTypeId();
+			url = "/ht/dcim-widget.html?" +  "area_id=" + area_id + "&widgetType=" + widgettype_id;
+		}
+
+		response.sendRedirect(url);
+	}
+	
+	@RequestMapping(value = "/api/htbackend/openDCIMViewer", method = RequestMethod.GET)
+	public void openDCIMViewer(HttpServletResponse response,
+			@RequestParam(value = "area_id", required = true) String area_id) throws IOException {
+		String url = "error";
+		Map<String, Object> map = new HashMap<String, Object>();
+
+		map.put("area_id", (area_id));
+		List<HashMap> info = service.getAreaDCIMWidget(map);
+		if (info != null && info.size()>0) {
+			
+			Integer dcim_widget_id = (Integer) info.get(0).get("dcim_widget_id");
+			Integer site_id = (Integer) info.get(0).get("site_id");
+			//dcim/preview-dcim-widget.html?widget_id=433&area_id=59080
+			url = "/ht/preview-dcim-widget.html?widget_id=" + dcim_widget_id + "&area_id=" + area_id + "&site_id=" + site_id;
+		}
+
+		response.sendRedirect(url);
+	}
+	@RequestMapping(value = "/api/htbackend/getCompatibleWidgetForLayout", method = RequestMethod.GET)
+	public List<HashMap> getCompatibleWidgetForLayout(@RequestParam HashMap<String, String> requestParams) {
+		String samplewidget_id = requestParams.get("samplewidget_id");
+		String widget_id = requestParams.get("widget_id");
+		if (widget_id.equalsIgnoreCase("undefined") || widget_id.equalsIgnoreCase("null"))
+			widget_id = "0";
+		Map<String, Object> map = new HashMap<String, Object>();
+		map.put("samplewidget_id", new Integer(samplewidget_id));
+		map.put("widget_id", new Integer(widget_id));
+		return service.getCompatibleWidgetForLayout(map);
+	}
+
+	@RequestMapping(value = "/api/htbackend/getAvailableDataProvider/{widgettype_id}", method = RequestMethod.GET)
+	public List<HashMap> getAvailableDataProvider(@PathVariable(value = "widgettype_id") int widgettype_id) {
+		return service.getAvailableDataProvider(widgettype_id);
+	}
+
+	@Transactional(rollbackFor = Exception.class)
+	@RequestMapping(value = "/api/htbackend/saveMainPageWidget", method = RequestMethod.POST)
+	public ChartWidgetVO saveMainPageWidget(@RequestBody ChartWidgetVO vo) {
+		if (vo.getId() == 0) {
+			service.insertMainPageWidget(vo);
+			// int widget_id = vo.getId();
+		} else {
+			service.updateMainPageWidget(vo);
+		}
+		Map<String, Object> map = new HashMap<String, Object>();
+		map.put("mainpage_id", vo.getMainpage_id());
+		map.put("rowindex", vo.getRowindex());
+		map.put("colindex", vo.getColindex());
+		map.put("widget_id", vo.getId());
+		map.put("title", vo.getTitle());
+		service.updateMainPageWidgetLayout(map);
+		return vo;
+	}
+
+	@RequestMapping(value = "/api/htbackend/getLinkageImageForType/{typeid}", method = RequestMethod.GET)
+	public String getLinkageImageForType(@PathVariable(value = "typeid") int type_id) {
+		return service.getLinkageImageForType(type_id);
+	}
+
+	@RequestMapping(value = "/api/htbackend/getMainpageWidgetTypeIDByName/{typename}", method = RequestMethod.GET)
+	public Integer getMainpageWidgetTypeIDByName(@PathVariable(value = "typename") String typename) {
+		return service.getMainpageWidgetTypeIDByName(typename);
+	}
+
+	@RequestMapping(value = "/api/htbackend/getAvailableFloorMapImg", method = RequestMethod.GET)
+	public List<HashMap> getAvailableFloorMapImg() {
+		// System.out.println( new File(".").getAbsolutePath());
+		String UPLOADED_FOLDER = env.getProperty("system.floormap.directory");
+		if (UPLOADED_FOLDER == null || UPLOADED_FOLDER.isEmpty()) {
+			UPLOADED_FOLDER = "/floormaps/";
+		}
+		List<HashMap> rtnVal = new ArrayList<HashMap>();
+		File directory = new File(UPLOADED_FOLDER);
+
+		File[] fList = directory.listFiles();
+		for (File file : fList) {
+			if (file.isFile()) {
+				HashMap<String, Object> map = new HashMap<String, Object>();
+				map.put("filename", UPLOADED_FOLDER + file.getName());
+				rtnVal.add(map);
+			}
+		}
+		return rtnVal;
+	}
+
+	@RequestMapping(value = "/api/htbackend/singleFileUpload", method = RequestMethod.POST)
+    public HashMap singleFileUpload(@RequestParam("file") MultipartFile file) {
+		HashMap rtnVal = new HashMap();
+		String UPLOADED_FOLDER = env.getProperty("system.floormap.directory");
+		if (UPLOADED_FOLDER == null || UPLOADED_FOLDER.isEmpty()) {
+			UPLOADED_FOLDER = "/floormaps/";
+		}
+        if (file.isEmpty()) {
+            rtnVal.put("Result", "Error - File Is Empty");
+        }
+
+        try {
+            // Get the file and save it somewhere
+            byte[] bytes = file.getBytes();
+            Path path = Paths.get(UPLOADED_FOLDER + file.getOriginalFilename());
+            Files.write(path, bytes);
+            //rtnVal.put("Result", "Success - File stored @" + UPLOADED_FOLDER + file.getOriginalFilename());
+            rtnVal.put("Result", "Success");
+
+        } catch (IOException e) {
+            e.printStackTrace();
+            rtnVal.put("Result", "Error - " + e.getMessage());
+        }
+
+		return rtnVal;
+	}
+
+	@RequestMapping(value = "/api/htbackend/filesUpload", method = RequestMethod.POST)
+    public HashMap filesUpload(@RequestParam("files") MultipartFile[] uploadfiles) {
+		HashMap rtnVal = new HashMap();
+		String UPLOADED_FOLDER = env.getProperty("system.floormap.directory");
+		if (UPLOADED_FOLDER == null || UPLOADED_FOLDER.isEmpty()) {
+			UPLOADED_FOLDER = "/floormaps/";
+		}
+		this.logger.debug("size="+uploadfiles.length + " " +uploadfiles.toString());
+        /*String uploadedFileName = Arrays.stream(uploadfiles).map(x -> x.getOriginalFilename())
+                .filter(x -> !StringUtils.isEmpty(x)).collect(Collectors.joining(" , "));
+
+        if (StringUtils.isEmpty(uploadedFileName)) {
+        	rtnVal.put("Result", "Error - File Is Empty");
+        	return rtnVal;
+        }*/
+        try {            
+            for (MultipartFile file : uploadfiles) {
+
+                if (file.isEmpty()) {
+                    continue; //next pls
+                }
+
+                byte[] bytes = file.getBytes();
+                Path path = Paths.get(UPLOADED_FOLDER + file.getOriginalFilename());
+                Files.write(path, bytes);
+
+            }       
+            rtnVal.put("Result", "Success");
+        } catch (IOException e) {
+        	e.printStackTrace();
+        	rtnVal.put("Result", "Error - " + e.getMessage());
+        }
+       
+        return rtnVal;
+        
+	}
+	
+	@RequestMapping(value = "/api/htbackend/getDeviceInterfaces/{q:.+}", method = RequestMethod.GET)
+	public List<HashMap> getDeviceInterfaces(@PathVariable(value = "q") String devicename) {
+		return service.getDeviceInterfaces(devicename);
+	}
+
+	@RequestMapping(value = "/api/htbackend/getAvailableDevicesInRack", method = RequestMethod.GET)
+	public List<HashMap> getAvailableDevicesInRack(@RequestParam HashMap<String, Object> requestParams) {
+		Map<String, Object> map = new HashMap<String, Object>();
+		String source = (String)requestParams.get("source");
+		String target = (String)requestParams.get("target");
+		if(source != null && source.length()>0){
+			map.put("source", Integer.parseInt(source));
+		}
+		if(target != null && target.length()>0){
+			map.put("target", Integer.parseInt(target));
+		}
+		return service.getAvailableDevicesInRack(map);
+	}
+	
+	@RequestMapping(value = "/api/htbackend/get3DRackDetail", method = RequestMethod.GET)
+	public HashMap get3DRackDetail(@RequestParam HashMap<String, Object> requestParams) {
+		HashMap rtnVal = new HashMap();
+		String rack_node_id = (String)requestParams.get("rack_node_id");
+		String dcim_widget_id = (String)requestParams.get("dcim_widget_id");
+		if(rack_node_id != null && rack_node_id.length()>0){
+			rtnVal.put("detail", service.get3DRackDetail(Integer.parseInt(rack_node_id)));	
+		}
+		if(dcim_widget_id != null && dcim_widget_id.length()>0){
+			rtnVal.put("racks", service.getAllRacksInDCIM(Integer.parseInt(dcim_widget_id)));
+		}
+		return rtnVal;
+	}		
+	
+	@RequestMapping(value = { "/api/htbackend/getEdgeStatus/{q:.+}"}, method = RequestMethod.GET)
+	public HashMap getEdgeStatus(@PathVariable(value = "q", required = true) String interfacename) {
+		HashMap rtnVal = new HashMap();
+		if (!interfacename.isEmpty()) {
+			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.S");
+			Date currentDate = new Date();
+			System.out.println(sdf.format(currentDate));
+
+			// convert date to calendar
+			Calendar c = Calendar.getInstance();
+			c.setTime(currentDate);
+			c.set(Calendar.MINUTE, 0);
+			c.set(Calendar.SECOND, 0);
+			c.set(Calendar.MILLISECOND, 0);
+			c.add(Calendar.DATE, -2);
+			Date starttime = c.getTime();
+			c.add(Calendar.DATE, 2);
+			Date endtime = c.getTime();
+
+			String starttimehr = sdf.format(starttime);
+			String endtimehr = sdf.format(endtime);
+
+			Map<String, Object> map2 = new HashMap<String, Object>();
+			map2.put("fromtime", starttime.getTime());
+			map2.put("endtime", endtime.getTime());
+			map2.put("lookuptable", "IfHCRaw");
+			String tablename = widgetService.getTableNameFromMetaTable(map2);
+
+			Map<String, Object> map = new HashMap<String, Object>();
+			//map.put("starttimehr", starttime);
+			//map.put("endtimehr", endtime);
+			map.put("interfacename", interfacename);
+			map.put("tablename", "IfHCRaw_" + tablename);
+			//List<HashMap> traffic = service.getEdgeStatus(map);			
+
+			rtnVal.put("result", service.getEdgeStatus(map));			
+		} else {
+			rtnVal.put("result", null);	
+		}
+		return rtnVal;
+	}	
+	
+	@RequestMapping(value = "/api/htbackend/retrievePortUsageRate", method = RequestMethod.GET)
+	public List<HashMap> retrievePortUsageRate(@RequestParam HashMap<String, Object> requestParams) {
+		String sid = (String)requestParams.get("site_id");
+		String bid = (String)requestParams.get("bld_entity_id");
+		String type =  (String)requestParams.get("type");
+		Map<String, Object> map = new HashMap<String, Object>();
+		if(sid != null && sid.length()>0){
+			map.put("site_id", Integer.parseInt(sid));
+		}
+		if(bid != null && bid.length()>0){
+			map.put("bld_entity_id", Integer.parseInt(bid));
+		}
+		if(type != null && type.length()>0){
+			map.put("type", type);
+		}	
+		return service.retrievePortUsageRate(map);
+		/*
+		if(type.equalsIgnoreCase("switch")){
+			return service.retrieveSwitchPortUsageRate(map);
+		}else{
+			return service.retrievePatchPortUsageRate(map);
+		}*/
+		
+	}
+
+	@RequestMapping(value = "/api/htbackend/getSiteList", method = RequestMethod.GET)
+	public List<HashMap> getCMSList(HttpSession session, @RequestParam HashMap<String, Object> requestParams) {
+/*
+		Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
+		String systemUserName = null;
+		String systemUserRole = null;
+		if (principal instanceof UserDetails) {
+			systemUserName = ((UserDetails) principal).getUsername();
+			systemUserRole = ((UserDetails) principal).getAuthorities().iterator().next().getAuthority();
+		}
+		this.logger.debug("systemUserName=" + systemUserName + " systemUserRole=" + systemUserRole);
+		if ((systemUserRole == null) || (systemUserName == null)) {
+			systemUserRole = (String) session.getAttribute("systemUserRole");
+			systemUserName = (String) session.getAttribute("systemUserName");
+		}
+		Map<String, String> map = new HashMap<>();
+		map.put("systemUserRole", systemUserRole);
+		map.put("systemUserName", systemUserName);*/
+		Map<String, String> map = new HashMap<>();
+		String siteid = (String)requestParams.get("site_id");
+		if(siteid == null || siteid.isEmpty()){
+			return service.getCMSSiteList(map);
+		}
+		int id = Integer.parseInt(siteid);
+		return service.getCMSBuildingList(id);
+	}
+	
+	@RequestMapping(value = "/api/htbackend/getCMSFSubList", method = RequestMethod.GET)
+	public List<HashMap> getFloorList(HttpSession session, @RequestParam HashMap<String, Object> requestParams) {
+/*
+		Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
+		String systemUserName = null;
+		String systemUserRole = null;
+		if (principal instanceof UserDetails) {
+			systemUserName = ((UserDetails) principal).getUsername();
+			systemUserRole = ((UserDetails) principal).getAuthorities().iterator().next().getAuthority();
+		}
+		this.logger.debug("systemUserName=" + systemUserName + " systemUserRole=" + systemUserRole);
+		if ((systemUserRole == null) || (systemUserName == null)) {
+			systemUserRole = (String) session.getAttribute("systemUserRole");
+			systemUserName = (String) session.getAttribute("systemUserName");
+		}
+		Map<String, String> map = new HashMap<>();
+		map.put("systemUserRole", systemUserRole);
+		map.put("systemUserName", systemUserName);*/
+		Map<String, Integer> map = new HashMap<>();
+		String site_id = (String)requestParams.get("site_id");
+		String building_id = (String)requestParams.get("building_id");
+		Integer site_id_t = null;
+		Integer building_id_t = null;
+		if(site_id != null && !site_id.isEmpty())
+		{
+			site_id_t=Integer.parseInt(site_id);
+		}
+		if(building_id != null && !building_id.isEmpty())
+		{
+			building_id_t = Integer.parseInt(building_id);
+
+		}
+		map.put("site_id", (site_id_t));
+		map.put("building_id", (building_id_t));
+		return service.getCMSFSubList(map);
+	}
+	
+	@RequestMapping(value = "/api/htbackend/getRealtimeAlarmList", method = RequestMethod.GET)
+	public List<HashMap> getRealtimeAlarmList(@RequestParam HashMap<String, Object> requestParams) {
+		List<HashMap> list = service.getRealtimeAlarmList(requestParams);
+		return list;
+	}
+	
+	@RequestMapping(value = "/api/htbackend/getCurrentEndUsersTraffic", method = RequestMethod.GET)
+	public List<HashMap> getCurrentEndUsersTraffic(@RequestParam HashMap<String, Object> requestParams) {
+
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.S");
+		Date currentDate = new Date();
+		System.out.println(sdf.format(currentDate));
+
+		// convert date to calendar
+		Calendar c = Calendar.getInstance();
+		c.setTime(currentDate);
+		c.set(Calendar.MINUTE, 0);
+		c.set(Calendar.SECOND, 0);
+		c.set(Calendar.MILLISECOND, 0);
+		c.add(Calendar.HOUR, -1);
+		Date starttime = c.getTime();
+		c.add(Calendar.HOUR, 1);
+		Date endtime = c.getTime();
+
+		String starttimehr = sdf.format(starttime);
+		String endtimehr = sdf.format(endtime);
+
+		Map<String, Object> map2 = new HashMap<String, Object>();
+		map2.put("fromtime", starttime.getTime());
+		map2.put("endtime", endtime.getTime());
+		map2.put("lookuptable", "IfHCHourly");
+		String tablename = widgetService.getTableNameFromMetaTable(map2);
+
+		Map<String, Object> map = new HashMap<String, Object>();
+		map.put("starttimehr", starttime);
+		map.put("endtimehr", endtime);
+		map.put("tablename", "IfHCHourlySUM_" + tablename);
+		String site_id = (String)requestParams.get("site_id");
+		String bld_entity_id = (String)requestParams.get("bld_entity_id");
+		Integer site_id_t = null;
+		Integer building_id_t = null;
+		if(site_id != null && !site_id.isEmpty())
+		{
+			site_id_t=Integer.parseInt(site_id);
+		}
+		if(bld_entity_id != null && !bld_entity_id.isEmpty())
+		{
+			building_id_t = Integer.parseInt(bld_entity_id);
+
+		}
+		map.put("site_id", (site_id_t));
+		map.put("bld_entity_id", (building_id_t));		
+		return service.getCurrentEndUsersTraffic(map);
+
+	}	
+	
+	@RequestMapping(value = "/api/htbackend/getEndUsersStats", method = RequestMethod.GET)
+	public List<HashMap> getEndUsersStats(@RequestParam HashMap<String, Object> requestParams) {
+
+		Map<String, Object> map = new HashMap<String, Object>();
+		String type = (String)requestParams.get("type");
+		if(type == null || type.isEmpty()){
+			return null;
+		}
+		String site_id = (String)requestParams.get("site_id");
+		String bld_entity_id = (String)requestParams.get("bld_entity_id");
+		Integer site_id_t = null;
+		Integer building_id_t = null;
+		if(site_id != null && !site_id.isEmpty())
+		{
+			site_id_t=Integer.parseInt(site_id);
+		}
+		if(bld_entity_id != null && !bld_entity_id.isEmpty())
+		{
+			building_id_t = Integer.parseInt(bld_entity_id);
+
+		}
+		map.put("site_id", (site_id_t));
+		map.put("bld_entity_id", (building_id_t));	
+		if(type.equalsIgnoreCase("monthly")){
+			String startmonth = (String)requestParams.get("startmonth");
+			String endmonth = (String)requestParams.get("endmonth");
+			if(startmonth == null || startmonth.isEmpty() || endmonth == null || endmonth.isEmpty()){
+				return null;
+			}
+			map.put("startmonthint", (startmonth)+"-01");
+			map.put("endmonthint", (endmonth)+"-01");
+			startmonth = startmonth.replaceAll("-", "");
+			endmonth = endmonth.replaceAll("-", "");
+			map.put("startmonth", (startmonth +"00"));
+			map.put("endmonth", (endmonth + "99"));
+
+			map.put("type", type);
+			return service.getEndUsersStatsMonthly(map);
+		}else if(type.equalsIgnoreCase("yearly")){
+			String startyear = (String)requestParams.get("startyear");
+			String endyear = (String)requestParams.get("endyear");
+			if(startyear == null || endyear.isEmpty() || endyear == null || endyear.isEmpty()){
+				return null;
+			}
+			map.put("startmonthint", Integer.parseInt(startyear));
+			map.put("endmonthint", Integer.parseInt(endyear));
+			map.put("startmonth", (startyear +"0000"));
+			map.put("endmonth", (endyear + "9999"));
+			map.put("type", type);
+			return service.getEndUsersStatsMonthly(map);
+		}else if(type.equalsIgnoreCase("daily")){
+			String startday = (String)requestParams.get("startday");
+			String endday = (String)requestParams.get("endday");
+			if(startday == null || startday.isEmpty() || endday == null || endday.isEmpty()){
+				return null;
+			}
+			map.put("startmonthint", (startday));
+			map.put("endmonthint", (endday));
+			startday = startday.replaceAll("-", "");
+			endday = endday.replaceAll("-", "");
+			map.put("startmonth", (startday ));
+			map.put("endmonth", (endday ));
+			map.put("type", type);
+			return service.getEndUsersStatsMonthly(map);
+		}else if(type.equalsIgnoreCase("dailypick")){
+			String pickday = (String)requestParams.get("pickday");
+			if(pickday == null || pickday.isEmpty()){
+				return null;
+			}
+			pickday = pickday.replaceAll("-", "");
+			map.put("startmonth", (pickday ));
+			map.put("endmonth", (pickday ));
+			map.put("startmonthint", 0);
+			map.put("endmonthint", 23);
+			map.put("type", type);
+			return service.getEndUsersStatsMonthly(map);
+		}
+
+	
+		return service.getEndUsersStats(map);
+
+	}		
+	@RequestMapping(value = "/api/htbackend/getTempUserInfo", method = RequestMethod.GET)
+	public List<HashMap> getTempUserInfo(@RequestParam HashMap<String, Object> requestParams) {
+
+		Map<String, Object> map = new HashMap<String, Object>();
+		String clientIP = (String)requestParams.get("clientIP");
+		map.put("clientIP", clientIP);
+		if(clientIP == null || clientIP.isEmpty()){
+			return null;
+		}		
+	
+		return service.getTempUserInfo(map);
+
+	}	
+	
+	@RequestMapping(value = "/api/htbackend/getTempUserInfo2", method = RequestMethod.GET)
+	public List<HashMap> getTempUserInfo2(@RequestParam HashMap<String, Object> requestParams) {
+
+		Map<String, Object> map = new HashMap<String, Object>();
+		String switch_mac = (String)requestParams.get("switch_mac");
+		map.put("switch_mac", switch_mac);
+		if(switch_mac == null || switch_mac.isEmpty()){
+			return null;
+		}		
+	
+		return service.getTempUserInfo2(map);
+
+	}	
+	
+	@RequestMapping(value = "/api/htbackend/getAreaDCIMWidget", method = RequestMethod.GET)
+	public List<HashMap> getAreaDCIMWidget(@RequestParam HashMap<String, Object> requestParams) {
+
+		Map<String, Object> map = new HashMap<String, Object>();
+		String area_id = (String)requestParams.get("area_id");
+		
+		if(area_id == null || area_id.isEmpty()){
+			return null;
+		}		
+		map.put("area_id", Integer.parseInt(area_id));
+		return service.getAreaDCIMWidget(map);
+
+	}	
+	
+	@RequestMapping(value = "/api/htbackend/getUnAuthInfoBySWMac", method = RequestMethod.GET)
+	public HashMap getUnAuthInfoBySWMac(@RequestParam HashMap<String, Object> requestParams) {
+		HashMap rtnVal = new HashMap();
+		Map<String, Object> map = new HashMap<String, Object>();
+		String opm_name = (String)requestParams.get("opm_name");
+		String mac_address = (String)requestParams.get("mac_address");
+		if(opm_name == null || opm_name.isEmpty()|| mac_address == null || mac_address.isEmpty()){
+			rtnVal.put("error", "params required");
+		}else{
+			map.put("switch_name", opm_name);
+			map.put("mac_address", mac_address);
+			rtnVal.put("result", service.getUnAuthInfoBySWMac(map));	
+		}
+		return rtnVal;
+
+	}		
+	
+}
+
+
