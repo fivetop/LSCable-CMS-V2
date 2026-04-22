@@ -1,5 +1,7 @@
 # LSCable CMS V2 프로젝트 분석 문서
 
+![CMS](./cms.png)
+
 ---
 
 ## 문서 요약
